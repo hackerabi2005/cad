@@ -1,0 +1,57 @@
+{
+  "vessels": [
+    {
+      "id": "LAD",
+      "target": "LAD",
+      "nodeName": "LAD",
+      "name": "Left Anterior Descending",
+      "abbreviation": "LAD",
+      "territory": "Anterior myocardium & anterior interventricular septum",
+      "description": "Known as the 'widowmaker'. Occlusion typically causes extensive anterior wall myocardial infarction.",
+      "badgePosition": [0.35, 0.15, 0.72]
+    },
+    {
+      "id": "LCX",
+      "target": "LCX",
+      "nodeName": "LCX",
+      "name": "Left Circumflex Artery",
+      "abbreviation": "LCX",
+      "territory": "Lateral wall & posterior base of left ventricle",
+      "description": "Branches off the left main stem and wraps laterally around the coronary sulcus.",
+      "badgePosition": [0.68, 0.35, -0.12]
+    },
+    {
+      "id": "RCA",
+      "target": "RCA",
+      "nodeName": "RCA",
+      "name": "Right Coronary Artery",
+      "abbreviation": "RCA",
+      "territory": "Right ventricle, diaphragmatic inferior wall, SA and AV nodes",
+      "description": "Arises from right aortic sinus and courses through the right coronary sulcus.",
+      "badgePosition": [-0.62, 0.22, 0.38]
+    }
+  ],
+  "anatomy": [
+    {
+      "id": "Aorta",
+      "nodeName": "Aorta",
+      "name": "Ascending Aorta & Bulb",
+      "defaultColor": "#be123c",
+      "defaultOpacity": 0.95
+    },
+    {
+      "id": "Heart_Muscle",
+      "nodeName": "Heart_Muscle",
+      "name": "Myocardium & Chambers",
+      "defaultColor": "#e11d48",
+      "defaultOpacity": 0.25
+    }
+  ],
+  "colorScale": [
+    { "stop": 0.0, "color": "#10b981", "label": "Low Risk (<25%)" },
+    { "stop": 0.35, "color": "#84cc16", "label": "Mild (25-45%)" },
+    { "stop": 0.50, "color": "#f59e0b", "label": "Borderline / Moderate (50%)" },
+    { "stop": 0.70, "color": "#f97316", "label": "High Risk (70%)" },
+    { "stop": 1.0, "color": "#ef4444", "label": "Critical Stenosis (≥80%)" }
+  ]
+}

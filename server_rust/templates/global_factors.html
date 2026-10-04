@@ -1,0 +1,20 @@
+<div class="glass-panel" style="padding: 1.5rem;">
+  <div style="margin-bottom: 1.5rem;">
+    <h2 style="font-size: 1.25rem; font-weight: 800;">Global Population Risk Factors (Cath Model)</h2>
+    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">Mean absolute SHAP value across all 303 cohort patients.</p>
+  </div>
+  <div>
+    {% for factor in factors %}
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.85rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem; width: 240px;">
+          <span style="font-family: var(--font-mono); color: var(--text-muted); font-size: 0.75rem;">#{{ factor.rank }}</span>
+          <span style="font-weight: 600;">{{ factor.feature }}</span>
+        </div>
+        <div style="flex: 1; margin: 0 1.5rem; height: 8px; background: rgba(15, 23, 42, 0.7); border-radius: 9999px; overflow: hidden;">
+          <div style="width: {{ factor.pct }}%; height: 100%; background: linear-gradient(90deg, #0284c7, #06b6d4); border-radius: 9999px;"></div>
+        </div>
+        <span style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8; width: 60px; text-align: right;">{{ factor.val }}</span>
+      </div>
+    {% endfor %}
+  </div>
+</div>

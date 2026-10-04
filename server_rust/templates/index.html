@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardio3D AI — Multimodal Cardiovascular Risk & 3D Coronary Stenosis Viewer (Rust + HTMX)</title>
+  <meta name="description" content="High-performance Rust + HTMX + Three.js interactive 3D anatomical coronary visualization and clinical cardiac risk prediction.">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- HTMX 2.0 -->
+  <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- Persistent Safety Disclaimer Banner -->
+  <div id="safety-disclaimer-banner" style="background: rgba(245, 158, 11, 0.12); border-bottom: 1px solid rgba(245, 158, 11, 0.35); padding: 0.5rem 1rem; text-align: center; font-size: 0.75rem; color: #fef3c7; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 500;">
+    <span style="color: #f59e0b; font-size: 0.9rem;">⚠️</span>
+    <span><strong>Clinical Safety Disclaimer:</strong> Decision support & educational use only — not a substitute for formal diagnostic imaging, catheterization, or physician judgment.</span>
+  </div>
+
+  <!-- Executive Navigation Header -->
+  <header class="glass-header" style="position: sticky; top: 0; z-index: 20; padding: 0.75rem 1.5rem;">
+    <div style="max-width: 1440px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div style="width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #e11d48, #be123c); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4);">
+          <span style="font-size: 1.25rem;">🫀</span>
+        </div>
+        <div>
+          <h1 style="font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem;">
+            Cardio3D AI
+            <span style="font-size: 0.65rem; font-family: var(--font-mono); padding: 2px 7px; border-radius: 9999px; background: rgba(6, 182, 212, 0.2); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.4);">
+              Rust (Axum) + HTMX
+            </span>
+          </h1>
+          <p style="font-size: 0.7rem; color: var(--text-secondary);">Interactive 3D Coronary Anatomy & Multi-Vessel Stenosis Risk</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <div style="display: flex; align-items: center; gap: 0.35rem; padding: 3px; background: rgba(15, 23, 42, 0.9); border: 1px solid var(--border-subtle); border-radius: 12px;">
+        <button hx-get="/api/tab/risk-shap" hx-target="#main-tab-content" class="btn-ctrl active" id="tab-btn-risk">
+          <span>⚡ Risk & SHAP</span>
+        </button>
+        <button hx-get="/api/tab/global-factors" hx-target="#main-tab-content" class="btn-ctrl" id="tab-btn-global">
+          <span>🌐 Global Factors</span>
+        </button>
+        <button hx-get="/api/tab/cv-metrics" hx-target="#main-tab-content" class="btn-ctrl" id="tab-btn-metrics">
+          <span>📊 Model CV Validation</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Application Workspace -->
+  <main class="app-container" id="main-tab-content">
+    
+    <!-- Top Split Section: 3D Viewport + Clinical Status -->
+    <div class="top-split-grid">
+      
+      <!-- 3D Heart Anatomy Viewport -->
+      <div class="viewport-3d-box">
+        
+        <!-- Controls Overlay -->
+        <div class="viewport-controls-overlay">
+          <button id="btn-toggle-myocardium" class="btn-ctrl" title="Toggle Myocardium Mesh">
+            <span>👁️ Myocardium</span>
+          </button>
+
+          <div style="display: flex; align-items: center; gap: 0.35rem; background: rgba(15, 23, 42, 0.75); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 0.35rem 0.6rem; font-size: 0.7rem;">
+            <span style="color: var(--text-secondary);">Opacity:</span>
+            <input type="range" id="myo-opacity-slider" min="0.05" max="0.6" step="0.05" value="0.25" style="width: 60px; accent-color: var(--accent-cyan);">
+          </div>
+
+          <button id="btn-reset-camera" class="btn-ctrl" title="Reset 3D Camera">
+            <span>🔄 Reset</span>
+          </button>
+        </div>
+
+        <!-- WebGL Canvas Container -->
+        <div id="heart-canvas-container"></div>
+
+        <!-- Risk Legend Bar -->
+        <div class="viewport-legend-bar">
+          <div style="display: flex; align-items: center; gap: 0.4rem; color: var(--text-secondary);">
+            <span style="color: var(--accent-cyan);">ℹ️</span>
+            <span>Click vessels in 3D or below to inspect localized SHAP features</span>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <span style="color: var(--text-muted); font-size: 0.65rem; text-transform: uppercase; font-weight: 700;">Risk Scale:</span>
+            <div style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="width: 8px; height: 8px; border-radius: 9999px; background: #10b981;"></span>
+              <span style="font-size: 0.7rem;">Low (&lt;25%)</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="width: 8px; height: 8px; border-radius: 9999px; background: #f59e0b;"></span>
+              <span style="font-size: 0.7rem;">Moderate</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="width: 8px; height: 8px; border-radius: 9999px; background: #ef4444;"></span>
+              <span style="font-size: 0.7rem;">Severe (≥75%)</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: CAD Status & Vessel Cards -->
+      <div style="display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;">
+        
+        <!-- Target for dynamic prediction swap -->
+        <div id="dashboard-dynamic-updates" style="display: flex; flex-direction: column; gap: 1rem;">
+          {{ initial_overview_html | safe }}
+        </div>
+
+        <!-- Active Target Indicator -->
+        <div class="glass-panel" style="padding: 0.75rem 1rem; font-size: 0.75rem; color: var(--text-secondary); display: flex; align-items: center; justify-content: space-between;">
+          <span>Active Target for SHAP Attribution:</span>
+          <span id="active-target-badge" style="font-family: var(--font-mono); font-weight: 700; color: #38bdf8; background: rgba(6, 182, 212, 0.15); border: 1px solid rgba(6, 182, 212, 0.4); padding: 2px 8px; border-radius: 6px;">
+            Overall CAD (Cath)
+          </span>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Split Section: Patient Input Form + SHAP Waterfall -->
+    <div class="bottom-split-grid">
+      
+      <!-- Patient Physiological Parameters -->
+      <div class="glass-panel" style="padding: 1.25rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+          <div>
+            <span style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">Patient Physiological Input</span>
+            <h2 style="font-size: 1.05rem; font-weight: 700;">Clinical Biomarkers</h2>
+          </div>
+          <span style="font-size: 0.7rem; color: #38bdf8; font-family: var(--font-mono); background: rgba(6, 182, 212, 0.1); padding: 3px 8px; border-radius: 6px;">Live Debounced (Rust)</span>
+        </div>
+
+        <!-- Presets -->
+        <div style="margin-bottom: 1.25rem;">
+          <span style="font-size: 0.7rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">⚡ Load Real Patient Presets:</span>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
+            <button hx-get="/api/sample/sample-low-risk" hx-target="#patient-form-container" hx-on::after-request="setTimeout(() => htmx.trigger('#patient-input-form', 'change'), 80)" class="btn-ctrl" style="padding: 0.5rem; justify-content: center; text-align: center; border-color: rgba(16, 185, 129, 0.4);">
+              <span style="font-weight: 600; color: #34d399;">Patient A (Low Risk)</span>
+            </button>
+            <button hx-get="/api/sample/sample-mid-risk" hx-target="#patient-form-container" hx-on::after-request="setTimeout(() => htmx.trigger('#patient-input-form', 'change'), 80)" class="btn-ctrl" style="padding: 0.5rem; justify-content: center; text-align: center; border-color: rgba(245, 158, 11, 0.4);">
+              <span style="font-weight: 600; color: #fbbf24;">Patient B (Moderate)</span>
+            </button>
+            <button hx-get="/api/sample/sample-high-risk" hx-target="#patient-form-container" hx-on::after-request="setTimeout(() => htmx.trigger('#patient-input-form', 'change'), 80)" class="btn-ctrl" style="padding: 0.5rem; justify-content: center; text-align: center; border-color: rgba(239, 68, 68, 0.4);">
+              <span style="font-weight: 600; color: #f87171;">Patient C (High Risk)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Form Container -->
+        <div id="patient-form-container">
+          {{ initial_form_html | safe }}
+        </div>
+      </div>
+
+      <!-- Explainable AI (SHAP) Attribution Container -->
+      <div class="glass-panel" id="shap-container" style="padding: 1.25rem;">
+        {{ initial_shap_html | safe }}
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Persistent Safety Disclaimer Footer -->
+  <footer id="safety-disclaimer-footer" class="glass-header" style="margin-top: 2rem; padding: 1.25rem; font-size: 0.7rem; color: var(--text-muted); text-align: center;">
+    <p>Cardio3D AI — Multimodal Cardiovascular Risk & 3D Coronary Stenosis Viewer (Built in Rust + HTMX + Three.js)</p>
+    <p style="margin-top: 0.35rem;">Clinical Safety Notice: Model predictions reflect statistical probabilities. Never make intervention or medication decisions without certified coronary angiography.</p>
+    <p style="margin-top: 0.35rem;">Dataset: UCI Extension of Z-Alizadeh Sani (CC BY 4.0) | 3D Anatomical Meshes: BodyParts3D (CC BY-SA 2.1 JP)</p>
+  </footer>
+
+  <!-- Three.js Heart Viewer Script -->
+  <script type="module" src="/static/js/heart_viewer.js"></script>
+
+</body>
+</html>

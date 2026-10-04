@@ -1,0 +1,72 @@
+{
+  "dataset": {
+    "name": "Extension of Z-Alizadeh Sani CAD Dataset (UCI ML Repository)",
+    "records": 303,
+    "features": 54,
+    "sha256": "739343245c2ba578b541370217531750d8e936022f928b83e0d91756caa3ff0b",
+    "target_alignment": "Row 93 aligned to CAD per clinical stenosis definition"
+  },
+  "validation_strategy": "Repeated Stratified 5-Fold Cross-Validation (3 repeats = 15 folds)",
+  "selected_models": {
+    "Cath": "LogisticRegression",
+    "LAD": "RandomForest",
+    "LCX": "XGBoost",
+    "RCA": "LogisticRegression"
+  },
+  "coherence_policy": {
+    "cv_violation_rate": 0.2145,
+    "max_violation_delta": 0.2881,
+    "coherence_fix_applied": true,
+    "rule": "P(CAD_coherent) = max(P(CAD), P(LAD), P(LCX), P(RCA))"
+  },
+  "operating_thresholds": {
+    "Cath": {
+      "selected_model": "LogisticRegression",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.604,
+      "target_sensitivity": 0.9,
+      "achieved_sensitivity": 0.903,
+      "achieved_specificity": 0.814,
+      "cv_roc_auc": 0.9291,
+      "cv_brier": 0.0978
+    },
+    "LAD": {
+      "selected_model": "RandomForest",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.465,
+      "target_sensitivity": 0.9,
+      "achieved_sensitivity": 0.904,
+      "achieved_specificity": 0.595,
+      "cv_roc_auc": 0.8462,
+      "cv_brier": 0.1681
+    },
+    "LCX": {
+      "selected_model": "XGBoost",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.208,
+      "target_sensitivity": 0.9,
+      "achieved_sensitivity": 0.916,
+      "achieved_specificity": 0.353,
+      "cv_roc_auc": 0.7353,
+      "cv_brier": 0.2038
+    },
+    "RCA": {
+      "selected_model": "LogisticRegression",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.208,
+      "target_sensitivity": 0.9,
+      "achieved_sensitivity": 0.904,
+      "achieved_specificity": 0.381,
+      "cv_roc_auc": 0.7325,
+      "cv_brier": 0.2017
+    }
+  },
+  "environment": {
+    "scikit_learn_version": "1.9.1",
+    "xgboost_version": "3.4.1",
+    "shap_version": "0.52.0",
+    "python_version": "3.14.5",
+    "seed": 42
+  },
+  "disclaimer": "Decision support / educational use only \u2014 not a substitute for formal diagnostic imaging."
+}

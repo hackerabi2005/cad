@@ -1,0 +1,48 @@
+<div>
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+    <div>
+      <span style="font-size: 0.65rem; text-transform: uppercase; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em;">Explainable AI Attribution</span>
+      <h2 style="font-size: 1.05rem; font-weight: 700;">{{ target_title }} Explainer</h2>
+    </div>
+    <div style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--text-muted);">
+      Base Value: <strong style="color: #e2e8f0;">{{ base_val }}</strong>
+    </div>
+  </div>
+
+  <!-- SHAP Waterfall Bars -->
+  <div style="margin-bottom: 1rem;">
+    {% for feat in features %}
+      <div class="shap-bar-row">
+        <span class="shap-feat-name" title="{{ feat.feature }}">{{ feat.feature }}</span>
+        <div class="shap-bar-track">
+          <div class="shap-bar-fill" style="width: {{ feat.bar_width }}%; background: {{ feat.color }};"></div>
+        </div>
+        <span class="shap-val-text" style="color: {{ feat.color }};">{{ feat.shap_str }}</span>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Table Summary -->
+  <div style="max-height: 160px; overflow-y: auto; border: 1px solid var(--border-subtle); border-radius: 8px;">
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--border-subtle); background: rgba(15, 23, 42, 0.9); font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">
+          <th style="padding: 0.4rem 0.5rem; text-align: left;">Biomarker</th>
+          <th style="padding: 0.4rem 0.5rem; text-align: left;">Value</th>
+          <th style="padding: 0.4rem 0.5rem; text-align: right;">SHAP</th>
+          <th style="padding: 0.4rem 0.5rem; text-align: right;">Impact</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for feat in features %}
+          <tr style="border-bottom: 1px solid var(--border-subtle); font-size: 0.75rem;">
+            <td style="padding: 0.4rem 0.5rem; font-weight: 600;">{{ feat.feature }}</td>
+            <td style="padding: 0.4rem 0.5rem; font-family: var(--font-mono); color: var(--text-secondary);">{{ feat.value }}</td>
+            <td style="padding: 0.4rem 0.5rem; font-family: var(--font-mono); font-weight: 700; color: {{ feat.color }}; text-align: right;">{{ feat.shap_str }}</td>
+            <td style="padding: 0.4rem 0.5rem; font-family: var(--font-mono); text-align: right;">{{ feat.pct_str }}%</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

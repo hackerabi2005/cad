@@ -1,0 +1,1738 @@
+{
+  "Cath": [
+    {
+      "feature": "Typical Chest Pain",
+      "label": "Typical Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.68761,
+      "importance_pct": 11.81
+    },
+    {
+      "feature": "Age",
+      "label": "Age",
+      "group": "demographic",
+      "unit": "years",
+      "mean_abs_shap": 0.51408,
+      "importance_pct": 8.83
+    },
+    {
+      "feature": "Region RWMA",
+      "label": "Regional Wall Motion Abnormality Count",
+      "group": "echo",
+      "unit": "regions",
+      "mean_abs_shap": 0.45377,
+      "importance_pct": 7.79
+    },
+    {
+      "feature": "HTN",
+      "label": "Hypertension",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.30838,
+      "importance_pct": 5.3
+    },
+    {
+      "feature": "Tinversion",
+      "label": "T-Wave Inversion",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.24469,
+      "importance_pct": 4.2
+    },
+    {
+      "feature": "TG",
+      "label": "Triglycerides",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.24431,
+      "importance_pct": 4.2
+    },
+    {
+      "feature": "Dyspnea",
+      "label": "Exertional Dyspnea (Shortness of Breath)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.2424,
+      "importance_pct": 4.16
+    },
+    {
+      "feature": "DM",
+      "label": "Diabetes Mellitus",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.24191,
+      "importance_pct": 4.16
+    },
+    {
+      "feature": "Atypical",
+      "label": "Atypical Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.21433,
+      "importance_pct": 3.68
+    },
+    {
+      "feature": "EF-TTE",
+      "label": "Ejection Fraction (Echo)",
+      "group": "echo",
+      "unit": "%",
+      "mean_abs_shap": 0.21159,
+      "importance_pct": 3.63
+    },
+    {
+      "feature": "BP",
+      "label": "Systolic Blood Pressure",
+      "group": "symptoms-exam",
+      "unit": "mmHg",
+      "mean_abs_shap": 0.17017,
+      "importance_pct": 2.92
+    },
+    {
+      "feature": "ESR",
+      "label": "Erythrocyte Sedimentation Rate",
+      "group": "lab",
+      "unit": "mm/hr",
+      "mean_abs_shap": 0.16858,
+      "importance_pct": 2.9
+    },
+    {
+      "feature": "FBS",
+      "label": "Fasting Blood Sugar",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.16479,
+      "importance_pct": 2.83
+    },
+    {
+      "feature": "Sex",
+      "label": "Biological Sex",
+      "group": "demographic",
+      "unit": "",
+      "mean_abs_shap": 0.16338,
+      "importance_pct": 2.81
+    },
+    {
+      "feature": "Function Class",
+      "label": "NYHA Functional Class (0-3)",
+      "group": "symptoms-exam",
+      "unit": "class",
+      "mean_abs_shap": 0.15745,
+      "importance_pct": 2.7
+    },
+    {
+      "feature": "FH",
+      "label": "Family History of CAD",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.14583,
+      "importance_pct": 2.5
+    },
+    {
+      "feature": "K",
+      "label": "Serum Potassium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.12476,
+      "importance_pct": 2.14
+    },
+    {
+      "feature": "VHD",
+      "label": "Valvular Heart Disease",
+      "group": "echo",
+      "unit": "",
+      "mean_abs_shap": 0.12007,
+      "importance_pct": 2.06
+    },
+    {
+      "feature": "PR",
+      "label": "Pulse Rate",
+      "group": "symptoms-exam",
+      "unit": "bpm",
+      "mean_abs_shap": 0.11524,
+      "importance_pct": 1.98
+    },
+    {
+      "feature": "BMI",
+      "label": "Body Mass Index (BMI)",
+      "group": "demographic",
+      "unit": "kg/m\u00b2",
+      "mean_abs_shap": 0.10732,
+      "importance_pct": 1.84
+    },
+    {
+      "feature": "St Depression",
+      "label": "ST-Segment Depression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.10112,
+      "importance_pct": 1.74
+    },
+    {
+      "feature": "Current Smoker",
+      "label": "Current Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.10042,
+      "importance_pct": 1.72
+    },
+    {
+      "feature": "PLT",
+      "label": "Platelet Count",
+      "group": "lab",
+      "unit": "10\u00b3/\u00b5L",
+      "mean_abs_shap": 0.1004,
+      "importance_pct": 1.72
+    },
+    {
+      "feature": "DLP",
+      "label": "Dyslipidemia",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.09363,
+      "importance_pct": 1.61
+    },
+    {
+      "feature": "Obesity",
+      "label": "Obesity",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.06833,
+      "importance_pct": 1.17
+    },
+    {
+      "feature": "Lymph",
+      "label": "Lymphocytes",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.06718,
+      "importance_pct": 1.15
+    },
+    {
+      "feature": "Nonanginal",
+      "label": "Non-Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.04966,
+      "importance_pct": 0.85
+    },
+    {
+      "feature": "CR",
+      "label": "Serum Creatinine",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.04952,
+      "importance_pct": 0.85
+    },
+    {
+      "feature": "HB",
+      "label": "Hemoglobin",
+      "group": "lab",
+      "unit": "g/dL",
+      "mean_abs_shap": 0.04908,
+      "importance_pct": 0.84
+    },
+    {
+      "feature": "BUN",
+      "label": "Blood Urea Nitrogen",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.04656,
+      "importance_pct": 0.8
+    },
+    {
+      "feature": "HDL",
+      "label": "HDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.0456,
+      "importance_pct": 0.78
+    },
+    {
+      "feature": "Neut",
+      "label": "Neutrophils",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.03666,
+      "importance_pct": 0.63
+    },
+    {
+      "feature": "BBB",
+      "label": "Bundle Branch Block",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.03339,
+      "importance_pct": 0.57
+    },
+    {
+      "feature": "WBC",
+      "label": "White Blood Cell Count",
+      "group": "lab",
+      "unit": "/\u00b5L",
+      "mean_abs_shap": 0.01984,
+      "importance_pct": 0.34
+    },
+    {
+      "feature": "Q Wave",
+      "label": "Pathological Q Wave on ECG",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.01907,
+      "importance_pct": 0.33
+    },
+    {
+      "feature": "St Elevation",
+      "label": "ST-Segment Elevation",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.01816,
+      "importance_pct": 0.31
+    },
+    {
+      "feature": "LVH",
+      "label": "Left Ventricular Hypertrophy (LVH)",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.01745,
+      "importance_pct": 0.3
+    },
+    {
+      "feature": "Na",
+      "label": "Serum Sodium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.01487,
+      "importance_pct": 0.26
+    },
+    {
+      "feature": "Length",
+      "label": "Height",
+      "group": "demographic",
+      "unit": "cm",
+      "mean_abs_shap": 0.01398,
+      "importance_pct": 0.24
+    },
+    {
+      "feature": "Weight",
+      "label": "Weight",
+      "group": "demographic",
+      "unit": "kg",
+      "mean_abs_shap": 0.01392,
+      "importance_pct": 0.24
+    },
+    {
+      "feature": "LDL",
+      "label": "LDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.01337,
+      "importance_pct": 0.23
+    },
+    {
+      "feature": "Diastolic Murmur",
+      "label": "Diastolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0116,
+      "importance_pct": 0.2
+    },
+    {
+      "feature": "Poor R Progression",
+      "label": "Poor R-Wave Progression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00943,
+      "importance_pct": 0.16
+    },
+    {
+      "feature": "Airway disease",
+      "label": "Airway Disease (COPD/Asthma)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00862,
+      "importance_pct": 0.15
+    },
+    {
+      "feature": "Lung rales",
+      "label": "Lung Rales / Crackles",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00611,
+      "importance_pct": 0.1
+    },
+    {
+      "feature": "EX-Smoker",
+      "label": "Former Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00275,
+      "importance_pct": 0.05
+    },
+    {
+      "feature": "Thyroid Disease",
+      "label": "Thyroid Disease",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00266,
+      "importance_pct": 0.05
+    },
+    {
+      "feature": "Edema",
+      "label": "Peripheral Edema",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00212,
+      "importance_pct": 0.04
+    },
+    {
+      "feature": "CRF",
+      "label": "Chronic Renal Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00186,
+      "importance_pct": 0.03
+    },
+    {
+      "feature": "Weak Peripheral Pulse",
+      "label": "Weak Peripheral Pulse",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0016,
+      "importance_pct": 0.03
+    },
+    {
+      "feature": "Systolic Murmur",
+      "label": "Systolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00096,
+      "importance_pct": 0.02
+    },
+    {
+      "feature": "CVA",
+      "label": "Cerebrovascular Accident (Stroke)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00064,
+      "importance_pct": 0.01
+    },
+    {
+      "feature": "LowTH Ang",
+      "label": "Low-Threshold Angina",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00064,
+      "importance_pct": 0.01
+    },
+    {
+      "feature": "CHF",
+      "label": "Congestive Heart Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 5e-05,
+      "importance_pct": 0.0
+    }
+  ],
+  "LAD": [
+    {
+      "feature": "Typical Chest Pain",
+      "label": "Typical Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.08425,
+      "importance_pct": 21.28
+    },
+    {
+      "feature": "Atypical",
+      "label": "Atypical Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.04504,
+      "importance_pct": 11.38
+    },
+    {
+      "feature": "EF-TTE",
+      "label": "Ejection Fraction (Echo)",
+      "group": "echo",
+      "unit": "%",
+      "mean_abs_shap": 0.03031,
+      "importance_pct": 7.66
+    },
+    {
+      "feature": "Region RWMA",
+      "label": "Regional Wall Motion Abnormality Count",
+      "group": "echo",
+      "unit": "regions",
+      "mean_abs_shap": 0.02973,
+      "importance_pct": 7.51
+    },
+    {
+      "feature": "Age",
+      "label": "Age",
+      "group": "demographic",
+      "unit": "years",
+      "mean_abs_shap": 0.02253,
+      "importance_pct": 5.69
+    },
+    {
+      "feature": "Tinversion",
+      "label": "T-Wave Inversion",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.01605,
+      "importance_pct": 4.05
+    },
+    {
+      "feature": "ESR",
+      "label": "Erythrocyte Sedimentation Rate",
+      "group": "lab",
+      "unit": "mm/hr",
+      "mean_abs_shap": 0.01428,
+      "importance_pct": 3.61
+    },
+    {
+      "feature": "HTN",
+      "label": "Hypertension",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.01387,
+      "importance_pct": 3.5
+    },
+    {
+      "feature": "Neut",
+      "label": "Neutrophils",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.0106,
+      "importance_pct": 2.68
+    },
+    {
+      "feature": "St Depression",
+      "label": "ST-Segment Depression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00955,
+      "importance_pct": 2.41
+    },
+    {
+      "feature": "Lymph",
+      "label": "Lymphocytes",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.00953,
+      "importance_pct": 2.41
+    },
+    {
+      "feature": "Na",
+      "label": "Serum Sodium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.00812,
+      "importance_pct": 2.05
+    },
+    {
+      "feature": "TG",
+      "label": "Triglycerides",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.00751,
+      "importance_pct": 1.9
+    },
+    {
+      "feature": "BMI",
+      "label": "Body Mass Index (BMI)",
+      "group": "demographic",
+      "unit": "kg/m\u00b2",
+      "mean_abs_shap": 0.00676,
+      "importance_pct": 1.71
+    },
+    {
+      "feature": "FBS",
+      "label": "Fasting Blood Sugar",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.0066,
+      "importance_pct": 1.67
+    },
+    {
+      "feature": "CR",
+      "label": "Serum Creatinine",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.00603,
+      "importance_pct": 1.52
+    },
+    {
+      "feature": "BP",
+      "label": "Systolic Blood Pressure",
+      "group": "symptoms-exam",
+      "unit": "mmHg",
+      "mean_abs_shap": 0.00595,
+      "importance_pct": 1.5
+    },
+    {
+      "feature": "Nonanginal",
+      "label": "Non-Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0053,
+      "importance_pct": 1.34
+    },
+    {
+      "feature": "Sex",
+      "label": "Biological Sex",
+      "group": "demographic",
+      "unit": "",
+      "mean_abs_shap": 0.00488,
+      "importance_pct": 1.23
+    },
+    {
+      "feature": "PR",
+      "label": "Pulse Rate",
+      "group": "symptoms-exam",
+      "unit": "bpm",
+      "mean_abs_shap": 0.0048,
+      "importance_pct": 1.21
+    },
+    {
+      "feature": "VHD",
+      "label": "Valvular Heart Disease",
+      "group": "echo",
+      "unit": "",
+      "mean_abs_shap": 0.00479,
+      "importance_pct": 1.21
+    },
+    {
+      "feature": "DM",
+      "label": "Diabetes Mellitus",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00476,
+      "importance_pct": 1.2
+    },
+    {
+      "feature": "WBC",
+      "label": "White Blood Cell Count",
+      "group": "lab",
+      "unit": "/\u00b5L",
+      "mean_abs_shap": 0.00402,
+      "importance_pct": 1.02
+    },
+    {
+      "feature": "K",
+      "label": "Serum Potassium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.0039,
+      "importance_pct": 0.99
+    },
+    {
+      "feature": "Weight",
+      "label": "Weight",
+      "group": "demographic",
+      "unit": "kg",
+      "mean_abs_shap": 0.00387,
+      "importance_pct": 0.98
+    },
+    {
+      "feature": "BUN",
+      "label": "Blood Urea Nitrogen",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.00368,
+      "importance_pct": 0.93
+    },
+    {
+      "feature": "HDL",
+      "label": "HDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.00357,
+      "importance_pct": 0.9
+    },
+    {
+      "feature": "HB",
+      "label": "Hemoglobin",
+      "group": "lab",
+      "unit": "g/dL",
+      "mean_abs_shap": 0.00353,
+      "importance_pct": 0.89
+    },
+    {
+      "feature": "PLT",
+      "label": "Platelet Count",
+      "group": "lab",
+      "unit": "10\u00b3/\u00b5L",
+      "mean_abs_shap": 0.00351,
+      "importance_pct": 0.89
+    },
+    {
+      "feature": "LDL",
+      "label": "LDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.00241,
+      "importance_pct": 0.61
+    },
+    {
+      "feature": "St Elevation",
+      "label": "ST-Segment Elevation",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00203,
+      "importance_pct": 0.51
+    },
+    {
+      "feature": "Length",
+      "label": "Height",
+      "group": "demographic",
+      "unit": "cm",
+      "mean_abs_shap": 0.00195,
+      "importance_pct": 0.49
+    },
+    {
+      "feature": "Dyspnea",
+      "label": "Exertional Dyspnea (Shortness of Breath)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00191,
+      "importance_pct": 0.48
+    },
+    {
+      "feature": "FH",
+      "label": "Family History of CAD",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00165,
+      "importance_pct": 0.42
+    },
+    {
+      "feature": "Edema",
+      "label": "Peripheral Edema",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00111,
+      "importance_pct": 0.28
+    },
+    {
+      "feature": "DLP",
+      "label": "Dyslipidemia",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.001,
+      "importance_pct": 0.25
+    },
+    {
+      "feature": "Function Class",
+      "label": "NYHA Functional Class (0-3)",
+      "group": "symptoms-exam",
+      "unit": "class",
+      "mean_abs_shap": 0.00095,
+      "importance_pct": 0.24
+    },
+    {
+      "feature": "Obesity",
+      "label": "Obesity",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00088,
+      "importance_pct": 0.22
+    },
+    {
+      "feature": "Q Wave",
+      "label": "Pathological Q Wave on ECG",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00083,
+      "importance_pct": 0.21
+    },
+    {
+      "feature": "Poor R Progression",
+      "label": "Poor R-Wave Progression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00069,
+      "importance_pct": 0.17
+    },
+    {
+      "feature": "Lung rales",
+      "label": "Lung Rales / Crackles",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00058,
+      "importance_pct": 0.15
+    },
+    {
+      "feature": "Current Smoker",
+      "label": "Current Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00053,
+      "importance_pct": 0.13
+    },
+    {
+      "feature": "Systolic Murmur",
+      "label": "Systolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00049,
+      "importance_pct": 0.12
+    },
+    {
+      "feature": "Diastolic Murmur",
+      "label": "Diastolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00046,
+      "importance_pct": 0.12
+    },
+    {
+      "feature": "LVH",
+      "label": "Left Ventricular Hypertrophy (LVH)",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.0003,
+      "importance_pct": 0.08
+    },
+    {
+      "feature": "Weak Peripheral Pulse",
+      "label": "Weak Peripheral Pulse",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00023,
+      "importance_pct": 0.06
+    },
+    {
+      "feature": "Thyroid Disease",
+      "label": "Thyroid Disease",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00021,
+      "importance_pct": 0.05
+    },
+    {
+      "feature": "BBB",
+      "label": "Bundle Branch Block",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00016,
+      "importance_pct": 0.04
+    },
+    {
+      "feature": "CRF",
+      "label": "Chronic Renal Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 8e-05,
+      "importance_pct": 0.02
+    },
+    {
+      "feature": "Airway disease",
+      "label": "Airway Disease (COPD/Asthma)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 6e-05,
+      "importance_pct": 0.02
+    },
+    {
+      "feature": "EX-Smoker",
+      "label": "Former Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "CVA",
+      "label": "Cerebrovascular Accident (Stroke)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "CHF",
+      "label": "Congestive Heart Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "LowTH Ang",
+      "label": "Low-Threshold Angina",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    }
+  ],
+  "LCX": [
+    {
+      "feature": "Age",
+      "label": "Age",
+      "group": "demographic",
+      "unit": "years",
+      "mean_abs_shap": 0.43421,
+      "importance_pct": 15.11
+    },
+    {
+      "feature": "Typical Chest Pain",
+      "label": "Typical Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.37849,
+      "importance_pct": 13.17
+    },
+    {
+      "feature": "TG",
+      "label": "Triglycerides",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.25524,
+      "importance_pct": 8.88
+    },
+    {
+      "feature": "CR",
+      "label": "Serum Creatinine",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.22657,
+      "importance_pct": 7.89
+    },
+    {
+      "feature": "PLT",
+      "label": "Platelet Count",
+      "group": "lab",
+      "unit": "10\u00b3/\u00b5L",
+      "mean_abs_shap": 0.20343,
+      "importance_pct": 7.08
+    },
+    {
+      "feature": "Length",
+      "label": "Height",
+      "group": "demographic",
+      "unit": "cm",
+      "mean_abs_shap": 0.18314,
+      "importance_pct": 6.37
+    },
+    {
+      "feature": "Na",
+      "label": "Serum Sodium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.16311,
+      "importance_pct": 5.68
+    },
+    {
+      "feature": "FBS",
+      "label": "Fasting Blood Sugar",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.15288,
+      "importance_pct": 5.32
+    },
+    {
+      "feature": "BMI",
+      "label": "Body Mass Index (BMI)",
+      "group": "demographic",
+      "unit": "kg/m\u00b2",
+      "mean_abs_shap": 0.0926,
+      "importance_pct": 3.22
+    },
+    {
+      "feature": "BP",
+      "label": "Systolic Blood Pressure",
+      "group": "symptoms-exam",
+      "unit": "mmHg",
+      "mean_abs_shap": 0.08898,
+      "importance_pct": 3.1
+    },
+    {
+      "feature": "Weight",
+      "label": "Weight",
+      "group": "demographic",
+      "unit": "kg",
+      "mean_abs_shap": 0.07529,
+      "importance_pct": 2.62
+    },
+    {
+      "feature": "Lymph",
+      "label": "Lymphocytes",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.07393,
+      "importance_pct": 2.57
+    },
+    {
+      "feature": "HDL",
+      "label": "HDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.07193,
+      "importance_pct": 2.5
+    },
+    {
+      "feature": "K",
+      "label": "Serum Potassium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.0695,
+      "importance_pct": 2.42
+    },
+    {
+      "feature": "ESR",
+      "label": "Erythrocyte Sedimentation Rate",
+      "group": "lab",
+      "unit": "mm/hr",
+      "mean_abs_shap": 0.06245,
+      "importance_pct": 2.17
+    },
+    {
+      "feature": "LDL",
+      "label": "LDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.06112,
+      "importance_pct": 2.13
+    },
+    {
+      "feature": "BUN",
+      "label": "Blood Urea Nitrogen",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.05364,
+      "importance_pct": 1.87
+    },
+    {
+      "feature": "HB",
+      "label": "Hemoglobin",
+      "group": "lab",
+      "unit": "g/dL",
+      "mean_abs_shap": 0.0531,
+      "importance_pct": 1.85
+    },
+    {
+      "feature": "EF-TTE",
+      "label": "Ejection Fraction (Echo)",
+      "group": "echo",
+      "unit": "%",
+      "mean_abs_shap": 0.04261,
+      "importance_pct": 1.48
+    },
+    {
+      "feature": "WBC",
+      "label": "White Blood Cell Count",
+      "group": "lab",
+      "unit": "/\u00b5L",
+      "mean_abs_shap": 0.02882,
+      "importance_pct": 1.0
+    },
+    {
+      "feature": "DLP",
+      "label": "Dyslipidemia",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.02234,
+      "importance_pct": 0.78
+    },
+    {
+      "feature": "Sex",
+      "label": "Biological Sex",
+      "group": "demographic",
+      "unit": "",
+      "mean_abs_shap": 0.01976,
+      "importance_pct": 0.69
+    },
+    {
+      "feature": "VHD",
+      "label": "Valvular Heart Disease",
+      "group": "echo",
+      "unit": "",
+      "mean_abs_shap": 0.01573,
+      "importance_pct": 0.55
+    },
+    {
+      "feature": "HTN",
+      "label": "Hypertension",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.01377,
+      "importance_pct": 0.48
+    },
+    {
+      "feature": "FH",
+      "label": "Family History of CAD",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00726,
+      "importance_pct": 0.25
+    },
+    {
+      "feature": "Neut",
+      "label": "Neutrophils",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.00634,
+      "importance_pct": 0.22
+    },
+    {
+      "feature": "PR",
+      "label": "Pulse Rate",
+      "group": "symptoms-exam",
+      "unit": "bpm",
+      "mean_abs_shap": 0.00591,
+      "importance_pct": 0.21
+    },
+    {
+      "feature": "Current Smoker",
+      "label": "Current Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00436,
+      "importance_pct": 0.15
+    },
+    {
+      "feature": "LVH",
+      "label": "Left Ventricular Hypertrophy (LVH)",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00335,
+      "importance_pct": 0.12
+    },
+    {
+      "feature": "Region RWMA",
+      "label": "Regional Wall Motion Abnormality Count",
+      "group": "echo",
+      "unit": "regions",
+      "mean_abs_shap": 0.00322,
+      "importance_pct": 0.11
+    },
+    {
+      "feature": "DM",
+      "label": "Diabetes Mellitus",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "EX-Smoker",
+      "label": "Former Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Obesity",
+      "label": "Obesity",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "CRF",
+      "label": "Chronic Renal Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "CVA",
+      "label": "Cerebrovascular Accident (Stroke)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Airway disease",
+      "label": "Airway Disease (COPD/Asthma)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Thyroid Disease",
+      "label": "Thyroid Disease",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "CHF",
+      "label": "Congestive Heart Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Edema",
+      "label": "Peripheral Edema",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Weak Peripheral Pulse",
+      "label": "Weak Peripheral Pulse",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Lung rales",
+      "label": "Lung Rales / Crackles",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Systolic Murmur",
+      "label": "Systolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Diastolic Murmur",
+      "label": "Diastolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Dyspnea",
+      "label": "Exertional Dyspnea (Shortness of Breath)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Function Class",
+      "label": "NYHA Functional Class (0-3)",
+      "group": "symptoms-exam",
+      "unit": "class",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Atypical",
+      "label": "Atypical Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Nonanginal",
+      "label": "Non-Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "LowTH Ang",
+      "label": "Low-Threshold Angina",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Q Wave",
+      "label": "Pathological Q Wave on ECG",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "St Elevation",
+      "label": "ST-Segment Elevation",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "St Depression",
+      "label": "ST-Segment Depression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Tinversion",
+      "label": "T-Wave Inversion",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "Poor R Progression",
+      "label": "Poor R-Wave Progression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    },
+    {
+      "feature": "BBB",
+      "label": "Bundle Branch Block",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.0,
+      "importance_pct": 0.0
+    }
+  ],
+  "RCA": [
+    {
+      "feature": "DM",
+      "label": "Diabetes Mellitus",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.35703,
+      "importance_pct": 8.48
+    },
+    {
+      "feature": "Age",
+      "label": "Age",
+      "group": "demographic",
+      "unit": "years",
+      "mean_abs_shap": 0.34885,
+      "importance_pct": 8.28
+    },
+    {
+      "feature": "Sex",
+      "label": "Biological Sex",
+      "group": "demographic",
+      "unit": "",
+      "mean_abs_shap": 0.27874,
+      "importance_pct": 6.62
+    },
+    {
+      "feature": "Function Class",
+      "label": "NYHA Functional Class (0-3)",
+      "group": "symptoms-exam",
+      "unit": "class",
+      "mean_abs_shap": 0.26816,
+      "importance_pct": 6.37
+    },
+    {
+      "feature": "Typical Chest Pain",
+      "label": "Typical Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.26506,
+      "importance_pct": 6.29
+    },
+    {
+      "feature": "Dyspnea",
+      "label": "Exertional Dyspnea (Shortness of Breath)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.25426,
+      "importance_pct": 6.04
+    },
+    {
+      "feature": "ESR",
+      "label": "Erythrocyte Sedimentation Rate",
+      "group": "lab",
+      "unit": "mm/hr",
+      "mean_abs_shap": 0.25327,
+      "importance_pct": 6.01
+    },
+    {
+      "feature": "TG",
+      "label": "Triglycerides",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.19692,
+      "importance_pct": 4.67
+    },
+    {
+      "feature": "Neut",
+      "label": "Neutrophils",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.19381,
+      "importance_pct": 4.6
+    },
+    {
+      "feature": "BUN",
+      "label": "Blood Urea Nitrogen",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.15763,
+      "importance_pct": 3.74
+    },
+    {
+      "feature": "HTN",
+      "label": "Hypertension",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.1294,
+      "importance_pct": 3.07
+    },
+    {
+      "feature": "HDL",
+      "label": "HDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.12279,
+      "importance_pct": 2.91
+    },
+    {
+      "feature": "K",
+      "label": "Serum Potassium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.11927,
+      "importance_pct": 2.83
+    },
+    {
+      "feature": "Atypical",
+      "label": "Atypical Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.11125,
+      "importance_pct": 2.64
+    },
+    {
+      "feature": "Region RWMA",
+      "label": "Regional Wall Motion Abnormality Count",
+      "group": "echo",
+      "unit": "regions",
+      "mean_abs_shap": 0.10943,
+      "importance_pct": 2.6
+    },
+    {
+      "feature": "CR",
+      "label": "Serum Creatinine",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.10308,
+      "importance_pct": 2.45
+    },
+    {
+      "feature": "Weight",
+      "label": "Weight",
+      "group": "demographic",
+      "unit": "kg",
+      "mean_abs_shap": 0.09148,
+      "importance_pct": 2.17
+    },
+    {
+      "feature": "HB",
+      "label": "Hemoglobin",
+      "group": "lab",
+      "unit": "g/dL",
+      "mean_abs_shap": 0.08126,
+      "importance_pct": 1.93
+    },
+    {
+      "feature": "Lymph",
+      "label": "Lymphocytes",
+      "group": "lab",
+      "unit": "%",
+      "mean_abs_shap": 0.08096,
+      "importance_pct": 1.92
+    },
+    {
+      "feature": "PLT",
+      "label": "Platelet Count",
+      "group": "lab",
+      "unit": "10\u00b3/\u00b5L",
+      "mean_abs_shap": 0.07659,
+      "importance_pct": 1.82
+    },
+    {
+      "feature": "FH",
+      "label": "Family History of CAD",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0704,
+      "importance_pct": 1.67
+    },
+    {
+      "feature": "Na",
+      "label": "Serum Sodium",
+      "group": "lab",
+      "unit": "mEq/L",
+      "mean_abs_shap": 0.06443,
+      "importance_pct": 1.53
+    },
+    {
+      "feature": "Current Smoker",
+      "label": "Current Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.04599,
+      "importance_pct": 1.09
+    },
+    {
+      "feature": "VHD",
+      "label": "Valvular Heart Disease",
+      "group": "echo",
+      "unit": "",
+      "mean_abs_shap": 0.04477,
+      "importance_pct": 1.06
+    },
+    {
+      "feature": "WBC",
+      "label": "White Blood Cell Count",
+      "group": "lab",
+      "unit": "/\u00b5L",
+      "mean_abs_shap": 0.03909,
+      "importance_pct": 0.93
+    },
+    {
+      "feature": "FBS",
+      "label": "Fasting Blood Sugar",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.0382,
+      "importance_pct": 0.91
+    },
+    {
+      "feature": "BMI",
+      "label": "Body Mass Index (BMI)",
+      "group": "demographic",
+      "unit": "kg/m\u00b2",
+      "mean_abs_shap": 0.03554,
+      "importance_pct": 0.84
+    },
+    {
+      "feature": "PR",
+      "label": "Pulse Rate",
+      "group": "symptoms-exam",
+      "unit": "bpm",
+      "mean_abs_shap": 0.0314,
+      "importance_pct": 0.75
+    },
+    {
+      "feature": "Length",
+      "label": "Height",
+      "group": "demographic",
+      "unit": "cm",
+      "mean_abs_shap": 0.0295,
+      "importance_pct": 0.7
+    },
+    {
+      "feature": "Nonanginal",
+      "label": "Non-Anginal Chest Pain",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.02925,
+      "importance_pct": 0.69
+    },
+    {
+      "feature": "Poor R Progression",
+      "label": "Poor R-Wave Progression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.02423,
+      "importance_pct": 0.58
+    },
+    {
+      "feature": "DLP",
+      "label": "Dyslipidemia",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.02376,
+      "importance_pct": 0.56
+    },
+    {
+      "feature": "Q Wave",
+      "label": "Pathological Q Wave on ECG",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.02225,
+      "importance_pct": 0.53
+    },
+    {
+      "feature": "Diastolic Murmur",
+      "label": "Diastolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.01515,
+      "importance_pct": 0.36
+    },
+    {
+      "feature": "BBB",
+      "label": "Bundle Branch Block",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.01272,
+      "importance_pct": 0.3
+    },
+    {
+      "feature": "LDL",
+      "label": "LDL Cholesterol",
+      "group": "lab",
+      "unit": "mg/dL",
+      "mean_abs_shap": 0.01212,
+      "importance_pct": 0.29
+    },
+    {
+      "feature": "CRF",
+      "label": "Chronic Renal Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.01,
+      "importance_pct": 0.24
+    },
+    {
+      "feature": "Systolic Murmur",
+      "label": "Systolic Murmur",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.01,
+      "importance_pct": 0.24
+    },
+    {
+      "feature": "Obesity",
+      "label": "Obesity",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00965,
+      "importance_pct": 0.23
+    },
+    {
+      "feature": "EX-Smoker",
+      "label": "Former Smoker",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.0081,
+      "importance_pct": 0.19
+    },
+    {
+      "feature": "St Depression",
+      "label": "ST-Segment Depression",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00767,
+      "importance_pct": 0.18
+    },
+    {
+      "feature": "Airway disease",
+      "label": "Airway Disease (COPD/Asthma)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00604,
+      "importance_pct": 0.14
+    },
+    {
+      "feature": "LVH",
+      "label": "Left Ventricular Hypertrophy (LVH)",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00534,
+      "importance_pct": 0.13
+    },
+    {
+      "feature": "CVA",
+      "label": "Cerebrovascular Accident (Stroke)",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00457,
+      "importance_pct": 0.11
+    },
+    {
+      "feature": "Thyroid Disease",
+      "label": "Thyroid Disease",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00317,
+      "importance_pct": 0.08
+    },
+    {
+      "feature": "EF-TTE",
+      "label": "Ejection Fraction (Echo)",
+      "group": "echo",
+      "unit": "%",
+      "mean_abs_shap": 0.00291,
+      "importance_pct": 0.07
+    },
+    {
+      "feature": "Lung rales",
+      "label": "Lung Rales / Crackles",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00212,
+      "importance_pct": 0.05
+    },
+    {
+      "feature": "St Elevation",
+      "label": "ST-Segment Elevation",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00169,
+      "importance_pct": 0.04
+    },
+    {
+      "feature": "BP",
+      "label": "Systolic Blood Pressure",
+      "group": "symptoms-exam",
+      "unit": "mmHg",
+      "mean_abs_shap": 0.00093,
+      "importance_pct": 0.02
+    },
+    {
+      "feature": "LowTH Ang",
+      "label": "Low-Threshold Angina",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00084,
+      "importance_pct": 0.02
+    },
+    {
+      "feature": "CHF",
+      "label": "Congestive Heart Failure",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00061,
+      "importance_pct": 0.01
+    },
+    {
+      "feature": "Tinversion",
+      "label": "T-Wave Inversion",
+      "group": "ECG",
+      "unit": "",
+      "mean_abs_shap": 0.00051,
+      "importance_pct": 0.01
+    },
+    {
+      "feature": "Edema",
+      "label": "Peripheral Edema",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00031,
+      "importance_pct": 0.01
+    },
+    {
+      "feature": "Weak Peripheral Pulse",
+      "label": "Weak Peripheral Pulse",
+      "group": "symptoms-exam",
+      "unit": "",
+      "mean_abs_shap": 0.00021,
+      "importance_pct": 0.0
+    }
+  ]
+}

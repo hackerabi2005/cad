@@ -1,0 +1,545 @@
+{
+  "Age": {
+    "group": "demographic",
+    "encoding": "numeric",
+    "unit": "years",
+    "label": "Age",
+    "min": 30.0,
+    "max": 86.0,
+    "mean": 58.9,
+    "median": 58.0
+  },
+  "Weight": {
+    "group": "demographic",
+    "encoding": "numeric",
+    "unit": "kg",
+    "label": "Weight",
+    "min": 48.0,
+    "max": 120.0,
+    "mean": 73.83,
+    "median": 74.0
+  },
+  "Length": {
+    "group": "demographic",
+    "encoding": "numeric",
+    "unit": "cm",
+    "label": "Height",
+    "min": 140.0,
+    "max": 188.0,
+    "mean": 164.72,
+    "median": 165.0
+  },
+  "Sex": {
+    "group": "demographic",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Biological Sex",
+    "categories": [
+      "Male",
+      "Fmale"
+    ]
+  },
+  "BMI": {
+    "group": "demographic",
+    "encoding": "numeric",
+    "unit": "kg/m\u00b2",
+    "label": "Body Mass Index (BMI)",
+    "min": 18.115412710007302,
+    "max": 40.90065778377467,
+    "mean": 27.25,
+    "median": 26.775510204081634
+  },
+  "DM": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Diabetes Mellitus",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "HTN": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Hypertension",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "Current Smoker": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Current Smoker",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "EX-Smoker": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Former Smoker",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "FH": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Family History of CAD",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "Obesity": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Obesity",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "CRF": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Chronic Renal Failure",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "CVA": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Cerebrovascular Accident (Stroke)",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Airway disease": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Airway Disease (COPD/Asthma)",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Thyroid Disease": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Thyroid Disease",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "CHF": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Congestive Heart Failure",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "DLP": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Dyslipidemia",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "BP": {
+    "group": "symptoms-exam",
+    "encoding": "numeric",
+    "unit": "mmHg",
+    "label": "Systolic Blood Pressure",
+    "min": 90.0,
+    "max": 190.0,
+    "mean": 129.55,
+    "median": 130.0
+  },
+  "PR": {
+    "group": "symptoms-exam",
+    "encoding": "numeric",
+    "unit": "bpm",
+    "label": "Pulse Rate",
+    "min": 50.0,
+    "max": 110.0,
+    "mean": 75.14,
+    "median": 70.0
+  },
+  "Edema": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Peripheral Edema",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "Weak Peripheral Pulse": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Weak Peripheral Pulse",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Lung rales": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Lung Rales / Crackles",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Systolic Murmur": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Systolic Murmur",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Diastolic Murmur": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Diastolic Murmur",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Typical Chest Pain": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Typical Anginal Chest Pain",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "Dyspnea": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Exertional Dyspnea (Shortness of Breath)",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Function Class": {
+    "group": "symptoms-exam",
+    "encoding": "ordinal",
+    "unit": "class",
+    "label": "NYHA Functional Class (0-3)",
+    "min": 0.0,
+    "max": 3.0,
+    "mean": 0.66,
+    "median": 0.0
+  },
+  "Atypical": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Atypical Chest Pain",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Nonanginal": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Non-Anginal Chest Pain",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "LowTH Ang": {
+    "group": "symptoms-exam",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Low-Threshold Angina",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Q Wave": {
+    "group": "ECG",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Pathological Q Wave on ECG",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "St Elevation": {
+    "group": "ECG",
+    "encoding": "binary",
+    "unit": "",
+    "label": "ST-Segment Elevation",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "St Depression": {
+    "group": "ECG",
+    "encoding": "binary",
+    "unit": "",
+    "label": "ST-Segment Depression",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "Tinversion": {
+    "group": "ECG",
+    "encoding": "binary",
+    "unit": "",
+    "label": "T-Wave Inversion",
+    "categories": [
+      0,
+      1
+    ]
+  },
+  "LVH": {
+    "group": "ECG",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Left Ventricular Hypertrophy (LVH)",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "Poor R Progression": {
+    "group": "ECG",
+    "encoding": "binary",
+    "unit": "",
+    "label": "Poor R-Wave Progression",
+    "categories": [
+      "N",
+      "Y"
+    ]
+  },
+  "BBB": {
+    "group": "ECG",
+    "encoding": "nominal",
+    "unit": "",
+    "label": "Bundle Branch Block",
+    "categories": [
+      "N",
+      "LBBB",
+      "RBBB"
+    ]
+  },
+  "FBS": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mg/dL",
+    "label": "Fasting Blood Sugar",
+    "min": 62.0,
+    "max": 400.0,
+    "mean": 119.18,
+    "median": 98.0
+  },
+  "CR": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mg/dL",
+    "label": "Serum Creatinine",
+    "min": 0.5,
+    "max": 2.2,
+    "mean": 1.06,
+    "median": 1.0
+  },
+  "TG": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mg/dL",
+    "label": "Triglycerides",
+    "min": 37.0,
+    "max": 1050.0,
+    "mean": 150.34,
+    "median": 122.0
+  },
+  "LDL": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mg/dL",
+    "label": "LDL Cholesterol",
+    "min": 18.0,
+    "max": 232.0,
+    "mean": 104.64,
+    "median": 100.0
+  },
+  "HDL": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mg/dL",
+    "label": "HDL Cholesterol",
+    "min": 15.9,
+    "max": 111.0,
+    "mean": 40.23,
+    "median": 39.0
+  },
+  "BUN": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mg/dL",
+    "label": "Blood Urea Nitrogen",
+    "min": 6.0,
+    "max": 52.0,
+    "mean": 17.5,
+    "median": 16.0
+  },
+  "ESR": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mm/hr",
+    "label": "Erythrocyte Sedimentation Rate",
+    "min": 1.0,
+    "max": 90.0,
+    "mean": 19.46,
+    "median": 15.0
+  },
+  "HB": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "g/dL",
+    "label": "Hemoglobin",
+    "min": 8.9,
+    "max": 17.6,
+    "mean": 13.15,
+    "median": 13.2
+  },
+  "K": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mEq/L",
+    "label": "Serum Potassium",
+    "min": 3.0,
+    "max": 6.6,
+    "mean": 4.23,
+    "median": 4.2
+  },
+  "Na": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "mEq/L",
+    "label": "Serum Sodium",
+    "min": 128.0,
+    "max": 156.0,
+    "mean": 141.0,
+    "median": 141.0
+  },
+  "WBC": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "/\u00b5L",
+    "label": "White Blood Cell Count",
+    "min": 3700.0,
+    "max": 18000.0,
+    "mean": 7562.05,
+    "median": 7100.0
+  },
+  "Lymph": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "%",
+    "label": "Lymphocytes",
+    "min": 7.0,
+    "max": 60.0,
+    "mean": 32.4,
+    "median": 32.0
+  },
+  "Neut": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "%",
+    "label": "Neutrophils",
+    "min": 32.0,
+    "max": 89.0,
+    "mean": 60.15,
+    "median": 60.0
+  },
+  "PLT": {
+    "group": "lab",
+    "encoding": "numeric",
+    "unit": "10\u00b3/\u00b5L",
+    "label": "Platelet Count",
+    "min": 25.0,
+    "max": 742.0,
+    "mean": 221.49,
+    "median": 210.0
+  },
+  "EF-TTE": {
+    "group": "echo",
+    "encoding": "numeric",
+    "unit": "%",
+    "label": "Ejection Fraction (Echo)",
+    "min": 15.0,
+    "max": 60.0,
+    "mean": 47.23,
+    "median": 50.0
+  },
+  "Region RWMA": {
+    "group": "echo",
+    "encoding": "ordinal",
+    "unit": "regions",
+    "label": "Regional Wall Motion Abnormality Count",
+    "min": 0.0,
+    "max": 4.0,
+    "mean": 0.62,
+    "median": 0.0
+  },
+  "VHD": {
+    "group": "echo",
+    "encoding": "nominal",
+    "unit": "",
+    "label": "Valvular Heart Disease",
+    "categories": [
+      "N",
+      "mild",
+      "Moderate",
+      "Severe"
+    ]
+  }
+}
