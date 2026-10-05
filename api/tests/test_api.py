@@ -64,8 +64,15 @@ def test_predict_contract():
     # Structure checks
     assert "cad" in data
     assert "prob" in data["cad"]
+    assert "raw_prob" in data["cad"]
     assert "coherent_prob" in data["cad"]
     assert "label" in data["cad"]
+
+    # Coherence rule assertion: displayed CAD probability >= every vessel probability
+    max_v_prob = max(data["vessels"][v]["prob"] for v in ["LAD", "LCX", "RCA"])
+    assert data["cad"]["prob"] >= max_v_prob - 1e-4, (
+        f"Displayed CAD prob {data['cad']['prob']} is less than max vessel prob {max_v_prob}"
+    )
 
     assert "vessels" in data
     for vessel in ["LAD", "LCX", "RCA"]:

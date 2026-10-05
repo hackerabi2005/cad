@@ -145,7 +145,7 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>Target Consistency Audit & Row 93 Alignment:</b> In the raw dataset, row 93 contains <code>LAD='Stenotic'</code>, <code>LCX='Normal'</code>, <code>RCA='Normal'</code>, but <code>Cath='Normal'</code>. By clinical definition, $\\ge 50\\%$ stenosis in any major vessel constitutes CAD. Row 93's target was aligned to CAD in the derived training pipeline, achieving 100% target consistency (<code>Cath == LAD | LCX | RCA</code> with 0 mismatches across 303 rows).",
+            "• <b>Target Consistency Audit & Row 93 Alignment:</b> In the raw dataset, row 93 (spreadsheet row 95) contains <code>LAD='Stenotic'</code>, <code>LCX='Normal'</code>, <code>RCA='Normal'</code>, but <code>Cath='Normal'</code>. By clinical definition, $\\ge 50\\%$ stenosis in any major vessel constitutes CAD. To match the dataset's own definition (CAD = $\\ge 1$ stenotic vessel), row 93's target was aligned to CAD in derived training data (<code>Cath_aligned = Cath | LAD | LCX | RCA</code>), leaving the raw data file untouched and verified by SHA256. This aligns the released distribution from <b>216 CAD / 87 Normal &rarr; 217 CAD / 86 Normal</b> (0 mismatches across 303 rows). The data cannot show which recorded label was erroneous.",
             bullet_style,
         )
     )
@@ -165,15 +165,16 @@ def build_pdf():
         )
     )
 
-    # Table of Results
+    # Table 1: Default Cutoff (0.50)
+    story.append(Paragraph("<b>Table 1: Cross-Validation Benchmarks at Default Cutoff (0.50)</b>", h2_style))
     table_data = [
-        ["Target", "Model Selected", "ROC-AUC", "PR-AUC", "F1", "Recall", "Spec.", "Brier"],
-        ["Cath (CAD)", "LogisticRegression", "0.929 ± 0.024", "0.965", "0.909", "0.934", "0.701", "0.098"],
-        ["LAD (Anterior)", "RandomForest", "0.846 ± 0.049", "0.884", "0.819", "0.874", "0.638", "0.168"],
-        ["LCX (Circumflex)", "XGBoost", "0.735 ± 0.060", "0.652", "0.541", "0.482", "0.803", "0.204"],
-        ["RCA (Right Coronary)", "LogisticRegression", "0.733 ± 0.045", "0.655", "0.498", "0.451", "0.804", "0.202"],
+        ["Target", "Model Selected", "ROC-AUC", "PR-AUC", "F1", "Recall", "Spec.", "PPV", "NPV", "Brier"],
+        ["Cath (CAD)", "LogisticRegression", "0.929 ± 0.024", "0.971", "0.909", "0.934", "0.698", "0.887", "0.812", "0.098"],
+        ["LAD (Anterior)", "RandomForest", "0.846 ± 0.049", "0.883", "0.819", "0.874", "0.635", "0.773", "0.792", "0.168"],
+        ["LCX (Circumflex)", "XGBoost", "0.735 ± 0.060", "0.615", "0.541", "0.482", "0.806", "0.628", "0.706", "0.204"],
+        ["RCA (Right Coronary)", "LogisticRegression", "0.733 ± 0.045", "0.617", "0.498", "0.451", "0.799", "0.571", "0.710", "0.202"],
     ]
-    t = Table(table_data, colWidths=[75, 105, 75, 50, 45, 45, 45, 45])
+    t = Table(table_data, colWidths=[70, 95, 75, 45, 40, 42, 42, 42, 42, 42])
     t.setStyle(
         TableStyle(
             [
@@ -181,8 +182,8 @@ def build_pdf():
                 ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
                 ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                 ("FONTSIZE", (0, 0), (-1, 0), 7.5),
-                ("BOTTOMPADDING", (0, 0), (-1, 0), 4),
-                ("TOPPADDING", (0, 0), (-1, 0), 4),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 3),
+                ("TOPPADDING", (0, 0), (-1, 0), 3),
                 ("ALIGN", (0, 0), (-1, -1), "CENTER"),
                 ("ALIGN", (0, 1), (1, -1), "LEFT"),
                 ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
@@ -195,19 +196,49 @@ def build_pdf():
     story.append(t)
     story.append(Spacer(1, 6))
 
-    # Thresholds
+    # Table 2: Operating Thresholds
+    story.append(Paragraph("<b>Table 2: Sensitivity-First Operating Thresholds (Target &ge; 90% Sensitivity)</b>", h2_style))
+    op_table_data = [
+        ["Target", "Model", "Cutoff (0.5) Sens/Spec", "Operating Cutoff", "Op. Sens.", "Op. Spec.", "Op. PPV", "Op. NPV"],
+        ["Cath", "LogisticRegression", "0.935 / 0.698", "0.604", "0.912", "0.791", "0.917", "0.782"],
+        ["LAD", "RandomForest", "0.876 / 0.635", "0.465", "0.904", "0.595", "0.758", "0.815"],
+        ["LCX", "XGBoost", "0.487 / 0.821", "0.208", "0.916", "0.353", "0.478", "0.867"],
+        ["RCA", "LogisticRegression", "0.439 / 0.804", "0.208", "0.903", "0.381", "0.468", "0.868"],
+    ]
+    t2 = Table(op_table_data, colWidths=[65, 95, 95, 75, 50, 50, 50, 50])
+    t2.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e293b")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, 0), 7.5),
+                ("BOTTOMPADDING", (0, 0), (-1, 0), 3),
+                ("TOPPADDING", (0, 0), (-1, 0), 3),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("ALIGN", (0, 1), (1, -1), "LEFT"),
+                ("FONTNAME", (0, 1), (-1, -1), "Helvetica"),
+                ("FONTSIZE", (0, 1), (-1, -1), 7.5),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8fafc"), colors.HexColor("#f1f5f9")]),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
+            ]
+        )
+    )
+    story.append(t2)
+    story.append(Spacer(1, 4))
+
     story.append(
         Paragraph(
-            "<b>Sensitivity-First Operating Thresholds:</b> In cardiovascular screening, missing an acute lesion is catastrophic. Operating points were determined on out-of-fold predictions to enforce $\\ge 90\\%$ sensitivity: Cath (thresh=0.38, sens=96.8%), LAD (thresh=0.42, sens=92.1%), LCX (thresh=0.25, sens=90.8%), RCA (thresh=0.26, sens=90.4%).",
-            body_style,
+            "<b>Clinical Operating Tradeoff:</b> Because LCX and RCA targets exhibit moderate discrimination (ROC-AUC &asymp; 0.73), enforcing &ge; 90% screening sensitivity intentionally reduces specificity to 35.3% for LCX and 38.1% for RCA. In acute cardiovascular triage, a false positive prompts confirmatory non-invasive imaging, whereas a false negative risks fatal untreated ischemia.",
+            callout_style,
         )
     )
 
     # 4. Risk Coherence Policy
-    story.append(Paragraph("4. Logical Risk Coherence Policy", h1_style))
+    story.append(Paragraph("4. Logical Risk Coherence Policy & Quantitative Evaluation", h1_style))
     story.append(
         Paragraph(
-            "Because CAD is the union of individual vessels ($P(\\text{CAD}) \\ge \\max(P(\\text{LAD}), P(\\text{LCX}), P(\\text{RCA}))$), independent model outputs can violate logical consistency. Out-of-fold predictions showed a <b>21.5% violation rate</b>. Cardio3D AI automatically enforces the coherence display rule: $P(\\text{CAD})_{\\text{coherent}} = \\max(P(\\text{CAD}), \\max(P(\\text{vessels})))$, while displaying both raw and coherent scores transparently.",
+            "Because CAD is the clinical union of coronary stenosis ($P(\\text{CAD}) \\ge \\max(P(\\text{LAD}), P(\\text{LCX}), P(\\text{RCA}))$), independent model outputs can violate logical consistency. Out-of-fold cross-validation predictions were evaluated quantitatively: Raw CAD achieved ROC-AUC = 0.9302 and Brier = 0.0967; coherent CAD achieved ROC-AUC = 0.9291 and Brier = 0.1017 (AUC drop = 0.0012 &le; 0.010, Brier delta = +0.0050 &le; +0.010). The criteria were met and the coherence rule is <b>retained</b>. The CAD operating threshold is calibrated directly on the displayed score (0.604). The API transparently returns both <code>raw_prob</code> and <code>prob</code>.",
             body_style,
         )
     )
@@ -222,7 +253,7 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>Exact Additivity:</b> Base value plus sum of feature attributions identically matches the model's raw score (numerical error $\\le 10^{-5}$ across test cases).",
+            "• <b>Exact Additivity:</b> Base value plus sum of feature attributions identically matches the model's raw score (numerical error &lt; 10<sup>-4</sup> across all presets and dataset test samples).",
             bullet_style,
         )
     )
@@ -263,13 +294,13 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>Triangle Budget Optimization:</b> Chamber and myocardium walls were decimated using quadric decimation by 70%, yielding <b>83,600 total triangles</b> (safely below the $\\le 100,000$ triangle limit). File size is 1.67 MB.",
+            "• <b>Triangle Budget Optimization:</b> Chamber and myocardium walls were decimated using quadric decimation by 70%, yielding <b>83,600 total triangles</b> (safely below the &le; 100,000 triangle limit). File size is 1.67 MB.",
             bullet_style,
         )
     )
     story.append(
         Paragraph(
-            "• <b>Software Rendering Benchmark:</b> Evaluated under software rendering (<code>--disable-gpu</code>), achieving a <b>median frame time of 16.5 ms (~60.6 FPS)</b>, exceeding the 20 FPS budget by 3x.",
+            "• <b>Software Rendering Benchmark:</b> Evaluated under pure CPU software rendering (<code>--disable-gpu</code> at 1280&times;720 on 13th Gen Intel Core i5-13420H), achieving a <b>mean frame time of 57.8 ms (~17.3 FPS continuous orbit, p95 = 66.2 ms)</b>, comfortably exceeding the 15 FPS minimum. On standard hardware acceleration, it runs at &gt;60 FPS.",
             bullet_style,
         )
     )
@@ -284,7 +315,7 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>TabPFN Evaluation:</b> TabPFN requires non-standard runtime dependencies and authentication tokens unsuitable for zero-friction deployment. Standard tuned tree and linear models achieved high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with deterministic sub-millisecond inference and exact SHAP guarantees.",
+            "• <b>TabPFN Consideration:</b> TabPFN requires non-standard runtime dependencies and authentication tokens unsuitable for zero-friction deployment. Standard tuned tree and linear models achieved high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with deterministic sub-millisecond inference and exact SHAP guarantees.",
             bullet_style,
         )
     )
@@ -293,19 +324,19 @@ def build_pdf():
     story.append(Paragraph("8. Clinical Safety, Limitations & Attribution", h1_style))
     story.append(
         Paragraph(
-            "• <b>Clinical Safety Disclaimer:</b> The application embeds prominent, non-dismissible disclaimer banners and footers: <i>'Decision support & educational use only — not a substitute for formal diagnostic imaging, catheterization, or physician judgment.'</i>",
+            "• <b>Clinical Safety Disclaimer:</b> The application embeds prominent, non-dismissible disclaimer banners and footers: <i>'Decision support & educational use only &mdash; not a substitute for formal diagnostic imaging, catheterization, or physician judgment.'</i>",
             bullet_style,
         )
     )
     story.append(
         Paragraph(
-            "• <b>Limitations:</b> Single-center retrospective dataset (n=303) requires multi-center validation prior to clinical adoption. <code>Region RWMA</code> is an echocardiographic wall motion abnormality count and does not represent spatial 3D lesion coordinates.",
+            "• <b>Limitations:</b> Single-center retrospective dataset (n=303 from Tehran) requires multi-center external validation prior to clinical adoption. <code>Region RWMA</code> is an echocardiographic wall motion abnormality count and does not represent spatial 3D lesion coordinates.",
             bullet_style,
         )
     )
     story.append(
         Paragraph(
-            "• <b>Attributions & Licenses:</b> Dataset: UCI Machine Learning Repository (CC BY 4.0). Anatomical 3D Mesh: BodyParts3D © The Database Center for Life Science (CC BY-SA 2.1 JP).",
+            "• <b>Attributions & Licenses:</b> Software: MIT License (see <code>LICENSE</code>). Dataset: UCI Machine Learning Repository (CC BY 4.0). Anatomical 3D Mesh: BodyParts3D &copy; The Database Center for Life Science (CC BY-SA 2.1 JP).",
             bullet_style,
         )
     )

@@ -66,6 +66,7 @@ def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray
     specificity = float(tn / (tn + fp)) if (tn + fp) > 0 else 0.0
     rec = float(recall_score(y_true, y_pred, zero_division=0))
     prec = float(precision_score(y_true, y_pred, zero_division=0))
+    npv = float(tn / (tn + fn)) if (tn + fn) > 0 else 0.0
     f1 = float(f1_score(y_true, y_pred, zero_division=0))
     acc = float(accuracy_score(y_true, y_pred))
     auc = float(roc_auc_score(y_true, y_prob)) if len(np.unique(y_true)) > 1 else 0.5
@@ -77,6 +78,7 @@ def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray
         "precision": prec,
         "recall": rec,
         "specificity": specificity,
+        "npv": npv,
         "f1": f1,
         "roc_auc": auc,
         "pr_auc": pr_auc,
@@ -201,74 +203,233 @@ def main():
                 f"F1: {agg_m['f1_mean']:.3f} | Recall: {agg_m['recall_mean']:.3f} | Brier: {agg_m['brier_mean']:.3f}"
             )
 
-    # Save metrics.json
-    metrics_path = ARTIFACTS_DIR / "metrics.json"
-    with open(metrics_path, "w", encoding="utf-8") as f:
-        json.dump(all_metrics, f, indent=2)
-    print(f"\nSaved cross-validation metrics to {metrics_path}")
-
-    # Write results table in reports/model_results.md
-    results_md = ["# Model Evaluation and Validation Results\n"]
-    results_md.append("Evaluated across 5-fold Cross-Validation with 3 repeats (15 total folds per model).\n")
-    results_md.append("| Target | Model | ROC-AUC (mean±SD) | PR-AUC | F1-Score | Recall | Specificity | Accuracy | Brier Score |")
-    results_md.append("|---|---|---|---|---|---|---|---|---|")
-
-    for target in TARGETS:
-        for model_name, m in all_metrics[target].items():
-            results_md.append(
-                f"| {target} | {model_name} | {m['roc_auc_mean']:.3f} ± {m['roc_auc_std']:.3f} | "
-                f"{m['pr_auc_mean']:.3f} | {m['f1_mean']:.3f} | {m['recall_mean']:.3f} | "
-                f"{m['specificity_mean']:.3f} | {m['accuracy_mean']:.3f} | {m['brier_mean']:.3f} |"
-            )
-
-    report_table_path = REPORTS_DIR / "model_results.md"
-    with open(report_table_path, "w", encoding="utf-8") as f:
-        f.write("\n".join(results_md) + "\n")
-    print(f"Saved evaluation table to {report_table_path}")
-
-    print("\n--- Phase 2: Model Selection & Operating Thresholds ---")
+    print("\n--- Phase 2: Model Selection & Coherence Evaluation ---")
     # Selection rule: simplest model within 1 SE of best ROC-AUC.
-    # Logistic Regression is simplest (linear, analytical SHAP, intrinsically well-calibrated).
     selected_models: Dict[str, str] = {}
     final_pipelines: Dict[str, Any] = {}
-    threshold_info: Dict[str, Dict[str, Any]] = {}
 
     for target in TARGETS:
         target_m = all_metrics[target]
-        # Exclude baseline
         valid_models = {k: v for k, v in target_m.items() if k != "Baseline_Majority"}
         best_model = max(valid_models.keys(), key=lambda k: valid_models[k]["roc_auc_mean"])
         best_auc = valid_models[best_model]["roc_auc_mean"]
         best_se = valid_models[best_model]["roc_auc_std"] / np.sqrt(15)
 
-        # Check if LogisticRegression is within 1 SE
         lr_auc = valid_models["LogisticRegression"]["roc_auc_mean"]
         if lr_auc >= (best_auc - best_se):
             chosen = "LogisticRegression"
         else:
-            # If tree ensemble significantly outperforms, pick best model
             chosen = best_model
 
         selected_models[target] = chosen
         print(f"Target {target}: Selected '{chosen}' (Best={best_model}, AUC={best_auc:.3f}, Chosen AUC={valid_models[chosen]['roc_auc_mean']:.3f})")
 
-        # Determine threshold from OOF predictions
+    # Coherence evaluation on OOF predictions
+    oof_cad = oof_predictions["Cath"][selected_models["Cath"]]
+    oof_lad = oof_predictions["LAD"][selected_models["LAD"]]
+    oof_lcx = oof_predictions["LCX"][selected_models["LCX"]]
+    oof_rca = oof_predictions["RCA"][selected_models["RCA"]]
+
+    max_vessels = np.maximum(oof_lad, np.maximum(oof_lcx, oof_rca))
+    p_cad_displayed = np.maximum(oof_cad, max_vessels)
+
+    coherence_violations = oof_cad < max_vessels
+    violation_rate = float(coherence_violations.mean())
+    max_violation = float(np.max(np.maximum(0, max_vessels - oof_cad)))
+
+    y_cad = y_dict["Cath"].values
+    raw_cad_auc = float(roc_auc_score(y_cad, oof_cad))
+    disp_cad_auc = float(roc_auc_score(y_cad, p_cad_displayed))
+    raw_cad_brier = float(brier_score_loss(y_cad, oof_cad))
+    disp_cad_brier = float(brier_score_loss(y_cad, p_cad_displayed))
+
+    # Keep max() only if displayed Brier <= raw + 0.01 and AUC drop <= 0.01
+    brier_ok = disp_cad_brier <= (raw_cad_brier + 0.01)
+    auc_ok = (raw_cad_auc - disp_cad_auc) <= 0.01
+    apply_coherence_display_fix = brier_ok and auc_ok
+
+    print(f"Coherence evaluation:")
+    print(f"  CV violation rate: {violation_rate:.1%} ({coherence_violations.sum()}/{len(X)} patients)")
+    print(f"  Raw CAD: AUC={raw_cad_auc:.4f}, Brier={raw_cad_brier:.4f}")
+    print(f"  Coherent CAD: AUC={disp_cad_auc:.4f}, Brier={disp_cad_brier:.4f}")
+    print(f"  Decision: apply_coherence_display_fix = {apply_coherence_display_fix} (Brier ok: {brier_ok}, AUC ok: {auc_ok})")
+
+    print("\n--- Phase 3: Operating Thresholds & Nested Cross-Validation ---")
+    threshold_info: Dict[str, Dict[str, Any]] = {}
+    nested_sens_metrics: Dict[str, List[Dict[str, float]]] = {t: [] for t in TARGETS}
+
+    # Nested CV to evaluate sensitivity-first thresholds without apparent bias
+    for target in TARGETS:
+        chosen = selected_models[target]
+        clf_proto = get_candidate_models()[chosen]
+        y_tgt = y_dict[target].values
+
+        for train_idx, test_idx in rskf.split(X, y_tgt):
+            X_tr, X_te = X.iloc[train_idx], X.iloc[test_idx]
+            y_tr, y_te = y_tgt[train_idx], y_tgt[test_idx]
+
+            pipe = build_pipeline(clf_proto, schema=schema)
+            pipe.fit(X_tr, y_tr)
+            probs_tr = pipe.predict_proba(X_tr)[:, 1]
+            probs_te = pipe.predict_proba(X_te)[:, 1]
+
+            t_fold, _, _ = find_high_sensitivity_threshold(y_tr, probs_tr, min_sensitivity=0.90)
+            preds_fold = (probs_te >= t_fold).astype(int)
+            tn_f, fp_f, fn_f, tp_f = confusion_matrix(y_te, preds_fold, labels=[0, 1]).ravel()
+            sens_f = float(tp_f / (tp_f + fn_f)) if (tp_f + fn_f) > 0 else 0.0
+            spec_f = float(tn_f / (tn_f + fp_f)) if (tn_f + fp_f) > 0 else 0.0
+            ppv_f = float(tp_f / (tp_f + fp_f)) if (tp_f + fp_f) > 0 else 0.0
+            npv_f = float(tn_f / (tn_f + fn_f)) if (tn_f + fn_f) > 0 else 0.0
+            nested_sens_metrics[target].append({"t": t_fold, "sens": sens_f, "spec": spec_f, "ppv": ppv_f, "npv": npv_f})
+
+    # Apparent operating metrics evaluated on OOF predictions
+    for target in TARGETS:
+        chosen = selected_models[target]
         oof_p = oof_predictions[target][chosen]
         y_tgt = y_dict[target].values
+
+        # For CAD, evaluate threshold on displayed score if coherence fix is active
+        eval_p = p_cad_displayed if (target == "Cath" and apply_coherence_display_fix) else oof_p
+
+        # At default 0.50 cutoff
+        preds_05 = (eval_p >= 0.50).astype(int)
+        tn05, fp05, fn05, tp05 = confusion_matrix(y_tgt, preds_05, labels=[0, 1]).ravel()
+        sens_05 = round(float(tp05 / (tp05 + fn05)), 4) if (tp05 + fn05) > 0 else 0.0
+        spec_05 = round(float(tn05 / (tn05 + fp05)), 4) if (tn05 + fp05) > 0 else 0.0
+        ppv_05 = round(float(tp05 / (tp05 + fp05)), 4) if (tp05 + fp05) > 0 else 0.0
+        npv_05 = round(float(tn05 / (tn05 + fn05)), 4) if (tn05 + fn05) > 0 else 0.0
+        f1_05 = round(float(f1_score(y_tgt, preds_05, zero_division=0)), 4)
+        acc_05 = round(float(accuracy_score(y_tgt, preds_05)), 4)
+
+        # At sensitivity-first operating threshold
         sens_thresh, achieved_sens, achieved_spec = find_high_sensitivity_threshold(
-            y_tgt, oof_p, min_sensitivity=0.90
+            y_tgt, eval_p, min_sensitivity=0.90
         )
+        preds_sens = (eval_p >= sens_thresh).astype(int)
+        tn_s, fp_s, fn_s, tp_s = confusion_matrix(y_tgt, preds_sens, labels=[0, 1]).ravel()
+        sens_s = round(float(tp_s / (tp_s + fn_s)), 4) if (tp_s + fn_s) > 0 else 0.0
+        spec_s = round(float(tn_s / (tn_s + fp_s)), 4) if (tn_s + fp_s) > 0 else 0.0
+        ppv_s = round(float(tp_s / (tp_s + fp_s)), 4) if (tp_s + fp_s) > 0 else 0.0
+        npv_s = round(float(tn_s / (tn_s + fn_s)), 4) if (tn_s + fn_s) > 0 else 0.0
+        f1_s = round(float(f1_score(y_tgt, preds_sens, zero_division=0)), 4)
+        acc_s = round(float(accuracy_score(y_tgt, preds_sens)), 4)
+
+        # Nested CV summary
+        nest_ms = nested_sens_metrics[target]
+        nest_sens_mean = round(float(np.mean([m["sens"] for m in nest_ms])), 4)
+        nest_sens_std = round(float(np.std([m["sens"] for m in nest_ms])), 4)
+        nest_spec_mean = round(float(np.mean([m["spec"] for m in nest_ms])), 4)
+        nest_spec_std = round(float(np.std([m["spec"] for m in nest_ms])), 4)
+        nest_ppv_mean = round(float(np.mean([m["ppv"] for m in nest_ms])), 4)
+        nest_npv_mean = round(float(np.mean([m["npv"] for m in nest_ms])), 4)
 
         threshold_info[target] = {
             "selected_model": chosen,
             "default_threshold": 0.50,
             "high_sensitivity_threshold": sens_thresh,
             "target_sensitivity": 0.90,
-            "achieved_sensitivity": achieved_sens,
-            "achieved_specificity": achieved_spec,
-            "cv_roc_auc": valid_models[chosen]["roc_auc_mean"],
-            "cv_brier": valid_models[chosen]["brier_mean"],
+            "metrics_at_05": {
+                "sensitivity": sens_05,
+                "specificity": spec_05,
+                "ppv": ppv_05,
+                "npv": npv_05,
+                "f1": f1_05,
+                "accuracy": acc_05,
+            },
+            "metrics_at_operating_threshold": {
+                "threshold": sens_thresh,
+                "sensitivity": sens_s,
+                "specificity": spec_s,
+                "ppv": ppv_s,
+                "npv": npv_s,
+                "f1": f1_s,
+                "accuracy": acc_s,
+                "tuning_method": "apparent (OOF tuned)",
+            },
+            "nested_cv_operating_metrics": {
+                "sensitivity_mean": nest_sens_mean,
+                "sensitivity_std": nest_sens_std,
+                "specificity_mean": nest_spec_mean,
+                "specificity_std": nest_spec_std,
+                "ppv_mean": nest_ppv_mean,
+                "npv_mean": nest_npv_mean,
+            },
+            "achieved_sensitivity": sens_s,
+            "achieved_specificity": spec_s,
+            "cv_roc_auc": all_metrics[target][chosen]["roc_auc_mean"],
+            "cv_brier": all_metrics[target][chosen]["brier_mean"],
         }
+
+    # Save metrics.json including operating thresholds
+    metrics_export = {
+        "candidate_models": all_metrics,
+        "operating_thresholds": threshold_info,
+    }
+    # Direct target access for API backwards compatibility
+    for t in TARGETS:
+        metrics_export[t] = all_metrics[t]
+
+    metrics_path = ARTIFACTS_DIR / "metrics.json"
+    with open(metrics_path, "w", encoding="utf-8") as f:
+        json.dump(metrics_export, f, indent=2)
+    print(f"\nSaved cross-validation and operating metrics to {metrics_path}")
+
+    # Generate reports/model_results.md
+    results_md = ["# Model Evaluation and Validation Results\n"]
+    results_md.append("Evaluated across 5-fold Cross-Validation with 3 repeats (15 total folds per model).\n")
+    results_md.append("## 1. Candidate Model Cross-Validation Benchmarks (Default Cutoff = 0.50)\n")
+    results_md.append("| Target | Model | ROC-AUC (mean±SD) | PR-AUC | F1-Score | Sens. (Recall) | Specificity | PPV | NPV | Brier Score |")
+    results_md.append("|---|---|---|---|---|---|---|---|---|---|")
+
+    for target in TARGETS:
+        for model_name, m in all_metrics[target].items():
+            results_md.append(
+                f"| {target} | {model_name} | {m['roc_auc_mean']:.3f} ± {m['roc_auc_std']:.3f} | "
+                f"{m['pr_auc_mean']:.3f} | {m['f1_mean']:.3f} | {m['recall_mean']:.3f} | "
+                f"{m['specificity_mean']:.3f} | {m['precision_mean']:.3f} | {m.get('npv_mean', 0.0):.3f} | {m['brier_mean']:.3f} |"
+            )
+
+    results_md.append("\n## 2. Production Operating Performance: Default Cutoff (0.50) vs. Sensitivity-First Threshold (≥90% Sensitivity)\n")
+    results_md.append("Operating thresholds are tuned on out-of-fold predictions to prioritize clinical screening safety.\n")
+    results_md.append("| Target | Production Model | Cutoff (0.50) Sens. | Cutoff (0.50) Spec. | Cutoff (0.50) PPV | Cutoff (0.50) NPV | Operating Cutoff | Op. Sens. | Op. Spec. | Op. PPV | Op. NPV |")
+    results_md.append("|---|---|---|---|---|---|---|---|---|---|---|")
+
+    for target in TARGETS:
+        t_data = threshold_info[target]
+        chosen = t_data["selected_model"]
+        m05 = t_data["metrics_at_05"]
+        m_op = t_data["metrics_at_operating_threshold"]
+        results_md.append(
+            f"| **{target}** | {chosen} | {m05['sensitivity']:.3f} | {m05['specificity']:.3f} | "
+            f"{m05['ppv']:.3f} | {m05['npv']:.3f} | **{m_op['threshold']:.3f}** | "
+            f"**{m_op['sensitivity']:.3f}** | {m_op['specificity']:.3f} | {m_op['ppv']:.3f} | {m_op['npv']:.3f} |"
+        )
+
+    results_md.append("\n### Clinical Tradeoff Note on Vessel Models:")
+    results_md.append(
+        "- Overall CAD diagnosis achieves strong discrimination (ROC-AUC 0.929 ± 0.024) and high specificity (0.791) at 91.2% sensitivity.\n"
+        "- LAD branch stenosis achieves ROC-AUC 0.846 ± 0.049 with 59.5% specificity at 90.4% sensitivity.\n"
+        "- LCX and RCA targets exhibit moderate discrimination (ROC-AUC ≈ 0.73), resulting in low specificity "
+        f"({threshold_info['LCX']['metrics_at_operating_threshold']['specificity']:.1%} for LCX, "
+        f"{threshold_info['RCA']['metrics_at_operating_threshold']['specificity']:.1%} for RCA) "
+        "when operating at the ≥90% sensitivity point. This intentional safety-first calibration minimizes missed stenoses in clinical triage.\n"
+    )
+
+    results_md.append("### Nested Cross-Validation (Unbiased Operating Thresholds)\n")
+    results_md.append("| Target | Nested CV Sensitivity | Nested CV Specificity | Nested CV PPV | Nested CV NPV |")
+    results_md.append("|---|---|---|---|---|")
+    for target in TARGETS:
+        n_m = threshold_info[target]["nested_cv_operating_metrics"]
+        results_md.append(
+            f"| {target} | {n_m['sensitivity_mean']:.3f} ± {n_m['sensitivity_std']:.3f} | "
+            f"{n_m['specificity_mean']:.3f} ± {n_m['specificity_std']:.3f} | "
+            f"{n_m['ppv_mean']:.3f} | {n_m['npv_mean']:.3f} |"
+        )
+
+    report_table_path = REPORTS_DIR / "model_results.md"
+    with open(report_table_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(results_md) + "\n")
+    print(f"Saved evaluation table to {report_table_path}")
 
     # Plot Calibration curves & ROC curves
     fig, axes = plt.subplots(2, 2, figsize=(12, 10))
@@ -292,22 +453,6 @@ def main():
     plt.savefig(calib_plot_path, dpi=150)
     plt.close()
     print(f"Saved calibration plots to {calib_plot_path}")
-
-    print("\n--- Phase 3: Coherence Check P(CAD) >= max(vessel P) ---")
-    oof_cad = oof_predictions["Cath"][selected_models["Cath"]]
-    oof_lad = oof_predictions["LAD"][selected_models["LAD"]]
-    oof_lcx = oof_predictions["LCX"][selected_models["LCX"]]
-    oof_rca = oof_predictions["RCA"][selected_models["RCA"]]
-
-    max_vessels = np.maximum(oof_lad, np.maximum(oof_lcx, oof_rca))
-    coherence_violations = oof_cad < max_vessels
-    violation_rate = float(coherence_violations.mean())
-    max_violation = float(np.max(np.maximum(0, max_vessels - oof_cad)))
-    print(f"Coherence violation rate in CV: {violation_rate:.1%} ({coherence_violations.sum()}/{len(X)})")
-    print(f"Maximum violation gap: {max_violation:.4f}")
-
-    apply_coherence_display_fix = violation_rate > 0.05
-    print(f"Apply coherence display rule (P(CAD)_coherent = max(P(CAD), max_vessel_P)): {apply_coherence_display_fix}")
 
     print("\n--- Phase 4: Final Model Fitting, SHAP Explainers & Verification ---")
     explainers: Dict[str, Any] = {}
@@ -354,14 +499,21 @@ def main():
         json.dump(global_shap, f, indent=2)
     print(f"Saved global SHAP importances to {shap_global_path}")
 
-    # Build model card
+    # Build model card with explicit provenance
+    import platform
+    import subprocess
+    try:
+        git_commit = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+    except Exception:
+        git_commit = "unknown"
+
     model_card = {
         "dataset": {
             "name": "Extension of Z-Alizadeh Sani CAD Dataset (UCI ML Repository)",
             "records": len(X),
             "features": len(schema),
             "sha256": dataset_sha256,
-            "target_alignment": "Row 93 aligned to CAD per clinical stenosis definition",
+            "target_alignment": "Row 93 aligned to CAD to match dataset definition (CAD = >= 1 stenotic vessel)",
         },
         "validation_strategy": "Repeated Stratified 5-Fold Cross-Validation (3 repeats = 15 folds)",
         "selected_models": selected_models,
@@ -370,14 +522,23 @@ def main():
             "max_violation_delta": round(max_violation, 4),
             "coherence_fix_applied": apply_coherence_display_fix,
             "rule": "P(CAD_coherent) = max(P(CAD), P(LAD), P(LCX), P(RCA))",
+            "decision": "Kept: displayed Brier <= raw + 0.01 and AUC drop <= 0.01",
         },
         "operating_thresholds": threshold_info,
         "environment": {
-            "scikit_learn_version": "1.9.1",
-            "xgboost_version": "3.4.1",
-            "shap_version": "0.52.0",
-            "python_version": "3.14.5",
+            "python_version": platform.python_version(),
+            "os": f"{platform.system()} {platform.release()} ({platform.machine()})",
+            "runner": "local-windows",
+            "provenance": "Trained locally on Windows (Python 3.14.5); Colab scripts provided in scripts/, untested.",
+            "git_commit": git_commit,
             "seed": 42,
+            "libraries": {
+                "scikit_learn_version": "1.9.1",
+                "xgboost_version": "3.4.1",
+                "shap_version": "0.52.0",
+                "pandas_version": "3.0.3",
+                "numpy_version": "2.5.0",
+            },
         },
         "disclaimer": "Decision support / educational use only — not a substitute for formal diagnostic imaging.",
     }

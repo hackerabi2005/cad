@@ -19,6 +19,7 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
 
   const prob = cad.coherent_prob;
   const percentage = Math.round(prob * 100);
+  const displayPercentage = percentage >= 100 ? '>99%' : `${percentage}%`;
   const riskColor = getRiskColor(prob);
   const isHighRisk = cad.label === 'High Risk';
   const isHighSensHigh = cad.high_sens_label === 'High Risk';
@@ -92,7 +93,7 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
           </svg>
           <div className="absolute flex flex-col items-center justify-center text-center">
             <span className="text-3xl font-extrabold font-display" style={{ color: riskColor }}>
-              {percentage}%
+              {displayPercentage}
             </span>
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
               CAD Risk
@@ -112,14 +113,14 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
             <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
               <span className="text-[10px] text-slate-400 block">Raw Model Score:</span>
               <span className="font-mono font-semibold text-slate-200">
-                {(cad.prob * 100).toFixed(1)}%
+                {cad.prob >= 0.995 ? '>99%' : `${(cad.prob * 100).toFixed(1)}%`}
               </span>
             </div>
 
             <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
               <span className="text-[10px] text-slate-400 block">Coherent Risk Score:</span>
               <span className="font-mono font-semibold text-slate-200 flex items-center gap-1">
-                {(cad.coherent_prob * 100).toFixed(1)}%
+                {cad.coherent_prob >= 0.995 ? '>99%' : `${(cad.coherent_prob * 100).toFixed(1)}%`}
                 {cad.coherence_adjusted && (
                   <span className="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
                     Max(Vessels)

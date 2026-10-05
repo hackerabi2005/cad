@@ -4,7 +4,7 @@
     "records": 303,
     "features": 54,
     "sha256": "739343245c2ba578b541370217531750d8e936022f928b83e0d91756caa3ff0b",
-    "target_alignment": "Row 93 aligned to CAD per clinical stenosis definition"
+    "target_alignment": "Row 93 aligned to CAD to match dataset definition (CAD = >= 1 stenotic vessel)"
   },
   "validation_strategy": "Repeated Stratified 5-Fold Cross-Validation (3 repeats = 15 folds)",
   "selected_models": {
@@ -17,7 +17,8 @@
     "cv_violation_rate": 0.2145,
     "max_violation_delta": 0.2881,
     "coherence_fix_applied": true,
-    "rule": "P(CAD_coherent) = max(P(CAD), P(LAD), P(LCX), P(RCA))"
+    "rule": "P(CAD_coherent) = max(P(CAD), P(LAD), P(LCX), P(RCA))",
+    "decision": "Kept: displayed Brier <= raw + 0.01 and AUC drop <= 0.01"
   },
   "operating_thresholds": {
     "Cath": {
@@ -25,8 +26,34 @@
       "default_threshold": 0.5,
       "high_sensitivity_threshold": 0.604,
       "target_sensitivity": 0.9,
-      "achieved_sensitivity": 0.903,
-      "achieved_specificity": 0.814,
+      "metrics_at_05": {
+        "sensitivity": 0.9355,
+        "specificity": 0.6977,
+        "ppv": 0.8865,
+        "npv": 0.8108,
+        "f1": 0.9103,
+        "accuracy": 0.868
+      },
+      "metrics_at_operating_threshold": {
+        "threshold": 0.604,
+        "sensitivity": 0.9124,
+        "specificity": 0.7907,
+        "ppv": 0.9167,
+        "npv": 0.7816,
+        "f1": 0.9145,
+        "accuracy": 0.8779,
+        "tuning_method": "apparent (OOF tuned)"
+      },
+      "nested_cv_operating_metrics": {
+        "sensitivity_mean": 0.8587,
+        "sensitivity_std": 0.0416,
+        "specificity_mean": 0.8447,
+        "specificity_std": 0.0636,
+        "ppv_mean": 0.9335,
+        "npv_mean": 0.7071
+      },
+      "achieved_sensitivity": 0.9124,
+      "achieved_specificity": 0.7907,
       "cv_roc_auc": 0.9291,
       "cv_brier": 0.0978
     },
@@ -35,8 +62,34 @@
       "default_threshold": 0.5,
       "high_sensitivity_threshold": 0.465,
       "target_sensitivity": 0.9,
+      "metrics_at_05": {
+        "sensitivity": 0.8757,
+        "specificity": 0.6349,
+        "ppv": 0.7711,
+        "npv": 0.7843,
+        "f1": 0.8201,
+        "accuracy": 0.7756
+      },
+      "metrics_at_operating_threshold": {
+        "threshold": 0.465,
+        "sensitivity": 0.904,
+        "specificity": 0.5952,
+        "ppv": 0.7583,
+        "npv": 0.8152,
+        "f1": 0.8247,
+        "accuracy": 0.7756,
+        "tuning_method": "apparent (OOF tuned)"
+      },
+      "nested_cv_operating_metrics": {
+        "sensitivity_mean": 0.8026,
+        "sensitivity_std": 0.0773,
+        "specificity_mean": 0.7406,
+        "specificity_std": 0.0973,
+        "ppv_mean": 0.8172,
+        "npv_mean": 0.7349
+      },
       "achieved_sensitivity": 0.904,
-      "achieved_specificity": 0.595,
+      "achieved_specificity": 0.5952,
       "cv_roc_auc": 0.8462,
       "cv_brier": 0.1681
     },
@@ -45,8 +98,34 @@
       "default_threshold": 0.5,
       "high_sensitivity_threshold": 0.208,
       "target_sensitivity": 0.9,
+      "metrics_at_05": {
+        "sensitivity": 0.4874,
+        "specificity": 0.8207,
+        "ppv": 0.6374,
+        "npv": 0.7123,
+        "f1": 0.5524,
+        "accuracy": 0.6898
+      },
+      "metrics_at_operating_threshold": {
+        "threshold": 0.208,
+        "sensitivity": 0.916,
+        "specificity": 0.3533,
+        "ppv": 0.4781,
+        "npv": 0.8667,
+        "f1": 0.6282,
+        "accuracy": 0.5743,
+        "tuning_method": "apparent (OOF tuned)"
+      },
+      "nested_cv_operating_metrics": {
+        "sensitivity_mean": 0.4766,
+        "sensitivity_std": 0.074,
+        "specificity_mean": 0.8064,
+        "specificity_std": 0.0651,
+        "ppv_mean": 0.6227,
+        "npv_mean": 0.7047
+      },
       "achieved_sensitivity": 0.916,
-      "achieved_specificity": 0.353,
+      "achieved_specificity": 0.3533,
       "cv_roc_auc": 0.7353,
       "cv_brier": 0.2038
     },
@@ -55,18 +134,52 @@
       "default_threshold": 0.5,
       "high_sensitivity_threshold": 0.208,
       "target_sensitivity": 0.9,
-      "achieved_sensitivity": 0.904,
+      "metrics_at_05": {
+        "sensitivity": 0.4386,
+        "specificity": 0.8042,
+        "ppv": 0.5747,
+        "npv": 0.7037,
+        "f1": 0.4975,
+        "accuracy": 0.6667
+      },
+      "metrics_at_operating_threshold": {
+        "threshold": 0.208,
+        "sensitivity": 0.9035,
+        "specificity": 0.381,
+        "ppv": 0.4682,
+        "npv": 0.8675,
+        "f1": 0.6168,
+        "accuracy": 0.5776,
+        "tuning_method": "apparent (OOF tuned)"
+      },
+      "nested_cv_operating_metrics": {
+        "sensitivity_mean": 0.7872,
+        "sensitivity_std": 0.0875,
+        "specificity_mean": 0.5561,
+        "specificity_std": 0.0838,
+        "ppv_mean": 0.5196,
+        "npv_mean": 0.8173
+      },
+      "achieved_sensitivity": 0.9035,
       "achieved_specificity": 0.381,
       "cv_roc_auc": 0.7325,
       "cv_brier": 0.2017
     }
   },
   "environment": {
-    "scikit_learn_version": "1.9.1",
-    "xgboost_version": "3.4.1",
-    "shap_version": "0.52.0",
     "python_version": "3.14.5",
-    "seed": 42
+    "os": "Windows 11 (AMD64)",
+    "runner": "local-windows",
+    "provenance": "Trained locally on Windows (Python 3.14.5); Colab scripts provided in scripts/, untested.",
+    "git_commit": "0cd3408d2d31b521b523715085cebe7d59c86d2e",
+    "seed": 42,
+    "libraries": {
+      "scikit_learn_version": "1.9.1",
+      "xgboost_version": "3.4.1",
+      "shap_version": "0.52.0",
+      "pandas_version": "3.0.3",
+      "numpy_version": "2.5.0"
+    }
   },
   "disclaimer": "Decision support / educational use only \u2014 not a substitute for formal diagnostic imaging."
 }

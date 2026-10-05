@@ -1,14 +1,16 @@
-# Core ML and API dependencies pinned for reproducibility
-scikit-learn>=1.5.0
-xgboost>=2.0.0
-shap>=0.45.0
-pandas>=2.2.0
-numpy>=1.26.0
-openpyxl>=3.1.0
-joblib>=1.4.0
-scipy>=1.13.0
-matplotlib>=3.8.0
-fastapi>=0.110.0
-uvicorn>=0.28.0
-pydantic>=2.6.0
-trimesh>=4.0.0
+# Pinned direct dependencies from training and evaluation environment (Python 3.14.5)
+scikit-learn==1.9.1
+xgboost==3.4.1
+shap==0.52.0
+pandas==3.0.3
+numpy==2.5.0
+openpyxl==3.1.5
+joblib==1.6.0
+scipy==1.18.1
+matplotlib==3.11.1
+fastapi==0.139.2
+uvicorn==0.51.0
+pydantic==2.12.5
+trimesh==5.1.1
+pytest==9.1.1
+httpx==0.28.1

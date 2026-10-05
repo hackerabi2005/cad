@@ -39,12 +39,24 @@ The breakdown is:
 - **Cath (Overall CAD)**:
   - Raw UCI labels: `CAD`: 216 (71.29%), `Normal`: 87 (28.71%)
   - Target Consistency Audit:
-    In the raw dataset, row index 93 has `LAD='Stenotic'`, `LCX='Normal'`, `RCA='Normal'`, but `Cath='Normal'`.
-    By clinical definition, significant stenosis (≥50%) in any major coronary vessel defines CAD.
-    Per the decision logged during Step B2, row 93's `Cath` target is aligned to `CAD` in derived training data.
+    In the raw dataset, exactly 1 row exhibits a logical discrepancy where `Cath != (LAD | LCX | RCA)`:
+    - **Pandas DataFrame index**: `93`
+    - **Spreadsheet row** (Excel 1-indexed, header = row 1): `95`
+    - **Patient attributes** (no patient ID present in raw data): Age: 65, Sex: 'Male', Weight: 73 kg, Length: 165 cm
+    - **Raw target values**: `Cath='Normal'`, `LAD='Stenotic'`, `LCX='Normal'`, `RCA='Normal'`
+    - **Alignment rationale**: Aligned to match the dataset's own definition (CAD = ≥1 stenotic vessel); the data cannot show which label is wrong (whether LAD was false-positive or Cath was false-negative). In derived training data, `Cath_aligned = Cath | LAD | LCX | RCA`.
     After alignment:
     `Cath`: 217 CAD (71.62%), 86 Normal (28.38%).
     `Cath == (LAD | LCX | RCA)` consistency: **100% (0 mismatches across 303 patients)**.
+
+### Sensitivity Analysis: Recorded vs. Aligned Cath (LogisticRegression 5-Fold × 3 Repeats CV)
+
+| Target Labeling | ROC-AUC | PR-AUC | F1-Score | Recall (Sens.) | Specificity | Brier Score | Accuracy |
+|---|---|---|---|---|---|---|---|
+| **Recorded Cath** (216 CAD / 87 Normal) | 0.926 ± 0.030 | 0.969 ± 0.013 | 0.906 ± 0.026 | 0.926 ± 0.038 | 0.705 ± 0.120 | 0.100 ± 0.017 | 0.862 ± 0.039 |
+| **Aligned Cath** (217 CAD / 86 Normal) | 0.929 ± 0.024 | 0.971 ± 0.011 | 0.910 ± 0.021 | 0.934 ± 0.031 | 0.698 ± 0.083 | 0.098 ± 0.012 | 0.867 ± 0.032 |
+
+The single-patient alignment improves label consistency to 100% with negligible variation in cross-validated performance (ROC-AUC shift: +0.003, Brier shift: -0.002).
 
 ## 4. Column-by-Column Inventory and Roles
 

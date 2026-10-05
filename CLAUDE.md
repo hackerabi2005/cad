@@ -13,5 +13,5 @@
 - The disclaimer is always visible in the UI ("Decision support / educational use only — not a substitute for formal diagnostic imaging.").
 - Pin and log library versions; fixed seeds.
 - Any new dependency needs a one-line justification.
-- Cath == (LAD | LCX | RCA) consistency is verified.
+- Cath == OR(vessels) holds after one documented alignment.
 - Fast, exact SHAP explanations for served model.

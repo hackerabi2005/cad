@@ -123,9 +123,16 @@ def load_raw_dataset(excel_path: str | Path, align_row_93: bool = True) -> Tuple
 
     cath_series = (df["Cath"].astype(str).str.strip().str.lower() == "cad").astype(int)
 
+    vessels_or = y_dict["LAD"] | y_dict["LCX"] | y_dict["RCA"]
+    mismatch_mask = (cath_series != vessels_or)
+    mismatch_indices = list(df.index[mismatch_mask])
+
     if align_row_93:
-        # Per audit decision: row 93 has LAD=Stenotic (>=50% stenosis), so Cath=1 (CAD)
-        cath_series.iloc[93] = 1
+        # Align Cath to match dataset's definition (CAD = >= 1 stenotic vessel)
+        assert len(mismatch_indices) == 1, (
+            f"Expected exactly 1 raw mismatch row between Cath and OR(vessels), found {len(mismatch_indices)}: {mismatch_indices}"
+        )
+        cath_series = cath_series | vessels_or
 
     y_dict["Cath"] = cath_series
 

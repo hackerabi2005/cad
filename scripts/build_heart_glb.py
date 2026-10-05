@@ -14,9 +14,7 @@ from pathlib import Path
 import trimesh
 import numpy as np
 
-USER_MODAL_DIR = Path(__file__).resolve().parent.parent / "3D MODAL" / "BP51782_FMA3_2_1_inference_isa_FMA67135_Postnatal_anatomical_structure"
-DATA_RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw" / "BP51782_FMA3_2_1_inference_isa_FMA67135_Postnatal_anatomical_structure"
-RAW_MESH_DIR = USER_MODAL_DIR if USER_MODAL_DIR.exists() else DATA_RAW_DIR
+RAW_MESH_DIR = Path(__file__).resolve().parent.parent / "data" / "raw" / "BP51782_FMA3_2_1_inference_isa_FMA67135_Postnatal_anatomical_structure"
 
 OUTPUT_DIR = Path(__file__).resolve().parent.parent / "web" / "public" / "models"
 DIST_OUTPUT_DIR = Path(__file__).resolve().parent.parent / "web" / "dist" / "models"

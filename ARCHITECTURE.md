@@ -5,7 +5,7 @@
 ## 1. PROJECT OVERVIEW
 
 ### Core Purpose
-**Cardio3D AI** is a multimodal clinical decision-support and educational visualization platform for coronary artery disease (CAD) assessment. Given 54 patient demographic, symptom, examination, ECG, echocardiographic, and laboratory biomarkers, the system concurrently predicts overall CAD status alongside vessel-specific stenosis ($\ge 50\%$ diameter reduction) across the three primary coronary arteries: the Left Anterior Descending (**LAD**), the Left Circumflex (**LCX**), and the Right Coronary Artery (**RCA**). Predictions are coupled with exact additive local feature attributions via SHAP (SHapley Additive exPlanations) and mapped dynamically onto an interactive, GPU-accelerated 3D anatomical coronary heart model derived from BodyParts3D meshes.
+**Cardio3D AI** is a clinical decision-support and educational visualization platform for coronary artery disease (CAD) assessment (developed for the Multimodal AI Hackathon 2026). Given 54 patient demographic, symptom, examination, ECG, echocardiographic, and laboratory biomarkers, the system concurrently predicts overall CAD status alongside vessel-specific stenosis ($\ge 50\%$ diameter reduction) across the three primary coronary arteries: the Left Anterior Descending (**LAD**), the Left Circumflex (**LCX**), and the Right Coronary Artery (**RCA**). Predictions are coupled with exact additive local feature attributions via SHAP (SHapley Additive exPlanations) and mapped dynamically onto an interactive 3D anatomical coronary heart model derived from BodyParts3D meshes.
 
 ### Technology Stack
 - **Primary Languages**:
@@ -16,7 +16,7 @@
 - **Machine Learning & Data Processing**:
   - `scikit-learn 1.6+`: Data transformers, Pipelines, LogisticRegression, RandomForest, cross-validation metrics.
   - `xgboost 2.0+`: Gradient-boosted decision trees for non-linear vessel stenosis estimation.
-  - `shap 0.45+`: `LinearExplainer` and `TreeExplainer` providing mathematically exact additive attribution ($| \text{error} | < 10^{-5}$).
+  - `shap 0.45+`: `LinearExplainer` and `TreeExplainer` providing mathematically exact additive attribution ($| \text{error} | < 10^{-4}$).
   - `pandas 2.2+` & `numpy 1.26+`: Tabular feature wrangling and matrix operations.
   - `joblib 1.4+`: Zero-copy artifact serialization and deserialization.
   - `trimesh 4.0+`: 3D OBJ parsing, coordinate centering, node classification, and binary GLB compilation.
@@ -32,9 +32,9 @@
   - Node.js: v20+ / npm 10+
 
 ### Project Type
-Cardio3D AI is an **enterprise-grade multimodal clinical workstation and ML inference monorepo**. It contains two interoperable architectures:
-1. **High-Performance Rust Workstation**: Rust (Axum) web server + HTMX reactive partial swapping + Vanilla Three.js + Python ML IPC sidecar (listening on port 8000).
-2. **Full-Stack Python/React Application**: FastAPI unified server + React SPA bundle + React Three Fiber (compiled into `web/dist/`).
+Cardio3D AI is a **clinical decision-support workstation and ML inference monorepo**.
+1. **Primary Application (FastAPI + React)**: Unified FastAPI REST API server + React 18 SPA + React Three Fiber 3D interactive viewer (compiled into `web/dist/`, served on port 8000).
+2. **Optional Extra Stack (Rust + HTMX)**: High-performance Rust (Axum) web server + HTMX reactive swapping + Three.js + shared Python ML service (located in `extras/rust-htmx/`).
 
 ---
 
@@ -46,27 +46,21 @@ Below is the complete inventory of all files and folders in the repository (excl
 CAD/
 │
 ├── .gitignore                                         # Git ignore specifications for Python, Node, OS, and build artifacts
+├── .python-version                                    # Pinned Python version (3.14.5)
 ├── CLAUDE.md                                          # Development invariants, coding rules, and zero-leakage constraints
+├── LICENSE                                            # MIT (software) + CC BY-SA 2.1 JP (mesh) + CC BY 4.0 (dataset)
 ├── Makefile                                           # Orchestration tasks: setup, local/colab training, testing, 3D builds, serving
 ├── PLAN.md                                            # Technical specifications, assumptions, and architectural roadmap
 ├── README.md                                          # Project overview, quickstart instructions, evaluation tables, and citations
 │
-├── 3D MODAL/                                          # Original source directory for raw 3D anatomical meshes
-│   └── BP51782_FMA3_2_1_inference_isa_FMA67135_Postnatal_anatomical_structure/ # 129 BodyParts3D OBJ polygon mesh files
-│       ├── MM500_BP51860_FMA7096_Right_ventricle.obj   # Mesh: Right ventricle chamber and muscular walls
-│       ├── MM502_BP51846_FMA7097_Left_ventricle.obj    # Mesh: Left ventricle thick myocardium shell
-│       ├── MM513_BP51924_FMA3900_Anterior_interventricular_branch.obj # Mesh: Trunk of Left Anterior Descending (LAD) artery
-│       ├── MM635_BP51973_FMA74923_Trunk_circumflex_branch.obj # Mesh: Trunk of Left Circumflex (LCX) coronary artery
-│       ├── MM545_BP51923_FMA3901_Right_coronary_artery.obj # Mesh: Trunk of Right Coronary Artery (RCA)
-│       └── ... (124 additional anatomical mesh files representing valves, chambers, septa, and cardiac vessels)
-│
-├── DATASET/                                           # Original external dataset storage
-│   └── extention of Z-Alizadeh sani dataset.xlsx      # Raw Excel dataset from UCI ML Repository (303 rows, 54 features, 4 targets)
+├── extras/                                            # Optional auxiliary stacks and tools
+│   └── rust-htmx/                                     # Optional Rust (Axum) + HTMX implementation and Python sidecar
 │
 ├── api/                                               # FastAPI monolithic REST API and web application server
 │   ├── main.py                                        # FastAPI app serving /api routes, validating inputs, and serving static SPA
 │   └── tests/                                         # API integration test suite
-│       └── test_api.py                                # Pytest validating schema, metrics, samples, predict contract, HTTP 422, p95 latency
+│       ├── test_api.py                                # Pytest validating schema, metrics, samples, predict contract, HTTP 422, p95 latency
+│       └── test_consistency.py                        # Mathematical consistency tests between predictions, raw scores, and SHAP sum
 │
 ├── data/                                              # Structured project data directory
 │   └── raw/                                           # Canonical raw immutable inputs
@@ -89,13 +83,15 @@ CAD/
 │   ├── pipeline.py                                    # Zero-leakage data loading, column transformers, and pipeline construction
 │   ├── requirements.txt                               # Pinned Python package dependencies for reproducible environments
 │   ├── schema.json                                    # Authoritative metadata registry for 54 features (ranges, categories, groups, units)
-│   ├── sidecar.py                                     # Standalone FastAPI microservice on port 8001 providing IPC inference for Rust
+│   ├── service.py                                     # Centralized patient inference, validation, coherence, and SHAP service
 │   ├── train.py                                       # End-to-end training script: CV benchmark, model selection, calibration, serialization
 │   └── tests/                                         # ML integrity and validation unit tests
+│       ├── test_labels.py                             # Pytest verifying raw label audit, hash immutability, and row 93 alignment
 │       └── test_leakage.py                            # Pytest verifying strict exclusion of targets from X and chance shuffled baseline
 │
 ├── reports/                                           # Technical audits, validation figures, and visual evidence
 │   ├── calibration_curves.png                         # Matplotlib reliability calibration plots for Cath, LAD, LCX, and RCA
+│   ├── coherence_eval.md                              # Quantitative evaluation of risk coherence rule P(CAD) >= max(P_vessel)
 │   ├── data_audit.md                                  # In-depth clinical data audit: distributions, missingness, Row 93 alignment
 │   ├── mesh_audit.md                                  # 3D mesh node catalog, polygon budgets, and coronary vessel extraction mapping
 │   ├── model_results.md                               # Formatted markdown table comparing CV ROC-AUC, PR-AUC, F1, Recall, and Brier
@@ -108,42 +104,14 @@ CAD/
 │       ├── 06_lcx_shap_waterfall.png                  # React UI: Localized LCX SHAP waterfall chart
 │       ├── 07_shap_table_view.png                     # React UI: Tabular SHAP feature contributions
 │       ├── 08_global_importance_tab.png               # React UI: Dataset-wide global feature importance view
-│       ├── 09_model_validation_tab.png                # React UI: 15-fold cross-validation performance metrics
-│       ├── rust_01_dashboard.png                      # Rust/HTMX: Initial workstation load
-│       ├── rust_02_high_risk.png                      # Rust/HTMX: Patient C high risk state with red vessels & 100% CAD gauge
-│       ├── rust_03_low_risk.png                       # Rust/HTMX: Patient A low risk state with green vessels & 24% CAD gauge
-│       ├── rust_04_cv_metrics.png                     # Rust/HTMX: Model CV validation tab
-│       └── rust_05_lad_shap.png                       # Rust/HTMX: Left Anterior Descending (LAD) SHAP explainer inspection
+│       └── 09_model_validation_tab.png                # React UI: 15-fold cross-validation performance metrics
 │
 ├── scripts/                                           # Automation, asset processing, and verification scripts
 │   ├── build_heart_glb.py                             # Converts 129 BodyParts3D OBJ meshes into an optimized 83,600-triangle binary GLB
-│   ├── colab_launcher.py                              # Generates reproducible Google Colab execution commands
+│   ├── colab_launcher.py                              # Remote launcher script for execution inside Google Colab
 │   ├── generate_pdf_report.py                         # Generates docs/report.pdf using ReportLab and matplotlib figures
-│   ├── test_rust_ui_playwright.py                     # Playwright E2E test verifying Rust+HTMX disclaimer, presets, tabs, and vessel click
 │   ├── test_ui_playwright.py                          # Playwright E2E test verifying React UI responsiveness, 3D FPS, and presets
 │   └── train_colab.sh                                 # Bash script executing automated training run inside Google Colab
-│
-├── server_rust/                                       # High-performance asynchronous Rust web engine
-│   ├── Cargo.lock                                     # Pinned Rust crate dependency tree
-│   ├── Cargo.toml                                     # Rust package manifest (Axum, Tokio, Tower, Tera, Reqwest, Serde)
-│   ├── src/                                           # Rust source code
-│   │   └── main.rs                                    # Axum application entry point, route definitions, SSR Tera templates, sidecar IPC
-│   ├── static/                                        # Static assets served directly by Axum
-│   │   ├── css/                                       # Stylesheets
-│   │   │   └── style.css                              # Medical workstation dark glassmorphism design system
-│   │   ├── js/                                        # Client scripts
-│   │   │   └── heart_viewer.js                        # Vanilla Three.js r170 script with OrbitControls, continuous risk shaders, raycasting
-│   │   └── models/                                    # Compiled 3D models
-│   │       └── heart.glb                              # 1.67 MB binary GLB asset (83,600 triangles)
-│   └── templates/                                     # Tera (Jinja2-compatible) server-rendered HTML templates
-│       ├── cv_metrics.html                            # CV metrics table tab partial
-│       ├── form.html                                  # Patient clinical biomarker input form partial with hidden state preservation
-│       ├── global_factors.html                        # Global feature importance rankings tab partial
-│       ├── index.html                                 # Master layout shell: header, disclaimer banner, navigation tabs, split containers
-│       ├── overview.html                              # CAD clinical risk card partial: SVG gauge, coherent probability, vessel status cards
-│       ├── risk_shap.html                             # Composite Risk & SHAP tab partial combining 3D scene, overview, form, and explainer
-│       └── shap.html                                  # Local SHAP waterfall bar chart partial
-│
 └── web/                                               # React 18 + Vite + TypeScript frontend monorepo package
     ├── index.html                                     # Single Page Application HTML entry shell
     ├── package-lock.json                              # Locked NPM dependency tree
@@ -176,64 +144,40 @@ CAD/
 
 ## 3. ENTRY POINTS
 
-The system supports multiple operational entry points depending on whether it is running in local training, Rust workstation mode, or Python/React monolithic mode.
+The system supports a primary production entry point (FastAPI + React 18 SPA) and an optional lightweight hypermedia stack (Rust Axum + HTMX in `extras/rust-htmx/`).
 
 ### Main Execution Files
-1. **Rust Server Workstation Entry Point**:
-   - **Path**: `server_rust/src/main.rs`
-   - **Command**: `cargo run --manifest-path server_rust/Cargo.toml` or `target/debug/server_rust.exe`
-   - **Role**: Listens on `http://127.0.0.1:8000`. Handles all user HTTP traffic, serves hypermedia HTML partials via Tera, streams static assets, and communicates asynchronously with the Python ML sidecar.
-2. **Python ML Sidecar Entry Point**:
-   - **Path**: `ml/sidecar.py`
-   - **Command**: `python -m uvicorn ml.sidecar:app --host 127.0.0.1 --port 8001`
-   - **Role**: Internal microservice on port 8001. Loads fitted pipelines and SHAP explainers; serves JSON endpoints for inference, schema, metrics, and patient presets.
-3. **Unified Python/FastAPI Application Entry Point**:
+1. **Primary Unified FastAPI Application Entry Point**:
    - **Path**: `api/main.py`
    - **Command**: `python -m uvicorn api.main:app --host 127.0.0.1 --port 8000`
    - **Role**: Monolithic server that exposes REST API endpoints under `/api/*` and serves the precompiled React SPA from `web/dist/` under `/`.
-4. **Machine Learning Training & Artifact Pipeline**:
+2. **React Client Application Entry Point**:
+   - **Path**: `web/src/main.tsx` (built via `web/index.html`)
+   - **Command**: `npm run dev` (Vite dev server on port 5173) or `npm run build` (outputs to `web/dist/`)
+   - **Role**: Client-side SPA entry point initializing React DOM and mounting `App.tsx` with React Three Fiber 3D viewer.
+3. **Machine Learning Training & Artifact Pipeline**:
    - **Path**: `ml/train.py`
    - **Command**: `python -m ml.train`
    - **Role**: Reads the raw Excel dataset, executes 15-fold Repeated Stratified CV, benchmarks models, fits final production pipelines and SHAP explainers, verifies additivity, and serializes `ml/artifacts/`.
-5. **React Client Application Entry Point**:
-   - **Path**: `web/src/main.tsx` (built via `web/index.html`)
-   - **Command**: `npm run dev` (Vite dev server on port 5173) or `npm run build` (outputs to `web/dist/`)
-   - **Role**: Client-side SPA entry point initializing React DOM and mounting `App.tsx`.
-6. **3D Asset Pipeline Tool**:
+4. **Centralized ML Inference Service**:
+   - **Path**: `ml/service.py`
+   - **Role**: Single source of truth for patient validation, multi-task model inference, coherence adjustment ($P(\text{CAD}) \ge \max(P(\text{vessels}))$), operating thresholding, and additive SHAP attribution.
+5. **3D Asset Pipeline Tool**:
    - **Path**: `scripts/build_heart_glb.py`
    - **Command**: `python scripts/build_heart_glb.py`
-   - **Role**: Parses 129 BodyParts3D OBJ meshes, extracts coronary branches, decodes myocardium, centers bounding boxes, and outputs binary GLB to `web/public/models/heart.glb` and `server_rust/static/models/heart.glb`.
+   - **Role**: Parses 129 BodyParts3D OBJ meshes from `data/raw/`, extracts coronary branches, decodes myocardium, centers bounding boxes, and outputs binary GLB to `web/public/models/heart.glb` (and `extras/rust-htmx/server_rust/static/models/heart.glb`).
+6. **Optional Rust Server Workstation Entry Point**:
+   - **Path**: `extras/rust-htmx/server_rust/src/main.rs`
+   - **Command**: `cargo run --manifest-path extras/rust-htmx/server_rust/Cargo.toml`
+   - **Role**: Optional extra stack. Listens on `http://127.0.0.1:8000`. Serves hypermedia HTML partials via Tera, streams static assets, and communicates asynchronously with the Python ML sidecar.
+7. **Optional Python ML Sidecar Entry Point**:
+   - **Path**: `extras/rust-htmx/sidecar.py`
+   - **Command**: `python -m uvicorn extras.rust-htmx.sidecar:app --host 127.0.0.1 --port 8001`
+   - **Role**: IPC bridge microservice on port 8001 importing `ml.service` for the optional Rust Axum engine.
 
 ### System Boot Sequences
 
-#### Architecture A: Rust (Axum) + HTMX + Three.js (Recommended Workstation)
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Sidecar as Python ML Sidecar (Port 8001)
-    participant Rust as Rust Axum Server (Port 8000)
-    participant Client as Browser (HTMX + Three.js)
-
-    Note over Sidecar: python -m uvicorn ml.sidecar:app --port 8001
-    Sidecar->>Sidecar: lifespan(): load_artifacts() into memory (joblib, metrics, schema)
-    
-    Note over Rust: cargo run / server_rust.exe
-    Rust->>Rust: Compile Tera templates ("templates/**/*")
-    Rust->>Rust: Bind TcpListener to 127.0.0.1:8000
-    
-    Client->>Rust: GET / (Initial Page Load)
-    Rust->>Sidecar: GET /samples
-    Sidecar-->>Rust: Return 3 preset patient records
-    Rust->>Sidecar: POST /predict (Payload: Patient A initial sample)
-    Sidecar-->>Rust: Return CAD & vessel probabilities, labels, and SHAP
-    Rust->>Rust: Render overview.html, form.html, shap.html into index.html
-    Rust-->>Client: Return complete HTML document + /static assets
-    
-    Client->>Client: heart_viewer.js loads /models/heart.glb into Three.js WebGL scene
-    Client->>Client: Apply risk colors & attach HTMX custom event listeners
-```
-
-#### Architecture B: Python FastAPI + React SPA (Monolithic)
+#### Architecture A: Python FastAPI + React SPA (Primary Monolithic Application)
 ```mermaid
 sequenceDiagram
     autonumber
@@ -250,6 +194,33 @@ sequenceDiagram
     Client->>FastAPI: POST /api/predict (Initial Patient A JSON)
     FastAPI-->>Client: Returns JSON {cad, vessels, explain, disclaimer}
     Client->>Client: React Three Fiber renders 3D heart with animated materials
+```
+
+#### Architecture B: Rust (Axum) + HTMX + Three.js (Optional Workstation in `extras/rust-htmx/`)
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Sidecar as Python ML Sidecar (Port 8001)
+    participant Rust as Rust Axum Server (Port 8000)
+    participant Client as Browser (HTMX + Three.js)
+
+    Note over Sidecar: python -m uvicorn extras.rust-htmx.sidecar:app --port 8001
+    Sidecar->>Sidecar: lifespan(): load_artifacts() into memory
+    
+    Note over Rust: cargo run (in extras/rust-htmx/server_rust)
+    Rust->>Rust: Compile Tera templates ("templates/**/*")
+    Rust->>Rust: Bind TcpListener to 127.0.0.1:8000
+    
+    Client->>Rust: GET / (Initial Page Load)
+    Rust->>Sidecar: GET /samples
+    Sidecar-->>Rust: Return 3 preset patient records
+    Rust->>Sidecar: POST /predict (Payload: Patient A initial sample)
+    Sidecar-->>Rust: Return CAD & vessel probabilities, labels, and SHAP
+    Rust->>Rust: Render overview.html, form.html, shap.html into index.html
+    Rust-->>Client: Return complete HTML document + /static assets
+    
+    Client->>Client: heart_viewer.js loads /models/heart.glb into Three.js WebGL scene
+    Client->>Client: Apply risk colors & attach HTMX custom event listeners
 ```
 
 ---
@@ -277,16 +248,16 @@ sequenceDiagram
   - `find_high_sensitivity_threshold(y_true: np.ndarray, y_prob: np.ndarray, min_sensitivity: float = 0.90) -> Tuple[float, float, float]`: Grid-searches thresholds on out-of-fold predictions to find the cut-point maximizing specificity subject to sensitivity $\ge 90\%$.
   - `get_candidate_models() -> Dict[str, Any]`: Returns candidate constructors: `Baseline_Majority`, `LogisticRegression(C=0.1)`, `RandomForest(n_estimators=100, max_depth=4)`, and `XGBoost(n_estimators=50, max_depth=3)`.
   - `main()`: Orchestrates the 15-fold Repeated Stratified CV evaluation, generates calibration plots, selects models within 1 SE of best ROC-AUC, verifies 20-sample SHAP additivity, and serializes `metrics.json`, `model_card.json`, `shap_global.json`, and `model_bundle.joblib`.
-- **`ml/sidecar.py`**:
-  - Microservice providing low-latency inference on `http://127.0.0.1:8001`.
-  - Exposes `/health`, `/schema`, `/samples`, `/metrics`, and `/predict`. Performs range validation (HTTP 422), coherence adjustment ($P(\text{CAD}) \ge \max(P(\text{vessels}))$), and calls `explain_sample` for all 4 targets.
+- **`ml/service.py`**:
+  - Centralized clinical prediction service used across both FastAPI and the optional Rust sidecar.
+  - Implements `predict_patient()`, physiological range validation (`ValidationError`), model inference, coherence adjustment ($P(\text{CAD}) \ge \max(P(\text{vessels}))$), sensitivity-first thresholding, and additive SHAP generation.
 - **`ml/tests/test_leakage.py`**:
   - Unit tests verifying: (1) no targets exist in feature matrix $X$; (2) schema matches $X$ columns exactly ($54$ features); (3) label-shuffled CV ROC-AUC drops to chance ($0.50 \pm 0.08$).
 
 ---
 
-### 4.2. Rust Axum Engine (`server_rust/`)
-**Responsibility**: Serves as the primary public web application on port 8000. Provides sub-millisecond route handling, server-side template rendering, hypermedia partial updates, static model streaming, and HTTP IPC bridging to the ML sidecar.
+### 4.2. Optional Rust Axum Engine (`extras/rust-htmx/server_rust/`)
+**Responsibility**: Serves as an optional lightweight hypermedia web workstation on port 8000. Provides sub-millisecond route handling, server-side template rendering, hypermedia partial updates, static model streaming, and HTTP IPC bridging to the ML sidecar (`extras/rust-htmx/sidecar.py`).
 
 - **`server_rust/src/main.rs`**:
   - `struct AppState`: Contains shared `reqwest::Client` connection pool and `Arc<Tera>` template instance.
@@ -314,8 +285,8 @@ sequenceDiagram
 
 ---
 
-### 4.3. React Web Application (`web/`)
-**Responsibility**: Alternative monolithic Single Page Application (SPA) providing React Three Fiber 3D rendering and client-side reactive state management.
+### 4.3. Primary React Web Application (`web/`)
+**Responsibility**: Primary interactive Single Page Application (SPA) providing React Three Fiber 3D rendering, responsive clinician controls, and client-side reactive state management.
 
 - **`web/src/App.tsx`**:
   - Coordinates top-level state: `patientData`, `prediction`, `selectedVessel`, `activeTarget`, `activeTab`.
@@ -431,7 +402,20 @@ flowchart TD
 
 ## 6. API / ROUTES
 
-### 6.1. Rust Axum Web Workstation Server (`http://127.0.0.1:8000`)
+### 6.1. Primary FastAPI Application Server (`http://127.0.0.1:8000` via `api/main.py`)
+
+| Method | Path | Handler Function | Handler File | Purpose | Auth & Middleware |
+|---|---|---|---|---|---|
+| `GET` | `/api/health` | `health_check` | `api/main.py` | Health check endpoint | None; `CORSMiddleware`, No-Cache headers |
+| `GET` | `/api/schema` | `get_schema` | `api/main.py` | Serves schema registry JSON | None; `CORSMiddleware`, No-Cache headers |
+| `GET` | `/api/metrics` | `get_metrics` | `api/main.py` | Serves CV metrics, global SHAP, model card | None; `CORSMiddleware`, No-Cache headers |
+| `GET` | `/api/samples` | `get_samples` | `api/main.py` | Serves preset patient records | None; `CORSMiddleware`, No-Cache headers |
+| `POST` | `/api/predict` | `predict_cardiac_risk` | `api/main.py` | Ingests JSON patient biomarkers, returns multi-task predictions & SHAP via `ml.service` | None; `CORSMiddleware`, Range bounds validation |
+| `GET` | `/*` | `StaticFiles` | `web/dist/` | Serves precompiled React Single Page Application | None; Static file streaming |
+
+---
+
+### 6.2. Optional Rust Axum Workstation Server (`http://127.0.0.1:8000` in `extras/rust-htmx/server_rust/`)
 
 | Method | Path | Handler Function | Handler File | Purpose | Auth & Middleware |
 |---|---|---|---|---|---|
@@ -445,28 +429,15 @@ flowchart TD
 
 ---
 
-### 6.2. Python ML IPC Sidecar Microservice (`http://127.0.0.1:8001`)
+### 6.3. Optional Python ML Sidecar Microservice (`http://127.0.0.1:8001` in `extras/rust-htmx/sidecar.py`)
 
 | Method | Path | Handler Function | Handler File | Purpose | Auth & Middleware |
 |---|---|---|---|---|---|
-| `GET` | `/health` | `health` | `ml/sidecar.py` | Health-check status endpoint | None; `CORSMiddleware` |
-| `GET` | `/schema` | `get_schema` | `ml/sidecar.py` | Returns the 54-feature metadata registry JSON | None; `CORSMiddleware` |
-| `GET` | `/samples` | `get_samples` | `ml/sidecar.py` | Returns 3 representative patient presets (Low, Mid, High risk) | None; `CORSMiddleware` |
-| `GET` | `/metrics` | `get_metrics` | `ml/sidecar.py` | Returns CV metrics, global SHAP rankings, and model card | None; `CORSMiddleware` |
-| `POST` | `/predict` | `predict` | `ml/sidecar.py` | Computes CAD/vessel risks, coherence fix, and exact SHAP explanations | None; `CORSMiddleware`; Range bounds validation |
-
----
-
-### 6.3. Python FastAPI Monolithic Server (`http://127.0.0.1:8000` under `api/main.py`)
-
-| Method | Path | Handler Function | Handler File | Purpose | Auth & Middleware |
-|---|---|---|---|---|---|
-| `GET` | `/api/health` | `health_check` | `api/main.py` | Health check endpoint | None; `CORSMiddleware`, No-Cache headers |
-| `GET` | `/api/schema` | `get_schema` | `api/main.py` | Serves schema registry JSON | None; `CORSMiddleware`, No-Cache headers |
-| `GET` | `/api/metrics` | `get_metrics` | `api/main.py` | Serves CV metrics, global SHAP, model card | None; `CORSMiddleware`, No-Cache headers |
-| `GET` | `/api/samples` | `get_samples` | `api/main.py` | Serves preset patient records | None; `CORSMiddleware`, No-Cache headers |
-| `POST` | `/api/predict` | `predict_cardiac_risk` | `api/main.py` | Ingests JSON patient biomarkers, returns multi-task predictions & SHAP | None; `CORSMiddleware`, Range bounds validation |
-| `GET` | `/*` | `StaticFiles` | `web/dist/` | Serves precompiled React Single Page Application (if present) | None; Static file streaming |
+| `GET` | `/health` | `health` | `extras/rust-htmx/sidecar.py` | Health-check status endpoint | None; `CORSMiddleware` |
+| `GET` | `/schema` | `get_schema` | `extras/rust-htmx/sidecar.py` | Returns the 54-feature metadata registry JSON | None; `CORSMiddleware` |
+| `GET` | `/samples` | `get_samples` | `extras/rust-htmx/sidecar.py` | Returns 3 representative patient presets (Low, Mid, High risk) | None; `CORSMiddleware` |
+| `GET` | `/metrics` | `get_metrics` | `extras/rust-htmx/sidecar.py` | Returns CV metrics, global SHAP rankings, and model card | None; `CORSMiddleware` |
+| `POST` | `/predict` | `predict` | `extras/rust-htmx/sidecar.py` | Computes CAD/vessel risks, coherence fix, and SHAP via `ml.service` | None; `CORSMiddleware`; Range bounds validation |
 
 ---
 
@@ -479,11 +450,12 @@ Cardio3D AI does not utilize an external relational SQL or NoSQL database server
 
 #### 1. Input Clinical Biomarkers (`ml/schema.json`)
 The canonical feature registry defines 54 physiological biomarkers across 5 clinical categories:
-- **Demographics** (4 features): `Age` (years, 20-95), `Sex` (Male/Fmale), `Weight` (kg), `Length` (cm), `BMI` (derived kg/m²).
-- **Symptoms & Examination** (17 features): `BP` (Systolic BP, mmHg), `PR` (Pulse rate, bpm), `DM` (Diabetes Mellitus, 0/1), `HTN` (Hypertension, 0/1), `Current Smoker` (0/1), `EX-Smoker` (0/1), `FH` (Family History, 0/1), `Obesity` (Y/N), `CRF` (Chronic Renal Failure, Y/N), `CVA` (Stroke history, Y/N), `Airway disease` (Y/N), `Thyroid Disease` (Y/N), `CHF` (Heart failure, Y/N), `DLP` (Dyslipidemia, Y/N), `Typical Chest Pain` (0/1), `Atypical` (Y/N), `Nonanginal` (Y/N), `Dyspnea` (Y/N), `Function Class` (NYHA class 0-3).
-- **Physical Signs & Murmurs** (5 features): `Edema` (0/1), `Weak Peripheral Pulse` (Y/N), `Lung rales` (Y/N), `Systolic Murmur` (Y/N), `Diastolic Murmur` (Y/N).
-- **Laboratory Analyses** (12 features): `FBS` (Fasting blood sugar, mg/dL), `CR` (Serum creatinine, mg/dL), `TG` (Triglycerides, mg/dL), `LDL` (mg/dL), `HDL` (mg/dL), `BUN` (Blood urea nitrogen, mg/dL), `ESR` (mm/hr), `HB` (Hemoglobin, g/dL), `K` (Serum potassium, mEq/L), `Na` (Serum sodium, mEq/L), `WBC` (White blood cells, /µL), `Lymph` (%), `Neut` (%), `PLT` (Platelets, 10³/µL).
-- **ECG & Echocardiography** (16 features): `Q Wave` (0/1), `St Elevation` (0/1), `St Depression` (0/1), `Tinversion` (0/1), `LVH` (Left ventricular hypertrophy, Y/N), `Poor R Progression` (Y/N), `BBB` (Bundle branch block, Y/N), `EF-TTE` (Ejection fraction, %), `Region RWMA` (Regional wall motion abnormality count, 0-5), `VHD` (Valvular heart disease, Y/N).
+- **Demographics** (5 features): `Age` (years), `Sex` (Male/Fmale), `Weight` (kg), `Length` (cm), `BMI` (kg/m²).
+- **Symptoms & Physical Exam** (25 features): `DM` (Diabetes Mellitus, 0/1), `HTN` (Hypertension, 0/1), `Current Smoker` (0/1), `EX-Smoker` (0/1), `FH` (Family History, 0/1), `Obesity` (Y/N), `CRF` (Chronic Renal Failure, Y/N), `CVA` (Stroke history, Y/N), `Airway disease` (Y/N), `Thyroid Disease` (Y/N), `CHF` (Heart failure, Y/N), `DLP` (Dyslipidemia, Y/N), `BP` (Systolic BP, mmHg), `PR` (Pulse rate, bpm), `Edema` (0/1), `Weak Peripheral Pulse` (Y/N), `Lung rales` (Y/N), `Systolic Murmur` (Y/N), `Diastolic Murmur` (Y/N), `Typical Chest Pain` (0/1), `Dyspnea` (Y/N), `Function Class` (NYHA class 0-3), `Atypical` (Y/N), `Nonanginal` (Y/N), `LowTH Ang` (Y/N).
+- **ECG Features** (7 features): `Q Wave` (0/1), `St Elevation` (0/1), `St Depression` (0/1), `Tinversion` (0/1), `LVH` (Left ventricular hypertrophy, Y/N), `Poor R Progression` (Y/N), `BBB` (Bundle branch block, N/LBBB/RBBB).
+- **Laboratory Analyses** (14 features): `FBS` (Fasting blood sugar, mg/dL), `CR` (Serum creatinine, mg/dL), `TG` (Triglycerides, mg/dL), `LDL` (mg/dL), `HDL` (mg/dL), `BUN` (Blood urea nitrogen, mg/dL), `ESR` (mm/hr), `HB` (Hemoglobin, g/dL), `K` (Serum potassium, mEq/L), `Na` (Serum sodium, mEq/L), `WBC` (White blood cells, /µL), `Lymph` (%), `Neut` (%), `PLT` (Platelets, 10³/µL).
+- **Echocardiography** (3 features): `EF-TTE` (Ejection fraction, %), `Region RWMA` (Regional wall motion abnormality count, 0-4), `VHD` (Valvular heart disease, N/mild/Moderate/Severe).
+*Total active features*: 5 + 25 + 7 + 14 + 3 = 54.
 
 #### 2. Target Labels
 - `Cath`: Binary catheterization diagnosis ($1 = \text{CAD}, 0 = \text{Normal}$).
@@ -495,7 +467,8 @@ The canonical feature registry defines 54 physiological biomarkers across 5 clin
 ```json
 {
   "cad": {
-    "prob": 0.0261,
+    "prob": 0.2351,
+    "raw_prob": 0.0261,
     "coherent_prob": 0.2351,
     "label": "Low Risk",
     "high_sens_label": "Low Risk",
@@ -504,16 +477,16 @@ The canonical feature registry defines 54 physiological biomarkers across 5 clin
     "coherence_adjusted": true
   },
   "vessels": {
-    "LAD": { "prob": 0.2351, "label": "Normal", "high_sens_label": "Normal", "threshold": 0.5, "high_sensitivity_threshold": 0.35 },
-    "LCX": { "prob": 0.0604, "label": "Normal", "high_sens_label": "Normal", "threshold": 0.5, "high_sensitivity_threshold": 0.28 },
-    "RCA": { "prob": 0.0182, "label": "Normal", "high_sens_label": "Normal", "threshold": 0.5, "high_sensitivity_threshold": 0.32 }
+    "LAD": { "prob": 0.2351, "label": "Normal", "high_sens_label": "Normal", "threshold": 0.5, "high_sensitivity_threshold": 0.465 },
+    "LCX": { "prob": 0.0604, "label": "Normal", "high_sens_label": "Normal", "threshold": 0.5, "high_sensitivity_threshold": 0.208 },
+    "RCA": { "prob": 0.0182, "label": "Normal", "high_sens_label": "Normal", "threshold": 0.5, "high_sensitivity_threshold": 0.208 }
   },
   "explain": {
     "Cath": {
       "base_value": 1.685,
-      "raw_score": -1.42,
-      "reconstructed_score": -1.42,
-      "additive_error": 0.00001,
+      "raw_score": -3.621,
+      "reconstructed_score": -3.621,
+      "additive_error": 0.000016,
       "features": [
         { "feature": "Typical Chest Pain", "label": "Typical Anginal Chest Pain", "group": "symptoms-exam", "unit": "", "value": 0, "shap": -0.749, "pct": 18.2 }
       ]
@@ -560,15 +533,15 @@ A binary dictionary structure containing:
   - `useRef<any>(null)` coordinates a 250ms debounce timer for keystroke input.
 
 ### External Services & Integrations
-- **Zero Cloud / External Telemetry**: The application is fully self-contained and operates in air-gapped clinical environments. No external analytics, CDNs, fonts, or third-party APIs are called during execution.
-- **IPC Communication**: Local HTTP socket IPC between Rust (`http://127.0.0.1:8000`) and the Python ML Sidecar (`http://127.0.0.1:8001`).
+- **Zero Cloud / External Telemetry**: The primary FastAPI + React application is fully self-contained in local bundles (`web/dist/`) and operates in air-gapped clinical environments. No external analytics, CDNs, or third-party APIs are called during execution.
+- **IPC Communication**: Local HTTP socket IPC between the optional Rust server (`http://127.0.0.1:8000`) and the Python ML Sidecar (`http://127.0.0.1:8001`) in `extras/rust-htmx/`.
 
 ---
 
 ## 9. CONFIGURATION & ENVIRONMENT
 
 ### Configuration Files
-- **`server_rust/Cargo.toml`**: Configures Rust edition (`2021`), optimization levels, and crate dependencies (`axum`, `tokio`, `tower-http`, `tera`, `reqwest`, `serde`).
+- **`extras/rust-htmx/server_rust/Cargo.toml`**: Configures Rust edition (`2021`), optimization levels, and crate dependencies (`axum`, `tokio`, `tower-http`, `tera`, `reqwest`, `serde`).
 - **`web/package.json`**: Configures Node.js build scripts, runtime dependencies (`three`, `@react-three/fiber`, `lucide-react`), and dev dependencies (`vite`, `tailwindcss`, `typescript`).
 - **`web/vite.config.ts`**: Configures Vite development server, port, and proxy rules forwarding `/api` to port 8000.
 - **`web/tailwind.config.js`**: Defines the dark medical workstation theme, cyan/emerald/rose/amber risk color tokens, and font families.
@@ -598,12 +571,12 @@ The application relies on predictable sensible defaults and does not require com
 - `joblib>=1.4.0`: Fast persistence of trained pipelines and explainers.
 - `scipy>=1.13.0`: Statistical utilities and probability distributions.
 - `matplotlib>=3.8.0`: Headless (`Agg`) plot generation for reliability calibration curves and PDF reporting.
-- `fastapi>=0.110.0`: Asynchronous REST API framework powering both `api/main.py` and `ml/sidecar.py`.
+- `fastapi>=0.110.0`: Asynchronous REST API framework powering `api/main.py` (and `extras/rust-htmx/sidecar.py`).
 - `uvicorn>=0.28.0`: High-performance ASGI server for hosting FastAPI applications.
 - `pydantic>=2.6.0`: Data validation and schema enforcement.
 - `trimesh>=4.0.0`: 3D geometry processing library used to parse, center, and export BodyParts3D OBJ meshes into binary GLTF/GLB.
 
-### Rust Dependencies (`server_rust/Cargo.toml`)
+### Rust Dependencies (`extras/rust-htmx/server_rust/Cargo.toml`)
 - `axum 0.7`: Ergonomic, asynchronous web framework built on Tokio and Tower.
 - `tokio 1`: Multi-threaded asynchronous runtime.
 - `tower-http 0.5`: Middleware for static directory serving (`ServeDir`), CORS, and tracing.
@@ -648,24 +621,24 @@ python -m ml.train
 
 #### 4. Launching the Application
 
-##### Option A: High-Performance Rust + HTMX Stack (Recommended)
-```bash
-# Terminal 1: Start Python ML Sidecar on port 8001
-python -m uvicorn ml.sidecar:app --host 127.0.0.1 --port 8001
-
-# Terminal 2: Start Rust Axum Workstation on port 8000
-cd server_rust
-cargo run --release
-```
-Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in any modern browser.
-
-##### Option B: Unified FastAPI + React Stack
+##### Option A: Unified FastAPI + React Stack (Primary Application)
 ```bash
 # Build React frontend
 cd web && npm install && npm run build && cd ..
 
 # Launch FastAPI server
 python -m uvicorn api.main:app --host 127.0.0.1 --port 8000
+```
+Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in any modern browser.
+
+##### Option B: Rust + HTMX Stack (Optional Extra in `extras/rust-htmx/`)
+```bash
+# Terminal 1: Start Python ML Sidecar on port 8001
+python -m uvicorn extras.rust-htmx.sidecar:app --host 127.0.0.1 --port 8001
+
+# Terminal 2: Start Rust Axum Workstation on port 8000
+cd extras/rust-htmx/server_rust
+cargo run --release
 ```
 Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** in any modern browser.
 
@@ -790,7 +763,7 @@ sequenceDiagram
     Rust->>Rust: Render overview.html & shap.html via Tera
     Rust-->>DOM: HTML Partials + HX-Trigger: {"vesselRiskUpdated": {LAD: 0.87, LCX: 0.79, RCA: 0.81}}
     
-    DOM->>DOM: Update Circular Gauge (100%) & Vessel Cards (Red)
+    DOM->>DOM: Update Circular Gauge (>99%) & Vessel Cards (Red)
     DOM->>ThreeJS: Dispatch vesselRiskUpdated event
     ThreeJS->>ThreeJS: Interpolate mesh materials to Crimson Red (#ef4444)
     ThreeJS->>ThreeJS: Reposition floating 3D screen badges
@@ -845,7 +818,7 @@ erDiagram
         string target PK "Cath / LAD / LCX / RCA"
         float base_value "Model log-odds bias"
         float raw_score "Logit margin"
-        float additive_error "Math error < 1e-5"
+        float additive_error "Math error < 1e-4"
         json feature_contributions "Parent-aggregated values"
     }
 
@@ -862,29 +835,24 @@ erDiagram
 
 #### 1. Dual Web Application Stacks
 - **Observation**: The repository contains two parallel web applications:
-  1. The **Rust (Axum) + HTMX + Three.js** workstation (`server_rust/`).
-  2. The **Python FastAPI + React 18 SPA** application (`web/` and `api/`).
-- **Analysis**: The Rust + HTMX workstation is substantially lighter, starts in under a second, eliminates client JavaScript bundle compilation (`node_modules`), and achieves sub-millisecond route handling. The React SPA offers component modularity through React Three Fiber but introduces heavy Node dependencies and bundle build overhead.
-- **Recommendation**: Standardize on the Rust + HTMX architecture for production deployment, keeping the Python sidecar strictly dedicated to ML numerical computation.
+  1. The **Python FastAPI + React 18 SPA** application (`api/` and `web/`).
+  2. The **Rust (Axum) + HTMX + Three.js** workstation (`extras/rust-htmx/`).
+- **Analysis**: The FastAPI + React SPA serves as the primary production workstation matching the quickstart workflow. It pairs a typed REST API with modular React Three Fiber 3D rendering. The Rust + HTMX stack offers an ultra-lightweight alternative.
+- **Recommendation**: Standardize on the FastAPI + React application as the primary deployment target. The Rust + HTMX implementation is maintained under `extras/rust-htmx/` as an optional extra.
 
-#### 2. Mesh Directory Redundancy
-- **Observation**: The 129 BodyParts3D OBJ files exist in two separate folders:
-  - `3D MODAL/BP51782_FMA3_2_1_inference_isa_FMA67135_Postnatal_anatomical_structure/` (129 files)
-  - `data/raw/BP51782_FMA3_2_1_inference_isa_FMA67135_Postnatal_anatomical_structure/` (129 files)
-- **Analysis**: Both directories are identical mirrors taking up $\sim 26\text{ MB}$ each.
-- **Recommendation**: Retain `data/raw/` as the single canonical source of truth and archive `3D MODAL/` to avoid redundancy.
+#### 2. Mesh Directory Redundancy (Resolved)
+- **Status**: Deduplication completed. `3D MODAL/` has been removed. All asset compilation scripts (`scripts/build_heart_glb.py`) point strictly to canonical meshes in `data/raw/`, verified against `data/raw/CHECKSUMS`.
 
-#### 3. Excel Dataset Redundancy
-- **Observation**: `extention of Z-Alizadeh sani dataset.xlsx` exists in both `DATASET/` and `data/raw/`.
-- **Recommendation**: Standardize on `data/raw/extention of Z-Alizadeh sani dataset.xlsx`.
+#### 3. Excel Dataset Redundancy (Resolved)
+- **Status**: Deduplication completed. `DATASET/` has been removed. `data/raw/extention of Z-Alizadeh sani dataset.xlsx` is the single canonical dataset file.
 
 #### 4. Model Selection & Non-Temporal Modeling Choice
 - **Observation**: The initial prompt inquired about TimesFM 3.0.
-- **Analysis**: Confirmed **TimesFM 3.0 was properly rejected**. The dataset comprises 303 independent, static cross-sectional patient observations. Imposing an autoregressive temporal foundation model like TimesFM on static patient rows would invent fictitious temporal dependencies. The chosen ensemble—LogisticRegression for Cath ($\text{AUC} = 0.929$) and RCA ($\text{AUC} = 0.733$), RandomForest for LAD ($\text{AUC} = 0.846$), and XGBoost for LCX ($\text{AUC} = 0.735$)—strictly adheres to clinical epidemiology principles.
+- **Analysis**: Confirmed **TimesFM 3.0 was properly rejected**. The dataset comprises 303 independent, static cross-sectional patient observations. Imposing an autoregressive temporal foundation model like TimesFM on static patient rows would invent fictitious temporal dependencies. The chosen per-target model suite—LogisticRegression for Cath ($\text{AUC} = 0.929$) and RCA ($\text{AUC} = 0.733$), RandomForest for LAD ($\text{AUC} = 0.846$), and XGBoost for LCX ($\text{AUC} = 0.735$)—strictly adheres to clinical epidemiology principles.
 
 #### 5. Security & Authentication Considerations
 - **Observation**: The API endpoints currently operate without authentication and use permissive CORS (`allow_origins=["*"]`).
-- **Analysis**: This is appropriate for a local desktop clinical workstation or research prototype. However, if deployed to an enterprise hospital intranet:
+- **Analysis**: This is appropriate for a local desktop clinical workstation or research prototype. However, if deployed to a production hospital intranet:
   - Role-based access control (RBAC) should be introduced.
   - Endpoints should enforce mTLS or session JWTs.
   - Rate limiting should be added to `/api/predict`.
