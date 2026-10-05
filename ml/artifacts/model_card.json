@@ -171,7 +171,7 @@
     "os": "Windows 11 (AMD64)",
     "runner": "local-windows",
     "provenance": "Trained locally on Windows (Python 3.14.5); Colab scripts provided in scripts/, untested.",
-    "git_commit": "0cd3408d2d31b521b523715085cebe7d59c86d2e",
+    "git_commit": "dd7d0cc4cc226430f1e65e5f44915c7aaa3fd338",
     "seed": 42,
     "libraries": {
       "scikit_learn_version": "1.9.1",
