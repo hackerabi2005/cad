@@ -38,7 +38,7 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve,
 )
-from sklearn.model_selection import RepeatedStratifiedKFold
+from sklearn.model_selection import RepeatedStratifiedKFold, StratifiedKFold
 from xgboost import XGBClassifier
 
 from ml.explain import (
@@ -89,8 +89,8 @@ def calculate_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_prob: np.ndarray
 def find_high_sensitivity_threshold(
     y_true: np.ndarray, y_prob: np.ndarray, min_sensitivity: float = 0.90
 ) -> Tuple[float, float, float]:
-    """Finds decision threshold achieving target sensitivity with maximum specificity."""
-    thresholds = np.linspace(0.01, 0.99, 100)
+    """Finds decision threshold achieving target sensitivity with maximum specificity (fine 0.001 grid)."""
+    thresholds = np.linspace(0.005, 0.995, 991)
     best_thresh = 0.5
     best_spec = 0.0
     achieved_sens = 0.0
@@ -258,29 +258,55 @@ def main():
     threshold_info: Dict[str, Dict[str, Any]] = {}
     nested_sens_metrics: Dict[str, List[Dict[str, float]]] = {t: [] for t in TARGETS}
 
-    # Nested CV to evaluate sensitivity-first thresholds without apparent bias
+    # Nested CV to evaluate sensitivity-first thresholds using inner out-of-fold predictions
     for target in TARGETS:
         chosen = selected_models[target]
         clf_proto = get_candidate_models()[chosen]
         y_tgt = y_dict[target].values
+        print(f"\nNested CV Threshold Evaluation for {target} ({chosen}):")
 
-        for train_idx, test_idx in rskf.split(X, y_tgt):
+        for fold_idx, (train_idx, test_idx) in enumerate(rskf.split(X, y_tgt)):
             X_tr, X_te = X.iloc[train_idx], X.iloc[test_idx]
             y_tr, y_te = y_tgt[train_idx], y_tgt[test_idx]
 
-            pipe = build_pipeline(clf_proto, schema=schema)
-            pipe.fit(X_tr, y_tr)
-            probs_tr = pipe.predict_proba(X_tr)[:, 1]
-            probs_te = pipe.predict_proba(X_te)[:, 1]
+            # Inner CV on X_tr: tune threshold strictly on inner out-of-fold predictions to prevent optimistic bias
+            inner_cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42 + fold_idx)
+            inner_oof_probs = np.zeros(len(y_tr))
 
-            t_fold, _, _ = find_high_sensitivity_threshold(y_tr, probs_tr, min_sensitivity=0.90)
+            for in_tr_idx, in_val_idx in inner_cv.split(X_tr, y_tr):
+                in_pipe = build_pipeline(clf_proto, schema=schema)
+                in_pipe.fit(X_tr.iloc[in_tr_idx], y_tr[in_tr_idx])
+                inner_oof_probs[in_val_idx] = in_pipe.predict_proba(X_tr.iloc[in_val_idx])[:, 1]
+
+            t_fold, inner_sens, inner_spec = find_high_sensitivity_threshold(
+                y_tr, inner_oof_probs, min_sensitivity=0.90
+            )
+
+            # Fit outer pipeline on full X_tr and evaluate on unseen X_te
+            out_pipe = build_pipeline(clf_proto, schema=schema)
+            out_pipe.fit(X_tr, y_tr)
+            probs_te = out_pipe.predict_proba(X_te)[:, 1]
+
             preds_fold = (probs_te >= t_fold).astype(int)
             tn_f, fp_f, fn_f, tp_f = confusion_matrix(y_te, preds_fold, labels=[0, 1]).ravel()
             sens_f = float(tp_f / (tp_f + fn_f)) if (tp_f + fn_f) > 0 else 0.0
             spec_f = float(tn_f / (tn_f + fp_f)) if (tn_f + fp_f) > 0 else 0.0
             ppv_f = float(tp_f / (tp_f + fp_f)) if (tp_f + fp_f) > 0 else 0.0
             npv_f = float(tn_f / (tn_f + fn_f)) if (tn_f + fn_f) > 0 else 0.0
-            nested_sens_metrics[target].append({"t": t_fold, "sens": sens_f, "spec": spec_f, "ppv": ppv_f, "npv": npv_f})
+
+            nested_sens_metrics[target].append({
+                "fold": fold_idx + 1,
+                "threshold": round(t_fold, 3),
+                "inner_sens": round(inner_sens, 3),
+                "sens": round(sens_f, 4),
+                "spec": round(spec_f, 4),
+                "ppv": round(ppv_f, 4),
+                "npv": round(npv_f, 4),
+            })
+            print(
+                f"  Fold {fold_idx + 1:02d}: chosen threshold={t_fold:.3f}, "
+                f"inner sens={inner_sens:.3f} (>=0.90 expected), outer sens={sens_f:.3f}, outer spec={spec_f:.3f}"
+            )
 
     # Apparent operating metrics evaluated on OOF predictions
     for target in TARGETS:
@@ -374,6 +400,42 @@ def main():
         json.dump(metrics_export, f, indent=2)
     print(f"\nSaved cross-validation and operating metrics to {metrics_path}")
 
+    # Write reports/threshold_nested.md
+    nested_report_lines = [
+        "# Nested Cross-Validation Operating Threshold Evaluation\n",
+        "Per FIX_PLAN_2 (R1), inner thresholds are derived strictly from inner out-of-fold predictions ",
+        "within each training fold (5-fold inner CV) to eliminate optimistic overfitting bias on tree models.\n",
+        "## 1. Summary of Nested Cross-Validation (Operating Estimates)\n",
+        "| Target | Selected Model | Operating Cutoff (Mean ± SD) | Inner Sens. (Mean) | Nested-CV Sens. (Mean ± SD) | Nested-CV Spec. (Mean ± SD) | Nested-CV PPV | Nested-CV NPV |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for target in TARGETS:
+        t_data = threshold_info[target]
+        chosen = t_data["selected_model"]
+        n_m = t_data["nested_cv_operating_metrics"]
+        thresh_vals = [m["threshold"] for m in nested_sens_metrics[target]]
+        inner_sens_vals = [m["inner_sens"] for m in nested_sens_metrics[target]]
+        nested_report_lines.append(
+            f"| **{target}** | {chosen} | {np.mean(thresh_vals):.3f} ± {np.std(thresh_vals):.3f} | "
+            f"{np.mean(inner_sens_vals):.3f} | **{n_m['sensitivity_mean']:.3f} ± {n_m['sensitivity_std']:.3f}** | "
+            f"{n_m['specificity_mean']:.3f} ± {n_m['specificity_std']:.3f} | {n_m['ppv_mean']:.3f} | {n_m['npv_mean']:.3f} |"
+        )
+
+    nested_report_lines.append("\n## 2. Per-Fold Details across All 15 Outer Folds (5 Folds × 3 Repeats)\n")
+    nested_report_lines.append("| Target | Fold | Chosen Cutoff | Inner Sensitivity (≥0.90) | Outer Sensitivity | Outer Specificity | Outer PPV | Outer NPV |")
+    nested_report_lines.append("|---|---|---|---|---|---|---|---|")
+    for target in TARGETS:
+        for m in nested_sens_metrics[target]:
+            nested_report_lines.append(
+                f"| {target} | Fold {m['fold']:02d} | {m['threshold']:.3f} | {m['inner_sens']:.3f} | "
+                f"{m['sens']:.3f} | {m['spec']:.3f} | {m['ppv']:.3f} | {m['npv']:.3f} |"
+            )
+
+    nested_report_path = REPORTS_DIR / "threshold_nested.md"
+    with open(nested_report_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(nested_report_lines) + "\n")
+    print(f"Saved nested threshold report to {nested_report_path}")
+
     # Generate reports/model_results.md
     results_md = ["# Model Evaluation and Validation Results\n"]
     results_md.append("Evaluated across 5-fold Cross-Validation with 3 repeats (15 total folds per model).\n")
@@ -390,7 +452,7 @@ def main():
             )
 
     results_md.append("\n## 2. Production Operating Performance: Default Cutoff (0.50) vs. Sensitivity-First Threshold (≥90% Sensitivity)\n")
-    results_md.append("Operating thresholds are tuned on out-of-fold predictions to prioritize clinical screening safety.\n")
+    results_md.append("Operating thresholds are tuned on out-of-fold predictions to prioritize screening safety.\n")
     results_md.append("| Target | Production Model | Cutoff (0.50) Sens. | Cutoff (0.50) Spec. | Cutoff (0.50) PPV | Cutoff (0.50) NPV | Operating Cutoff | Op. Sens. | Op. Spec. | Op. PPV | Op. NPV |")
     results_md.append("|---|---|---|---|---|---|---|---|---|---|---|")
 
@@ -412,10 +474,10 @@ def main():
         "- LCX and RCA targets exhibit moderate discrimination (ROC-AUC ≈ 0.73), resulting in low specificity "
         f"({threshold_info['LCX']['metrics_at_operating_threshold']['specificity']:.1%} for LCX, "
         f"{threshold_info['RCA']['metrics_at_operating_threshold']['specificity']:.1%} for RCA) "
-        "when operating at the ≥90% sensitivity point. This intentional safety-first calibration minimizes missed stenoses in clinical triage.\n"
+        "when operating at the ≥90% sensitivity point. This intentional safety-first calibration prioritizes catching potential stenosis.\n"
     )
 
-    results_md.append("### Nested Cross-Validation (Unbiased Operating Thresholds)\n")
+    results_md.append("### Nested Cross-Validation (Operating Estimates)\n")
     results_md.append("| Target | Nested CV Sensitivity | Nested CV Specificity | Nested CV PPV | Nested CV NPV |")
     results_md.append("|---|---|---|---|---|")
     for target in TARGETS:
@@ -453,6 +515,29 @@ def main():
     plt.savefig(calib_plot_path, dpi=150)
     plt.close()
     print(f"Saved calibration plots to {calib_plot_path}")
+
+    # Generate ROC Curves Plot
+    fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+    for ax, target in zip(axes.flatten(), TARGETS):
+        chosen = selected_models[target]
+        oof_p = oof_predictions[target][chosen]
+        y_tgt = y_dict[target].values
+
+        fpr, tpr, _ = roc_curve(y_tgt, oof_p)
+        auc_val = roc_auc_score(y_tgt, oof_p)
+        ax.plot([0, 1], [0, 1], "k--", label="Chance (AUC = 0.50)")
+        ax.plot(fpr, tpr, "-", color="#0284c7", lw=2, label=f"{chosen} (AUC = {auc_val:.3f})")
+        ax.set_title(f"{target} ROC Curve ({chosen})")
+        ax.set_xlabel("False Positive Rate (1 - Specificity)")
+        ax.set_ylabel("True Positive Rate (Sensitivity)")
+        ax.legend(loc="lower right")
+        ax.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    roc_plot_path = REPORTS_DIR / "roc_curves.png"
+    plt.savefig(roc_plot_path, dpi=150)
+    plt.close()
+    print(f"Saved ROC plots to {roc_plot_path}")
 
     print("\n--- Phase 4: Final Model Fitting, SHAP Explainers & Verification ---")
     explainers: Dict[str, Any] = {}

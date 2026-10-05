@@ -37,16 +37,16 @@ Validation was conducted using **Repeated Stratified 5-Fold Cross-Validation wit
 *All models passed the strict audit ceiling (no CV ROC-AUC > 0.97).*
 
 ### Production Operating Performance: Default Cutoff (0.50) vs. Sensitivity-First Operating Threshold (≥90% Sensitivity)
-In cardiac triage, false negatives are clinically unacceptable. Operating decision thresholds were tuned to achieve $\ge 90\%$ sensitivity:
+Operating decision thresholds were tuned on out-of-fold predictions to prioritize screening safety by enforcing $\ge 90\%$ sensitivity:
 
 | Target | Production Model | Cutoff (0.50) Sens. | Cutoff (0.50) Spec. | Cutoff (0.50) PPV | Cutoff (0.50) NPV | Operating Cutoff | Op. Sens. | Op. Spec. | Op. PPV | Op. NPV |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **Cath** | LogisticRegression | 0.935 | 0.698 | 0.886 | 0.811 | **0.604** | **0.912** | 0.791 | 0.917 | 0.782 |
-| **LAD** | RandomForest | 0.876 | 0.635 | 0.771 | 0.784 | **0.465** | **0.904** | 0.595 | 0.758 | 0.815 |
-| **LCX** | XGBoost | 0.487 | 0.821 | 0.637 | 0.712 | **0.208** | **0.916** | 0.353 | 0.478 | 0.867 |
-| **RCA** | LogisticRegression | 0.439 | 0.804 | 0.575 | 0.704 | **0.208** | **0.903** | 0.381 | 0.468 | 0.868 |
+| **Cath** | LogisticRegression | 0.935 | 0.698 | 0.886 | 0.811 | **0.611** | **0.903** | 0.826 | 0.929 | 0.772 |
+| **LAD** | RandomForest | 0.876 | 0.635 | 0.771 | 0.784 | **0.469** | **0.904** | 0.603 | 0.762 | 0.817 |
+| **LCX** | XGBoost | 0.487 | 0.821 | 0.637 | 0.712 | **0.217** | **0.908** | 0.370 | 0.482 | 0.861 |
+| **RCA** | LogisticRegression | 0.439 | 0.804 | 0.575 | 0.704 | **0.213** | **0.903** | 0.392 | 0.472 | 0.871 |
 
-> **Clinical Operating Tradeoff**: Because LCX and RCA targets have moderate discrimination (ROC-AUC $\approx 0.73$), prioritizing $\ge 90\%$ screening sensitivity lowers specificity to $35.3\%$ for LCX and $38.1\%$ for RCA. This reflects an explicit clinical tradeoff: in triage screening, false positives prompt non-invasive follow-up, whereas false negatives risk fatal untreated ischemia. Unbiased nested cross-validation sensitivity is $85.9\% \pm 4.2\%$ for Cath, $80.3\% \pm 7.7\%$ for LAD, $47.7\% \pm 7.4\%$ for LCX, and $78.7\% \pm 8.7\%$ for RCA.
+> **Clinical Operating Tradeoff**: Because LCX and RCA targets have moderate discrimination (ROC-AUC $\approx 0.73$), prioritizing $\ge 90\%$ screening sensitivity yields lower specificity ($37.0\%$ for LCX, $39.2\%$ for RCA). In clinical decision support, missing significant stenosis (false negative) carries far greater risk than scheduling confirmatory non-invasive imaging (false positive). Derived from inner out-of-fold tuning, nested cross-validation sensitivity estimates are **$90.2\% \pm 3.9\%$ for Cath**, **$88.2\% \pm 7.2\%$ for LAD**, **$91.6\% \pm 6.3\%$ for LCX**, and **$89.2\% \pm 6.9\%$ for RCA** (detailed in `reports/threshold_nested.md`). LCX labels exhibit lower precision under high-sensitivity tuning, reflecting moderate discrimination and low-confidence single-vessel boundaries.
 
 ---
 
@@ -58,7 +58,7 @@ We quantitatively audited out-of-fold cross-validation predictions to verify whe
 - **Raw CAD Model**: ROC-AUC = 0.9302, Brier score = 0.0967.
 - **Coherent CAD ($P_{\text{coherent}} = \max(P_{\text{CAD}}, \max(P_{\text{vessels}}))$)**: ROC-AUC = 0.9291, Brier score = 0.1017.
 - **Criterion Evaluation**: AUC drop of $0.0012 \le 0.010$, Brier change of $+0.0050 \le +0.010$. The criteria are satisfied.
-- **Policy Decision**: The `max()` coherence rule is retained. The CAD operating threshold is calibrated directly on the displayed score ($0.604$). The API transparently returns both `raw_prob` and `prob`, and discrete label overrides ("any vessel High $\implies$ overall High") are rejected to avoid compounding false positives.
+- **Policy Decision**: The `max()` coherence rule is retained. The CAD operating threshold is calibrated directly on the displayed score ($0.611$). The API transparently returns both `raw_prob` and `prob`, and discrete label overrides ("any vessel High $\implies$ overall High") are rejected to avoid compounding false positives.
 
 ---
 
@@ -75,14 +75,14 @@ The system delivers exact, instantaneous feature attribution using **TreeSHAP** 
 The 3D interactive viewer is built on **Three.js** and **React Three Fiber (R3F)** using the open-source **BodyParts3D** anatomical model (Branch A: Separate Artery Meshes):
 - **Segment Extraction**: High-resolution anatomical meshes for the LAD (9 branches/trunks), LCX (4 branches/trunks), RCA (10 branches/trunks), and Ascending Aorta were combined and transformed into standard Three.js coordinates centered at the origin.
 - **Myocardium Shell & Decimation**: The 49 chamber walls and septa were decimated using quadric decimation by 70%, reducing the total triangle count from >160k to **83,600 triangles** (comfortably within the $\le 100,000$ triangle budget).
-- **Rendering Performance**: Under pure software rendering (`--disable-gpu` at 1280×720 on 13th Gen Intel Core i5-13420H), the 3D viewer benchmarks at **57.8 ms mean frame time (~17.3 FPS continuous orbit, p95 = 66.2 ms)**. On standard hardware acceleration, it runs at **>60 FPS**.
+- **Rendering Performance**: Under pure software rendering (`--disable-gpu` at 1280×720 on 13th Gen Intel Core i5-13420H), the 3D viewer benchmarks at **49.3 ms mean frame time (~20.3 FPS continuous orbit, p95 = 53.7 ms)**, recorded in `reports/fps_benchmark.json`. On standard hardware acceleration, it renders at the display refresh rate (not benchmarked).
 - **Dynamic Risk Mapping**: Arteries interpolate across a continuous spectrum (Green $\to$ Lime $\to$ Amber $\to$ Orange $\to$ Red) with floating 3D numeric risk pills and interactive click-to-focus hit meshes.
 
 ---
 
 ## 7. Architectural Decisions: TimesFM & TabPFN
 - **TimesFM Considered & Rejected**: TimesFM 3.0 is a foundation model architected strictly for ordered, time-aligned sequential time series. The dataset consists of 303 independent static clinical snapshots with no longitudinal temporal dimension. Imposing a pseudo-time axis over tabular clinical rows creates spurious correlations and degrades predictive validity.
-- **TabPFN Consideration**: TabPFN requires non-standard runtime dependencies and authentication tokens unsuitable for zero-friction deployment. Standard tuned tree and linear models achieved high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with deterministic sub-millisecond inference and exact SHAP guarantees.
+- **TabPFN Not Evaluated**: TabPFN (v2.5+) imposes non-commercial licensing constraints, requires interactive browser authentication tokens for pre-trained weights, and introduces heavyweight specialized dependencies. Standard tuned tree and regularized linear models achieved high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with sub-millisecond local inference and exact SHAP guarantees.
 
 ---
 
@@ -92,6 +92,5 @@ The 3D interactive viewer is built on **Three.js** and **React Three Fiber (R3F)
 - **Safety Disclaimer**: The UI features an indelible, prominent disclaimer banner and footer stating that predictions are for **decision support and educational purposes only**, and are not a substitute for formal diagnostic angiography.
 - **Open-Source Attribution & Licenses**:
   - Code: MIT License (see `LICENSE`).
-  - Dataset: UCI Machine Learning Repository (CC BY 4.0).
-  - 3D Anatomical Mesh: BodyParts3D, © The Database Center for Life Science, Japan (CC BY-SA 2.1 JP).
+  - Third-Party Assets & Data: See `THIRD_PARTY_NOTICES.md` for BodyParts3D mesh (CC BY-SA 2.1 JP) and UCI CAD dataset (CC BY 4.0).
 

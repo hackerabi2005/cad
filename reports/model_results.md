@@ -25,25 +25,25 @@ Evaluated across 5-fold Cross-Validation with 3 repeats (15 total folds per mode
 
 ## 2. Production Operating Performance: Default Cutoff (0.50) vs. Sensitivity-First Threshold (≥90% Sensitivity)
 
-Operating thresholds are tuned on out-of-fold predictions to prioritize clinical screening safety.
+Operating thresholds are tuned on out-of-fold predictions to prioritize screening safety.
 
 | Target | Production Model | Cutoff (0.50) Sens. | Cutoff (0.50) Spec. | Cutoff (0.50) PPV | Cutoff (0.50) NPV | Operating Cutoff | Op. Sens. | Op. Spec. | Op. PPV | Op. NPV |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **Cath** | LogisticRegression | 0.935 | 0.698 | 0.886 | 0.811 | **0.604** | **0.912** | 0.791 | 0.917 | 0.782 |
-| **LAD** | RandomForest | 0.876 | 0.635 | 0.771 | 0.784 | **0.465** | **0.904** | 0.595 | 0.758 | 0.815 |
-| **LCX** | XGBoost | 0.487 | 0.821 | 0.637 | 0.712 | **0.208** | **0.916** | 0.353 | 0.478 | 0.867 |
-| **RCA** | LogisticRegression | 0.439 | 0.804 | 0.575 | 0.704 | **0.208** | **0.903** | 0.381 | 0.468 | 0.868 |
+| **Cath** | LogisticRegression | 0.935 | 0.698 | 0.886 | 0.811 | **0.611** | **0.903** | 0.826 | 0.929 | 0.772 |
+| **LAD** | RandomForest | 0.876 | 0.635 | 0.771 | 0.784 | **0.469** | **0.904** | 0.603 | 0.762 | 0.817 |
+| **LCX** | XGBoost | 0.487 | 0.821 | 0.637 | 0.712 | **0.217** | **0.908** | 0.370 | 0.482 | 0.861 |
+| **RCA** | LogisticRegression | 0.439 | 0.804 | 0.575 | 0.704 | **0.213** | **0.903** | 0.392 | 0.472 | 0.871 |
 
 ### Clinical Tradeoff Note on Vessel Models:
 - Overall CAD diagnosis achieves strong discrimination (ROC-AUC 0.929 ± 0.024) and high specificity (0.791) at 91.2% sensitivity.
 - LAD branch stenosis achieves ROC-AUC 0.846 ± 0.049 with 59.5% specificity at 90.4% sensitivity.
-- LCX and RCA targets exhibit moderate discrimination (ROC-AUC ≈ 0.73), resulting in low specificity (35.3% for LCX, 38.1% for RCA) when operating at the ≥90% sensitivity point. This intentional safety-first calibration minimizes missed stenoses in clinical triage.
+- LCX and RCA targets exhibit moderate discrimination (ROC-AUC ≈ 0.73), resulting in low specificity (37.0% for LCX, 39.1% for RCA) when operating at the ≥90% sensitivity point. This intentional safety-first calibration prioritizes catching potential stenosis.
 
-### Nested Cross-Validation (Unbiased Operating Thresholds)
+### Nested Cross-Validation (Operating Estimates)
 
 | Target | Nested CV Sensitivity | Nested CV Specificity | Nested CV PPV | Nested CV NPV |
 |---|---|---|---|---|
-| Cath | 0.859 ± 0.042 | 0.845 ± 0.064 | 0.933 | 0.707 |
-| LAD | 0.803 ± 0.077 | 0.741 ± 0.097 | 0.817 | 0.735 |
-| LCX | 0.477 ± 0.074 | 0.806 ± 0.065 | 0.623 | 0.705 |
-| RCA | 0.787 ± 0.087 | 0.556 ± 0.084 | 0.520 | 0.817 |
+| Cath | 0.902 ± 0.039 | 0.806 ± 0.067 | 0.922 | 0.771 |
+| LAD | 0.882 ± 0.072 | 0.622 ± 0.080 | 0.767 | 0.799 |
+| LCX | 0.916 ± 0.063 | 0.351 ± 0.079 | 0.479 | 0.869 |
+| RCA | 0.892 ± 0.069 | 0.387 ± 0.079 | 0.469 | 0.869 |

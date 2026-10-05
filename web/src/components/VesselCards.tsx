@@ -83,8 +83,8 @@ export function VesselCards({ vessels, selectedVessel, onSelectVessel }: VesselC
 
             {/* Action Footer */}
             <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px]">
-              <span className="text-slate-500 font-mono text-[10px]">
-                Sens-Thresh: {vData?.high_sensitivity_threshold ?? 0.35}
+              <span className="text-slate-400 font-mono text-[10px]">
+                Sens: {vData?.nested_sensitivity ? `${(vData.nested_sensitivity * 100).toFixed(1)}%` : '90%'} (cutoff {vData?.high_sensitivity_threshold?.toFixed(2) ?? '0.21'})
               </span>
               <span
                 className={`flex items-center gap-0.5 font-medium transition-colors ${

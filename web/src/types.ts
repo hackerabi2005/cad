@@ -37,6 +37,7 @@ export interface CadPrediction {
   high_sens_label: string;
   threshold: number;
   high_sensitivity_threshold: number;
+  nested_sensitivity?: number;
   coherence_adjusted: boolean;
 }
 
@@ -46,6 +47,7 @@ export interface VesselPrediction {
   high_sens_label: string;
   threshold: number;
   high_sensitivity_threshold: number;
+  nested_sensitivity?: number;
 }
 
 export interface PredictResponse {

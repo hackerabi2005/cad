@@ -1,0 +1,15 @@
+{
+  "hardware": {
+    "cpu": "13th Gen Intel(R) Core(TM) i5-13420H",
+    "chromium": "148.0.7778.96",
+    "resolution": "1280x720",
+    "triangles": 83600,
+    "rendering_mode": "Pure CPU Software Rendering (--disable-gpu)"
+  },
+  "metrics": {
+    "mean_frame_time_ms": 49.32,
+    "median_frame_time_ms": 48.75,
+    "p95_frame_time_ms": 53.65,
+    "mean_fps": 20.3
+  }
+}

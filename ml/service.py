@@ -89,12 +89,14 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
     for v in ["LAD", "LCX", "RCA"]:
         p = probs[v]
         v_thresh = thresholds[v]["high_sensitivity_threshold"]
+        v_nest_sens = thresholds[v].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
         vessel_results[v] = {
             "prob": p,
             "label": "Stenotic" if p >= 0.50 else "Normal",
             "high_sens_label": "Stenotic" if p >= v_thresh else "Normal",
             "threshold": 0.50,
             "high_sensitivity_threshold": v_thresh,
+            "nested_sensitivity": v_nest_sens,
         }
 
     # 6. Exact additive SHAP explanations
@@ -109,6 +111,8 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
         )
         explanations[tgt] = exp
 
+    cad_nest_sens = thresholds["Cath"].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
+
     return {
         "cad": {
             "prob": coherent_cad_prob,
@@ -118,6 +122,7 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
             "high_sens_label": cad_high_sens_label,
             "threshold": 0.50,
             "high_sensitivity_threshold": cad_high_thresh,
+            "nested_sensitivity": cad_nest_sens,
             "coherence_adjusted": coherent_cad_prob > raw_cad_prob,
         },
         "vessels": vessel_results,

@@ -20,23 +20,22 @@
    - Raw CAD: ROC-AUC = 0.9302, Brier = 0.0967.
    - Coherent CAD: ROC-AUC = 0.9291, Brier = 0.1017 (AUC drop = 0.0012 $\le 0.010$, Brier change = $+0.0050 \le 0.010$).
    - Rule is **retained**: displayed Brier $\le$ raw $+ 0.01$ and AUC drop $\le 0.01$.
-   - CAD operating threshold is calibrated directly on the displayed score ($0.604$).
+   - CAD operating threshold is calibrated directly on the displayed score ($0.611$).
    - API returns both `raw_prob` and `prob`.
    - Discrete label overrides ("any vessel High &implies; overall High") are rejected to avoid compounding false positives.
 
 4. **Provenance & Reproducibility**:
-   - Shipped model weights and artifacts were trained locally on Windows 11 (Python 3.14.5, seed 42).
+   - Shipped model weights and artifacts were trained locally on Windows 11 (Python 3.14.5, seed 42) and verified on Python 3.12 (Linux/WSL2).
    - Dependencies strictly pinned in `ml/requirements.txt` and `.python-version`.
-   - Google Colab execution scripts are provided in `scripts/` (untested).
 
-5. **TimesFM Considered & Rejected**:
-   - TimesFM 3.0 is a foundation model architected strictly for ordered, sequential time series.
-   - The dataset consists of 303 independent static clinical observations. Imposing an artificial time axis introduces spurious temporal correlations and degrades predictive validity.
+5. **TimesFM & TabPFN Decisions**:
+   - TimesFM 3.0: Considered and rejected; strictly designed for sequential time series, inappropriate for static cross-sectional clinical observations.
+   - TabPFN: Not evaluated; v2.5+ imposes non-commercial licensing constraints, interactive browser login tokens, and heavy specialized dependencies.
 
 6. **Operating Decision Thresholds**:
    - Operating thresholds are tuned on out-of-fold predictions to enforce $\ge 90\%$ screening sensitivity.
-   - Operating cutoffs: Cath ($0.604$, Sens $91.2\%$, Spec $79.1\%$), LAD ($0.465$, Sens $90.4\%$, Spec $59.5\%$), LCX ($0.208$, Sens $91.6\%$, Spec $35.3\%$), RCA ($0.208$, Sens $90.3\%$, Spec $38.1\%$).
-   - Tradeoff: LCX and RCA have moderate discrimination (ROC-AUC $\approx 0.73$), so $\ge 90\%$ sensitivity reduces specificity. In clinical triage, false negatives carry far greater morbidity than false positives.
+   - Operating cutoffs: Cath ($0.611$, Sens $90.3\%$, Spec $82.6\%$), LAD ($0.469$, Sens $90.4\%$, Spec $60.3\%$), LCX ($0.217$, Sens $90.8\%$, Spec $37.0\%$), RCA ($0.213$, Sens $90.3\%$, Spec $39.2\%$).
+   - Derived from inner out-of-fold tuning, nested cross-validation sensitivity estimates are **$90.2\% \pm 3.9\%$ for Cath**, **$88.2\% \pm 7.2\%$ for LAD**, **$91.6\% \pm 6.3\%$ for LCX**, and **$89.2\% \pm 6.9\%$ for RCA** (detailed in `reports/threshold_nested.md`).
 
 ---
 

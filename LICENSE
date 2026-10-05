@@ -1,4 +1,4 @@
-MIT License (for Software Code)
+MIT License
 
 Copyright (c) 2026 Cardio3D AI Authors & Contributors
 
@@ -19,18 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----
-
-Third-Party Assets & Data Licenses:
-
-1. 3D Anatomical Heart Mesh (`web/public/models/heart.glb` and `data/raw/BP51782_*`):
-   Derived from BodyParts3D, © The Database Center for Life Science (DBCLS), Japan.
-   Licensed under Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP).
-   URL: https://lifesciencedb.jp/bp3d/
-   Any distribution of the 3D model asset must be licensed under CC BY-SA 2.1 JP.
-
-2. Clinical Dataset (`data/raw/extention of Z-Alizadeh sani dataset.xlsx`):
-   Extension of Z-Alizadeh Sani CAD Dataset (UCI Machine Learning Repository).
-   Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
-   Citation: Alizadehsani, R. et al. (2018).

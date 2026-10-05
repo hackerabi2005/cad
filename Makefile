@@ -1,6 +1,6 @@
 # Makefile for Cardio3D AI: Setup, Training, Testing, and Serving
 
-.PHONY: setup train-local train-colab test test-ui serve clean build-3d build-web report
+.PHONY: setup train-local test test-ui serve clean build-3d build-web report
 
 setup:
 	pip install -r ml/requirements.txt
@@ -11,9 +11,6 @@ build-3d:
 
 train-local:
 	python -m ml.train
-
-train-colab:
-	bash scripts/train_colab.sh
 
 test:
 	python -m pytest ml/tests/ api/tests/ -v

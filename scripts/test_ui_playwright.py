@@ -9,6 +9,7 @@ Verifies:
 Saves screenshots to reports/screenshots/
 """
 
+import json
 import os
 import subprocess
 import sys
@@ -220,6 +221,26 @@ def test_ui():
             assert mean_fps >= 15.0, f"Benchmark FPS {mean_fps:.1f} is below 15.0 FPS budget!"
             assert p95_ft <= 75.0, f"Benchmark p95 frame time {p95_ft:.2f}ms exceeds 75.0ms budget!"
             print(f"Benchmark passed performance budget (>= 15.0 FPS / p95 <= 75.0ms)!")
+
+            benchmark_data = {
+                "hardware": {
+                    "cpu": cpu_info,
+                    "chromium": chromium_ver,
+                    "resolution": "1280x720",
+                    "triangles": 83600,
+                    "rendering_mode": "Pure CPU Software Rendering (--disable-gpu)",
+                },
+                "metrics": {
+                    "mean_frame_time_ms": round(mean_ft, 2),
+                    "median_frame_time_ms": round(median_ft, 2),
+                    "p95_frame_time_ms": round(p95_ft, 2),
+                    "mean_fps": round(mean_fps, 1),
+                },
+            }
+            benchmark_json_path = REPORTS_DIR / "fps_benchmark.json"
+            with open(benchmark_json_path, "w", encoding="utf-8") as f:
+                json.dump(benchmark_data, f, indent=2)
+            print(f"Saved FPS benchmark data to {benchmark_json_path}")
 
             browser.close()
             print("\nALL PLAYWRIGHT TESTS PASSED SUCCESSFULLY!")

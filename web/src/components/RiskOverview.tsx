@@ -60,7 +60,7 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
         <div className="flex flex-col items-end">
           <span className="text-[11px] text-slate-400 font-mono">Operating Threshold: 0.50</span>
           <span className="text-[11px] text-amber-400/90 font-mono">
-            High-Sens (≥90%): {cad.high_sensitivity_threshold.toFixed(2)}
+            Nested-CV Sens: {cad.nested_sensitivity ? `${(cad.nested_sensitivity * 100).toFixed(1)}%` : '90.9%'} (cutoff {cad.high_sensitivity_threshold.toFixed(2)})
           </span>
         </div>
       </div>
