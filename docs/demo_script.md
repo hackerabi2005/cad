@@ -31,7 +31,7 @@
   >
   > We utilized segmented 3D meshes from BodyParts3D, extracting the exact anatomical branches for the Left Anterior Descending artery (LAD), Left Circumflex (LCX), Right Coronary Artery (RCA), and Ascending Aorta.
   >
-  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under pure CPU software rendering with GPU disabled, the viewer benchmarks at 49.3 ms mean frame time (≈ 20.3 FPS), and runs smoothly at 60 FPS on standard WebGL hardware.
+  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under pure CPU software rendering with GPU disabled, the viewer benchmarks at 49.3 ms mean frame time (≈ 20.3 FPS); the GPU path is not benchmarked.
   >
   > Notice the dynamic risk color-coding: each artery interpolates across a continuous green-to-red spectrum according to predicted stenosis probability, accompanied by 3D floating numeric risk badges."
 
@@ -68,7 +68,7 @@
   >
   > Our selected models achieve 0.929 ROC-AUC for overall CAD and 0.846 for LAD stenosis. To minimize dangerous false negatives in screening, we calibrated high-sensitivity operating cutoffs: 0.611 for Cath, 0.469 for LAD, 0.217 for LCX, and 0.213 for RCA.
   >
-  > Under rigorous nested cross-validation where thresholds are tuned strictly out-of-fold, honest sensitivity reaches 90.2% for Cath, 88.2% for LAD, 91.6% for LCX, and 89.2% for RCA. We are completely transparent about the tradeoff: catching 90%+ of branch disease means LCX and RCA nested specificity drop to 35.1% and 38.7% (37.0% and 39.2% apparent OOF)—an intentional clinical triage stance.
+  > Under rigorous nested cross-validation where thresholds are tuned strictly out-of-fold, honest sensitivity reaches 90.2% for Cath, 88.1% for LAD, 91.6% for LCX, and 89.2% for RCA (pooled over the 15 outer test folds). We are completely transparent about the tradeoff: catching 90%+ of branch disease means LCX and RCA nested specificity drop to 35.1% and 38.6% (pooled over the 15 outer test folds; 37.0% and 39.2% apparent OOF)—an intentional clinical screening-style stance.
   >
   > Furthermore, our architecture audits logical coherence: because CAD is the union of individual vessels, P(CAD) must be at least the maximum vessel risk. Our system logs this check and enforces coherent risk display."
 

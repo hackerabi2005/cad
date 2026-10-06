@@ -14,6 +14,9 @@ jobs:
           python-version: "3.12"
           cache: "pip"
       - run: python -m pip install --upgrade pip && pip install -r ml/requirements.txt
+      - name: Verify shipped model bundle
+        run: |
+          python -c "import joblib; from ml.pipeline import load_schema; from ml.service import predict_patient; b = joblib.load('ml/artifacts/model_bundle.joblib'); res = predict_patient(b['test_sample_inputs'][0], {**b, 'schema': load_schema()}); print('Shipped bundle inference OK, CAD prob:', res['cad']['prob'])"
       - name: Run training and nested CV
         run: python -m ml.train
       - name: Run unit tests
@@ -30,5 +33,6 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: web/package-lock.json
-        - run: npm ci
-        - run: npm run build
+      - run: npm ci
+      - run: npm run build
+

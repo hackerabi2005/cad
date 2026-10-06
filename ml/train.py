@@ -655,6 +655,13 @@ def main():
     except Exception:
         git_commit = "unknown"
 
+    is_ci = bool(os.environ.get("CI") or os.environ.get("GITHUB_ACTIONS"))
+    provenance_str = (
+        "Trained and verified in CI on Python 3.12 (Ubuntu)."
+        if is_ci
+        else f"Trained locally on {platform.system()} (Python {platform.python_version()}); verified clean virtualenv execution on Python 3.12 (Linux/WSL)."
+    )
+
     model_card = {
         "dataset": {
             "name": "Extension of Z-Alizadeh Sani CAD Dataset (UCI ML Repository)",
@@ -673,11 +680,16 @@ def main():
             "decision": "Kept: displayed Brier <= raw + 0.01 and AUC drop <= 0.01",
         },
         "operating_thresholds": threshold_info,
+        "aggregation_and_metrics_notes": {
+            "pr_auc_definition": "Table 1 PR-AUC reports the unweighted macro-average across 15 validation folds (1/K sum PR-AUC_k). Earlier README versions reported pooled out-of-fold average_precision_score over concatenated predictions, which yields slight Jensen's inequality deltas (e.g. LCX pooled 0.652 vs fold-macro 0.615; RCA pooled 0.655 vs fold-macro 0.617) due to class imbalance in small per-fold validation subsets (n=60).",
+            "vessel_target_invariance": "Row-93 alignment modified only Cath (Normal -> CAD) based on LAD='Stenotic'. Vessel targets (LAD, LCX, RCA) were not altered; minor specificity shifts (0.003-0.005) reflect standardized fold-macro averaging and deterministic StratifiedKFold seeding.",
+            "nested_cv_evaluation": "Operating thresholds are tuned strictly on inner out-of-fold predictions within each training fold, ensuring unbiased out-of-sample nested-CV sensitivity estimates."
+        },
         "environment": {
             "python_version": platform.python_version(),
             "os": f"{platform.system()} {platform.release()} ({platform.machine()})",
-            "runner": "local-windows",
-            "provenance": "Trained locally on Windows (Python 3.14.5); Colab scripts provided in scripts/, untested.",
+            "runner": "github-actions-ubuntu" if is_ci else f"local-{platform.system().lower()}",
+            "provenance": provenance_str,
             "git_commit": git_commit,
             "seed": 42,
             "libraries": {

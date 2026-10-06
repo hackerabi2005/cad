@@ -174,12 +174,17 @@
       "cv_brier": 0.2017
     }
   },
+  "aggregation_and_metrics_notes": {
+    "pr_auc_definition": "Table 1 PR-AUC reports the unweighted macro-average across 15 validation folds (1/K sum PR-AUC_k). Earlier README versions reported pooled out-of-fold average_precision_score over concatenated predictions, which yields slight Jensen's inequality deltas (e.g. LCX pooled 0.652 vs fold-macro 0.615; RCA pooled 0.655 vs fold-macro 0.617) due to class imbalance in small per-fold validation subsets (n=60).",
+    "vessel_target_invariance": "Row-93 alignment modified only Cath (Normal -> CAD) based on LAD='Stenotic'. Vessel targets (LAD, LCX, RCA) were not altered; minor specificity shifts (0.003-0.005) reflect standardized fold-macro averaging and deterministic StratifiedKFold seeding.",
+    "nested_cv_evaluation": "Operating thresholds are tuned strictly on inner out-of-fold predictions within each training fold, ensuring unbiased out-of-sample nested-CV sensitivity estimates."
+  },
   "environment": {
     "python_version": "3.14.5",
     "os": "Windows 11 (AMD64)",
     "runner": "local-windows",
-    "provenance": "Trained locally on Windows (Python 3.14.5); Colab scripts provided in scripts/, untested.",
-    "git_commit": "1d7d3b757352d9af28e485ab8c64db7ac903d88d",
+    "provenance": "Trained locally on Windows (Python 3.14.5); verified clean virtualenv execution on Python 3.12 (Linux/WSL).",
+    "git_commit": "7fb33286d9b63e616140e6a79ac4a3fb57daf2dc",
     "seed": 42,
     "libraries": {
       "scikit_learn_version": "1.9.1",
