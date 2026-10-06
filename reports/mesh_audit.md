@@ -30,5 +30,5 @@ Separate high-fidelity coronary artery meshes were identified in the source file
 - **Output File**: `web/public/models/heart.glb`
 - **File Size**: 1.67 MB
 - **Total Triangles**: 83,600 triangles (Within strict performance budget of ≤ 100,000 triangles)
-- **Framerate Target**: 60 FPS in modern WebGL / Three.js without dedicated discrete GPU
+- **Framerate Target**: 60 FPS in modern WebGL / Three.js; benchmarked at 49.3 ms mean frame time (~20.3 FPS) under pure CPU software rendering (`--disable-gpu`)
 - **Named Nodes Verified**: `LAD`, `LCX`, `RCA`, `Aorta`, `Heart_Muscle`

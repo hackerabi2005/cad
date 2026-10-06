@@ -1,5 +1,8 @@
 # Cardio3D AI: Cardiovascular Risk & 3D Coronary Stenosis Viewer
-**Multimodal AI Hackathon 2026 — Track A (Cardiovascular Risk Visualization & Prediction)**
+[![CI](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml/badge.svg)](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml)
+
+**Multimodal AI Hackathon 2026 — Track A (Cardiovascular Risk Visualization & Prediction)**  
+*Evaluation Submission Release: [`v1.0.1`](https://github.com/hackerabi2005/cad/releases/tag/v1.0.1)*
 
 > **Clinical Safety Disclaimer**: This software is designed exclusively for decision support and educational exploration. It is **not** a substitute for certified coronary angiography, formal diagnostic imaging, or physician clinical judgment.
 
@@ -27,11 +30,6 @@
 
 ---
 
-## 🎥 Demonstration Video
-
-- **Walkthrough Video**: [Watch Cardio3D AI Demonstration (YouTube)](https://youtu.be/placeholder) — Guided clinical workflow from preset patient loading to 3D anatomical risk exploration and SHAP interpretation.
-
----
 
 ## 🚀 Quickstart (5 Commands to Running App)
 
@@ -102,7 +100,7 @@ Operating thresholds are tuned on out-of-fold predictions to prioritize screenin
 
 *Note: Table 2 reports pooled out-of-fold confusion matrix statistics across all 303 patient records (slight variations from Table 1 arise from fold-denominator pooling).*
 
-> **Clinical Operating Tradeoff**: At the operating cutoff tuned for $\ge 90\%$ sensitivity, LCX and RCA specificity is $37.0\%$ and $39.2\%$ due to moderate target discrimination ($\text{AUC} \approx 0.73$). This tradeoff is clinically intentional: in a cardiovascular screening context, missing significant coronary stenosis (false negative) carries far greater risk than scheduling confirmatory non-invasive imaging (false positive). Nested-CV sensitivity estimates (derived strictly from inner out-of-fold tuning) are **$90.2\% \pm 3.9\%$ for Cath**, **$88.2\% \pm 7.2\%$ for LAD**, **$91.6\% \pm 6.3\%$ for LCX**, and **$89.2\% \pm 6.9\%$ for RCA** (see [reports/threshold_nested.md](reports/threshold_nested.md)). If LCX sensitivity is evaluated in clinical practice, note that LCX labels are low-confidence given lower positive predictive value.
+> **Clinical Operating Tradeoff**: When tuned for $\ge 90\%$ screening sensitivity, honest nested cross-validation estimates (pooled across all 15 outer test folds) are: **Cath**: $90.2\%$ sensitivity / $80.6\%$ specificity; **LAD**: $88.1\%$ sensitivity ($88.2\% \pm 7.2\%$ fold mean) / $62.2\%$ specificity; **LCX**: $91.6\%$ sensitivity / $35.1\%$ specificity; and **RCA**: $89.2\%$ sensitivity / $38.6\%$ specificity (with full-cohort apparent OOF specificity of $37.0\%$ and $39.2\%$; see [reports/threshold_nested.md](reports/threshold_nested.md)). This tradeoff is clinically intentional: in cardiovascular screening triage, missing significant coronary stenosis (false negative) carries far greater risk than scheduling confirmatory non-invasive imaging (false positive). LCX labels exhibit lower precision under high-sensitivity tuning, reflecting moderate discrimination ($\text{AUC} \approx 0.735$) and low-confidence single-vessel boundaries.
 
 ---
 

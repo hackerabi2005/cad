@@ -23,6 +23,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.base import clone
 from sklearn.calibration import calibration_curve
 from sklearn.dummy import DummyClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -116,6 +117,83 @@ def find_high_sensitivity_threshold(
         best_spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
 
     return round(best_thresh, 3), round(achieved_sens, 3), round(best_spec, 3)
+
+
+def nested_threshold_cv(
+    make_model: Any,
+    X: Any,
+    y: Any,
+    target_sensitivity: float = 0.90,
+    seed: int = 42,
+    outer_splits: int = 5,
+    inner_splits: int = 5,
+    n_repeats: int = 1,
+    return_details: bool = False,
+) -> Any:
+    """Evaluates operating decision thresholds using honest nested cross-validation.
+
+    Inner thresholds are derived strictly from inner out-of-fold predictions
+    within each training fold (inner CV) to prevent optimistic overfitting bias,
+    before evaluation on unseen outer folds.
+    """
+    if n_repeats > 1:
+        outer_cv = RepeatedStratifiedKFold(n_splits=outer_splits, n_repeats=n_repeats, random_state=seed)
+    else:
+        outer_cv = StratifiedKFold(n_splits=outer_splits, shuffle=True, random_state=seed)
+
+    outer_sens = []
+    fold_details = []
+    y_arr = np.asarray(y)
+
+    for fold_idx, (train_idx, test_idx) in enumerate(outer_cv.split(X, y_arr)):
+        X_tr = X.iloc[train_idx] if hasattr(X, "iloc") else X[train_idx]
+        X_te = X.iloc[test_idx] if hasattr(X, "iloc") else X[test_idx]
+        y_tr, y_te = y_arr[train_idx], y_arr[test_idx]
+
+        # Inner CV on X_tr: tune threshold strictly on inner out-of-fold predictions
+        inner_cv = StratifiedKFold(n_splits=inner_splits, shuffle=True, random_state=seed + fold_idx)
+        inner_oof_probs = np.zeros(len(y_tr))
+
+        for in_tr_idx, in_val_idx in inner_cv.split(X_tr, y_tr):
+            in_m = make_model() if callable(make_model) else clone(make_model)
+            X_in_tr = X_tr.iloc[in_tr_idx] if hasattr(X_tr, "iloc") else X_tr[in_tr_idx]
+            X_in_val = X_tr.iloc[in_val_idx] if hasattr(X_tr, "iloc") else X_tr[in_val_idx]
+            in_m.fit(X_in_tr, y_tr[in_tr_idx])
+            inner_oof_probs[in_val_idx] = in_m.predict_proba(X_in_val)[:, 1]
+
+        t_fold, inner_sens, inner_spec = find_high_sensitivity_threshold(
+            y_tr, inner_oof_probs, min_sensitivity=target_sensitivity
+        )
+
+        out_m = make_model() if callable(make_model) else clone(make_model)
+        out_m.fit(X_tr, y_tr)
+        probs_te = out_m.predict_proba(X_te)[:, 1]
+
+        preds_fold = (probs_te >= t_fold).astype(int)
+        tn_f, fp_f, fn_f, tp_f = confusion_matrix(y_te, preds_fold, labels=[0, 1]).ravel()
+        sens_f = float(tp_f / (tp_f + fn_f)) if (tp_f + fn_f) > 0 else 0.0
+        spec_f = float(tn_f / (tn_f + fp_f)) if (tn_f + fp_f) > 0 else 0.0
+        ppv_f = float(tp_f / (tp_f + fp_f)) if (tp_f + fp_f) > 0 else 0.0
+        npv_f = float(tn_f / (tn_f + fn_f)) if (tn_f + fn_f) > 0 else 0.0
+
+        outer_sens.append(sens_f)
+        fold_details.append({
+            "fold": fold_idx + 1,
+            "threshold": round(t_fold, 3),
+            "inner_sens": round(inner_sens, 3),
+            "sens": round(sens_f, 4),
+            "spec": round(spec_f, 4),
+            "ppv": round(ppv_f, 4),
+            "npv": round(npv_f, 4),
+            "tp": int(tp_f),
+            "fp": int(fp_f),
+            "tn": int(tn_f),
+            "fn": int(fn_f),
+        })
+
+    if return_details:
+        return outer_sens, fold_details
+    return outer_sens
 
 
 def get_candidate_models() -> Dict[str, Any]:
@@ -265,47 +343,23 @@ def main():
         y_tgt = y_dict[target].values
         print(f"\nNested CV Threshold Evaluation for {target} ({chosen}):")
 
-        for fold_idx, (train_idx, test_idx) in enumerate(rskf.split(X, y_tgt)):
-            X_tr, X_te = X.iloc[train_idx], X.iloc[test_idx]
-            y_tr, y_te = y_tgt[train_idx], y_tgt[test_idx]
-
-            # Inner CV on X_tr: tune threshold strictly on inner out-of-fold predictions to prevent optimistic bias
-            inner_cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42 + fold_idx)
-            inner_oof_probs = np.zeros(len(y_tr))
-
-            for in_tr_idx, in_val_idx in inner_cv.split(X_tr, y_tr):
-                in_pipe = build_pipeline(clf_proto, schema=schema)
-                in_pipe.fit(X_tr.iloc[in_tr_idx], y_tr[in_tr_idx])
-                inner_oof_probs[in_val_idx] = in_pipe.predict_proba(X_tr.iloc[in_val_idx])[:, 1]
-
-            t_fold, inner_sens, inner_spec = find_high_sensitivity_threshold(
-                y_tr, inner_oof_probs, min_sensitivity=0.90
-            )
-
-            # Fit outer pipeline on full X_tr and evaluate on unseen X_te
-            out_pipe = build_pipeline(clf_proto, schema=schema)
-            out_pipe.fit(X_tr, y_tr)
-            probs_te = out_pipe.predict_proba(X_te)[:, 1]
-
-            preds_fold = (probs_te >= t_fold).astype(int)
-            tn_f, fp_f, fn_f, tp_f = confusion_matrix(y_te, preds_fold, labels=[0, 1]).ravel()
-            sens_f = float(tp_f / (tp_f + fn_f)) if (tp_f + fn_f) > 0 else 0.0
-            spec_f = float(tn_f / (tn_f + fp_f)) if (tn_f + fp_f) > 0 else 0.0
-            ppv_f = float(tp_f / (tp_f + fp_f)) if (tp_f + fp_f) > 0 else 0.0
-            npv_f = float(tn_f / (tn_f + fn_f)) if (tn_f + fn_f) > 0 else 0.0
-
-            nested_sens_metrics[target].append({
-                "fold": fold_idx + 1,
-                "threshold": round(t_fold, 3),
-                "inner_sens": round(inner_sens, 3),
-                "sens": round(sens_f, 4),
-                "spec": round(spec_f, 4),
-                "ppv": round(ppv_f, 4),
-                "npv": round(npv_f, 4),
-            })
+        make_target_pipeline = lambda proto=clf_proto: build_pipeline(proto, schema=schema)
+        _, fold_details = nested_threshold_cv(
+            make_model=make_target_pipeline,
+            X=X,
+            y=y_tgt,
+            target_sensitivity=0.90,
+            seed=42,
+            outer_splits=5,
+            inner_splits=5,
+            n_repeats=3,
+            return_details=True,
+        )
+        nested_sens_metrics[target] = fold_details
+        for m in fold_details:
             print(
-                f"  Fold {fold_idx + 1:02d}: chosen threshold={t_fold:.3f}, "
-                f"inner sens={inner_sens:.3f} (>=0.90 expected), outer sens={sens_f:.3f}, outer spec={spec_f:.3f}"
+                f"  Fold {m['fold']:02d}: chosen threshold={m['threshold']:.3f}, "
+                f"inner sens={m['inner_sens']:.3f} (>=0.90 expected), outer sens={m['sens']:.3f}, outer spec={m['spec']:.3f}"
             )
 
     # Apparent operating metrics evaluated on OOF predictions
@@ -348,6 +402,12 @@ def main():
         nest_spec_std = round(float(np.std([m["spec"] for m in nest_ms])), 4)
         nest_ppv_mean = round(float(np.mean([m["ppv"] for m in nest_ms])), 4)
         nest_npv_mean = round(float(np.mean([m["npv"] for m in nest_ms])), 4)
+        tot_tp = sum(m.get("tp", 0) for m in nest_ms)
+        tot_fp = sum(m.get("fp", 0) for m in nest_ms)
+        tot_tn = sum(m.get("tn", 0) for m in nest_ms)
+        tot_fn = sum(m.get("fn", 0) for m in nest_ms)
+        nest_sens_pooled = round(float(tot_tp / (tot_tp + tot_fn)), 4) if (tot_tp + tot_fn) > 0 else 0.0
+        nest_spec_pooled = round(float(tot_tn / (tot_tn + tot_fp)), 4) if (tot_tn + tot_fp) > 0 else 0.0
 
         threshold_info[target] = {
             "selected_model": chosen,
@@ -377,6 +437,8 @@ def main():
                 "sensitivity_std": nest_sens_std,
                 "specificity_mean": nest_spec_mean,
                 "specificity_std": nest_spec_std,
+                "sensitivity_pooled": nest_sens_pooled,
+                "specificity_pooled": nest_spec_pooled,
                 "ppv_mean": nest_ppv_mean,
                 "npv_mean": nest_npv_mean,
             },
@@ -406,8 +468,8 @@ def main():
         "Per FIX_PLAN_2 (R1), inner thresholds are derived strictly from inner out-of-fold predictions ",
         "within each training fold (5-fold inner CV) to eliminate optimistic overfitting bias on tree models.\n",
         "## 1. Summary of Nested Cross-Validation (Operating Estimates)\n",
-        "| Target | Selected Model | Operating Cutoff (Mean ± SD) | Inner Sens. (Mean) | Nested-CV Sens. (Mean ± SD) | Nested-CV Spec. (Mean ± SD) | Nested-CV PPV | Nested-CV NPV |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Target | Selected Model | Operating Cutoff (Mean ± SD) | Inner Sens. (Mean) | Nested-CV Sens. (Mean ± SD) | Nested-CV Spec. (Mean ± SD) | Pooled Sens. | Pooled Spec. | Nested-CV PPV | Nested-CV NPV |",
+        "|---|---|---|---|---|---|---|---|---|---|",
     ]
     for target in TARGETS:
         t_data = threshold_info[target]
@@ -418,7 +480,8 @@ def main():
         nested_report_lines.append(
             f"| **{target}** | {chosen} | {np.mean(thresh_vals):.3f} ± {np.std(thresh_vals):.3f} | "
             f"{np.mean(inner_sens_vals):.3f} | **{n_m['sensitivity_mean']:.3f} ± {n_m['sensitivity_std']:.3f}** | "
-            f"{n_m['specificity_mean']:.3f} ± {n_m['specificity_std']:.3f} | {n_m['ppv_mean']:.3f} | {n_m['npv_mean']:.3f} |"
+            f"{n_m['specificity_mean']:.3f} ± {n_m['specificity_std']:.3f} | **{n_m['sensitivity_pooled']:.3f}** | **{n_m['specificity_pooled']:.3f}** | "
+            f"{n_m['ppv_mean']:.3f} | {n_m['npv_mean']:.3f} |"
         )
 
     nested_report_lines.append("\n## 2. Per-Fold Details across All 15 Outer Folds (5 Folds × 3 Repeats)\n")

@@ -53,8 +53,8 @@ The breakdown is:
 
 | Target Labeling | ROC-AUC | PR-AUC | F1-Score | Recall (Sens.) | Specificity | Brier Score | Accuracy |
 |---|---|---|---|---|---|---|---|
-| **Recorded Cath** (216 CAD / 87 Normal) | 0.926 ± 0.030 | 0.969 ± 0.013 | 0.906 ± 0.026 | 0.926 ± 0.038 | 0.705 ± 0.120 | 0.100 ± 0.017 | 0.862 ± 0.039 |
-| **Aligned Cath** (217 CAD / 86 Normal) | 0.929 ± 0.024 | 0.971 ± 0.011 | 0.910 ± 0.021 | 0.934 ± 0.031 | 0.698 ± 0.083 | 0.098 ± 0.012 | 0.867 ± 0.032 |
+| **Recorded Cath** (`align_row_93=False`, 216 CAD / 87 Normal) | 0.926 ± 0.030 | 0.969 ± 0.013 | 0.906 ± 0.026 | 0.926 ± 0.038 | 0.705 ± 0.120 | 0.100 ± 0.017 | 0.862 ± 0.039 |
+| **Aligned Cath** (`align_row_93=True`, 217 CAD / 86 Normal) | 0.929 ± 0.024 | 0.971 ± 0.011 | 0.910 ± 0.021 | 0.934 ± 0.031 | 0.698 ± 0.083 | 0.098 ± 0.012 | 0.867 ± 0.032 |
 
 The single-patient alignment improves label consistency to 100% with negligible variation in cross-validated performance (ROC-AUC shift: +0.003, Brier shift: -0.002).
 

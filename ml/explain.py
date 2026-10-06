@@ -62,6 +62,7 @@ def explain_sample(
     parent_mapping: Dict[str, str],
     schema: Dict[str, Any],
     sample_df: pd.DataFrame,
+    X_trans: Any = None,
 ) -> Dict[str, Any]:
     """
     Computes exact additive SHAP explanation for a single patient record.
@@ -70,8 +71,9 @@ def explain_sample(
     preprocessor = pipeline.named_steps["preprocessor"]
     classifier = pipeline.named_steps["classifier"]
 
-    # Transform sample
-    X_trans = preprocessor.transform(sample_df)
+    # Transform sample if not pre-computed
+    if X_trans is None:
+        X_trans = preprocessor.transform(sample_df)
     transformed_cols = list(preprocessor.get_feature_names_out())
 
     # Raw model score (logit / decision function / margin)

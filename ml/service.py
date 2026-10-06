@@ -63,10 +63,14 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
     sample_df = pd.DataFrame([row_dict])
 
     # 3. Model probability scoring across targets
+    # Pre-transform sample once using the pipeline preprocessor
+    common_prep = ml_state["pipelines"]["Cath"].named_steps["preprocessor"]
+    X_trans = common_prep.transform(sample_df)
+
     probs: Dict[str, float] = {}
     for tgt in TARGETS:
-        pipe = ml_state["pipelines"][tgt]
-        p = float(pipe.predict_proba(sample_df)[0, 1])
+        clf = ml_state["pipelines"][tgt].named_steps["classifier"]
+        p = float(clf.predict_proba(X_trans)[0, 1])
         probs[tgt] = round(p, 4)
 
     # 4. Logical risk coherence: P(CAD_coherent) = max(P(CAD), max(vessel_P))
@@ -108,6 +112,7 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
             parent_mapping=ml_state["parent_mappings"][tgt],
             schema=schema,
             sample_df=sample_df,
+            X_trans=X_trans,
         )
         explanations[tgt] = exp
 

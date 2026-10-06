@@ -358,6 +358,8 @@
         "sensitivity_std": 0.0394,
         "specificity_mean": 0.8057,
         "specificity_std": 0.0674,
+        "sensitivity_pooled": 0.9017,
+        "specificity_pooled": 0.8062,
         "ppv_mean": 0.922,
         "npv_mean": 0.7708
       },
@@ -394,6 +396,8 @@
         "sensitivity_std": 0.0717,
         "specificity_mean": 0.6218,
         "specificity_std": 0.0799,
+        "sensitivity_pooled": 0.8814,
+        "specificity_pooled": 0.6217,
         "ppv_mean": 0.7671,
         "npv_mean": 0.7993
       },
@@ -430,6 +434,8 @@
         "sensitivity_std": 0.0634,
         "specificity_mean": 0.3514,
         "specificity_std": 0.0794,
+        "sensitivity_pooled": 0.916,
+        "specificity_pooled": 0.3514,
         "ppv_mean": 0.4787,
         "npv_mean": 0.869
       },
@@ -466,6 +472,8 @@
         "sensitivity_std": 0.069,
         "specificity_mean": 0.3866,
         "specificity_std": 0.0791,
+        "sensitivity_pooled": 0.8918,
+        "specificity_pooled": 0.3862,
         "ppv_mean": 0.4687,
         "npv_mean": 0.8686
       },

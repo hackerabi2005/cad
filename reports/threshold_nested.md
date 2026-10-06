@@ -5,12 +5,12 @@ within each training fold (5-fold inner CV) to eliminate optimistic overfitting 
 
 ## 1. Summary of Nested Cross-Validation (Operating Estimates)
 
-| Target | Selected Model | Operating Cutoff (Mean ± SD) | Inner Sens. (Mean) | Nested-CV Sens. (Mean ± SD) | Nested-CV Spec. (Mean ± SD) | Nested-CV PPV | Nested-CV NPV |
-|---|---|---|---|---|---|---|---|
-| **Cath** | LogisticRegression | 0.588 ± 0.026 | 0.902 | **0.902 ± 0.039** | 0.806 ± 0.067 | 0.922 | 0.771 |
-| **LAD** | RandomForest | 0.486 ± 0.015 | 0.902 | **0.882 ± 0.072** | 0.622 ± 0.080 | 0.767 | 0.799 |
-| **LCX** | XGBoost | 0.203 ± 0.028 | 0.906 | **0.916 ± 0.063** | 0.351 ± 0.079 | 0.479 | 0.869 |
-| **RCA** | LogisticRegression | 0.203 ± 0.024 | 0.901 | **0.892 ± 0.069** | 0.387 ± 0.079 | 0.469 | 0.869 |
+| Target | Selected Model | Operating Cutoff (Mean ± SD) | Inner Sens. (Mean) | Nested-CV Sens. (Mean ± SD) | Nested-CV Spec. (Mean ± SD) | Pooled Sens. | Pooled Spec. | Nested-CV PPV | Nested-CV NPV |
+|---|---|---|---|---|---|---|---|---|---|
+| **Cath** | LogisticRegression | 0.588 ± 0.026 | 0.902 | **0.902 ± 0.039** | 0.806 ± 0.067 | **0.902** | **0.806** | 0.922 | 0.771 |
+| **LAD** | RandomForest | 0.486 ± 0.015 | 0.902 | **0.882 ± 0.072** | 0.622 ± 0.080 | **0.881** | **0.622** | 0.767 | 0.799 |
+| **LCX** | XGBoost | 0.203 ± 0.028 | 0.906 | **0.916 ± 0.063** | 0.351 ± 0.079 | **0.916** | **0.351** | 0.479 | 0.869 |
+| **RCA** | LogisticRegression | 0.203 ± 0.024 | 0.901 | **0.892 ± 0.069** | 0.387 ± 0.079 | **0.892** | **0.386** | 0.469 | 0.869 |
 
 ## 2. Per-Fold Details across All 15 Outer Folds (5 Folds × 3 Repeats)
 

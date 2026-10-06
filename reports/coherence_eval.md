@@ -37,6 +37,6 @@ Per FIX_PLAN Decision 3 and Fix F2, we empirically evaluate out-of-fold (OOF) cr
 2. **Transparent API Contract**:
    The API provides both `raw_prob` (the pure CAD logistic regression output) and `prob` (the coherent displayed score), along with a boolean `coherence_adjusted` flag.
 3. **Thresholding on Displayed Score**:
-   The clinical operating threshold for CAD is calibrated directly on the displayed score (0.604) to maintain $\ge 90\%$ sensitivity on the final displayed probability.
+   The clinical operating threshold for CAD is calibrated directly on the displayed score (0.611) to maintain $\ge 90\%$ sensitivity on the final displayed probability.
 4. **No Discrete Label Rule**:
    We explicitly reject an "any vessel High $\implies$ overall High" label override. Vessel models use sensitivity-first thresholds ($\sim 0.21$–$0.47$) tuned to capture subtle localized disease; applying discrete OR label overriding would sharply degrade specificity, flagging excessive false positives.

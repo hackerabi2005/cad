@@ -31,7 +31,7 @@
   >
   > We utilized segmented 3D meshes from BodyParts3D, extracting the exact anatomical branches for the Left Anterior Descending artery (LAD), Left Circumflex (LCX), Right Coronary Artery (RCA), and Ascending Aorta.
   >
-  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under software rendering with GPU disabled, the viewer runs at over 60 FPS, ensuring responsiveness on standard clinical workstations.
+  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under pure CPU software rendering with GPU disabled, the viewer benchmarks at 49.3 ms mean frame time (≈ 20.3 FPS), and runs smoothly at 60 FPS on standard WebGL hardware.
   >
   > Notice the dynamic risk color-coding: each artery interpolates across a continuous green-to-red spectrum according to predicted stenosis probability, accompanied by 3D floating numeric risk badges."
 
@@ -66,7 +66,9 @@
 - **Narrator**:
   > "Under our 'Model CV Validation' tab, we display full transparency into our 5-fold cross-validation with 3 repeats—15 folds total.
   >
-  > Our selected models achieve 0.929 ROC-AUC for overall CAD and 0.846 for LAD stenosis. To minimize dangerous false negatives in screening, we calibrated high-sensitivity operating thresholds ensuring greater than 90% sensitivity.
+  > Our selected models achieve 0.929 ROC-AUC for overall CAD and 0.846 for LAD stenosis. To minimize dangerous false negatives in screening, we calibrated high-sensitivity operating cutoffs: 0.611 for Cath, 0.469 for LAD, 0.217 for LCX, and 0.213 for RCA.
+  >
+  > Under rigorous nested cross-validation where thresholds are tuned strictly out-of-fold, honest sensitivity reaches 90.2% for Cath, 88.2% for LAD, 91.6% for LCX, and 89.2% for RCA. We are completely transparent about the tradeoff: catching 90%+ of branch disease means LCX and RCA nested specificity drop to 35.1% and 38.7% (37.0% and 39.2% apparent OOF)—an intentional clinical triage stance.
   >
   > Furthermore, our architecture audits logical coherence: because CAD is the union of individual vessels, P(CAD) must be at least the maximum vessel risk. Our system logs this check and enforces coherent risk display."
 
@@ -77,6 +79,6 @@
 - **Narrator**:
   > "Cardio3D AI is built for extensibility. Adding a new clinical feature or vessel requires only updating the declarative `schema.json` and `vessels.json` registries—no UI redesign required.
   >
-  > The entire project is reproducible with standard commands: `python -m ml.train`, `pytest`, and `npm run dev`.
+  > The entire project is reproducible with standard commands: `python -m ml.train` (which runs in ~2.5–3 minutes on CPU), `pytest`, and `npm run dev`.
   >
   > Thank you for reviewing Cardio3D AI, bridging statistical machine learning and 3D human anatomy for enhanced cardiovascular decision support."
