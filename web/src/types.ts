@@ -33,6 +33,7 @@ export interface TargetExplanation {
 export interface CadPrediction {
   prob: number;
   coherent_prob: number;
+  confidence_interval?: [number, number];
   label: string;
   high_sens_label: string;
   threshold: number;
@@ -43,6 +44,7 @@ export interface CadPrediction {
 
 export interface VesselPrediction {
   prob: number;
+  confidence_interval?: [number, number];
   label: string;
   high_sens_label: string;
   threshold: number;
@@ -78,6 +80,7 @@ export interface ModelMetricsResponse {
   metrics: Record<string, Record<string, Record<string, number>>>;
   shap_global: Record<string, GlobalShapItem[]>;
   model_card: Record<string, any>;
+  dca?: Record<string, any>;
 }
 
 export interface VesselDef {

@@ -1,0 +1,11 @@
+services:
+  cardio3d:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cardio3d-ai
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+    restart: unless-stopped

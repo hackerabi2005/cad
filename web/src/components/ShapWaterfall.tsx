@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, HelpCircle, BarChart3, ListFilter, Cpu } from 'lucide-react';
+import {
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  ListFilter,
+  Cpu,
+  Layers,
+  Activity,
+  Droplet,
+  Zap,
+  Heart,
+} from 'lucide-react';
 import { TargetExplanation, FeatureContribution } from '../types';
 
 interface ShapWaterfallProps {
@@ -13,7 +24,7 @@ export function ShapWaterfall({
   activeTarget,
   onSelectTarget,
 }: ShapWaterfallProps) {
-  const [viewMode, setViewMode] = useState<'chart' | 'table'>('chart');
+  const [viewMode, setViewMode] = useState<'chart' | 'table' | 'domains'>('chart');
 
   const exp = explanations ? explanations[activeTarget] : undefined;
 
@@ -51,6 +62,64 @@ export function ShapWaterfall({
 
   // Max absolute SHAP for bar scaling
   const maxAbsShap = Math.max(...exp.features.map((f) => Math.abs(f.shap)), 0.001);
+
+  // 4 Physiological Domain Groupings
+  const domainDefinitions = [
+    {
+      id: 'hemodynamic',
+      name: 'Hemodynamic & Vitals',
+      icon: Activity,
+      desc: 'Systemic blood pressure, cardiac workload and auscultation',
+      isMember: (f: FeatureContribution) =>
+        ['BP', 'PR', 'Dyspnea', 'Weak Peripheral Pulse', 'Lung Rales', 'Systolic Murmur', 'Diastolic Murmur'].some(
+          (k) => f.feature.toLowerCase().includes(k.toLowerCase()) || f.label.toLowerCase().includes(k.toLowerCase())
+        ),
+    },
+    {
+      id: 'metabolic',
+      name: 'Metabolic & Blood Chemistry',
+      icon: Droplet,
+      desc: 'Glycemia (FBS), atherogenic lipids (LDL, HDL, TG) & renal filtration',
+      isMember: (f: FeatureContribution) =>
+        ['FBS', 'CR', 'BUN', 'TG', 'LDL', 'HDL', 'DM', 'HTN', 'Hypercholesterolemia', 'BMI', 'Weight', 'Length', 'Obesity'].some(
+          (k) => f.feature.toLowerCase().includes(k.toLowerCase()) || f.label.toLowerCase().includes(k.toLowerCase())
+        ),
+    },
+    {
+      id: 'symptoms_ecg',
+      name: 'Anginal Symptoms & ECG',
+      icon: Zap,
+      desc: 'Symptom typicality, ischemic ST shifts, T-wave inversion & repolarization',
+      isMember: (f: FeatureContribution) =>
+        ['Typical Chest Pain', 'Atypical', 'Nonanginal', 'St Elevation', 'St Depression', 'Tinversion', 'Poor R Progression', 'LVH', 'Q Wave', 'Age', 'Sex', 'Smoker', 'FH'].some(
+          (k) => f.feature.toLowerCase().includes(k.toLowerCase()) || f.label.toLowerCase().includes(k.toLowerCase())
+        ),
+    },
+    {
+      id: 'echo_structural',
+      name: 'Echocardiographic & Structural',
+      icon: Heart,
+      desc: 'Left ventricular EF-TTE, wall motion abnormalities & valvular function',
+      isMember: (f: FeatureContribution) =>
+        ['EF-TTE', 'Regional Wall Motion Abnormality', 'Valvular HD', 'Function Class', 'Cath'].some(
+          (k) => f.feature.toLowerCase().includes(k.toLowerCase()) || f.label.toLowerCase().includes(k.toLowerCase())
+        ),
+    },
+  ];
+
+  const domainGroups = domainDefinitions.map((d) => {
+    const matched = exp.features.filter(d.isMember);
+    const netShap = matched.reduce((acc, f) => acc + f.shap, 0);
+    const positiveShap = matched.filter((f) => f.shap > 0).reduce((acc, f) => acc + f.shap, 0);
+    const negativeShap = matched.filter((f) => f.shap < 0).reduce((acc, f) => acc + f.shap, 0);
+    return {
+      ...d,
+      features: matched,
+      netShap,
+      positiveShap,
+      negativeShap,
+    };
+  });
 
   return (
     <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800/80 shadow-xl space-y-4">
@@ -117,6 +186,7 @@ export function ShapWaterfall({
           </span>
         </div>
 
+        {/* View Switcher: Bars | Table | Domains */}
         <div className="flex items-center gap-1 bg-slate-800/60 p-0.5 rounded-lg border border-slate-700/50">
           <button
             id="btn-shap-chart-view"
@@ -128,6 +198,17 @@ export function ShapWaterfall({
           >
             <BarChart3 className="w-3 h-3" />
             Bars
+          </button>
+          <button
+            id="btn-shap-domains-view"
+            data-testid="btn-shap-domains-view"
+            onClick={() => setViewMode('domains')}
+            className={`px-2 py-0.5 rounded text-[11px] font-medium flex items-center gap-1 ${
+              viewMode === 'domains' ? 'bg-cyan-500/20 text-cyan-300 font-semibold' : 'text-slate-400'
+            }`}
+          >
+            <Layers className="w-3 h-3" />
+            Domains
           </button>
           <button
             id="btn-shap-table-view"
@@ -143,8 +224,8 @@ export function ShapWaterfall({
         </div>
       </div>
 
-      {/* Waterfall / Horizontal Signed Bar Chart View */}
-      {viewMode === 'chart' ? (
+      {/* 1. Waterfall / Horizontal Signed Bar Chart View */}
+      {viewMode === 'chart' && (
         <div className="space-y-2 pt-1 max-h-[380px] overflow-y-auto pr-1">
           {top10.map((f) => {
             const isRisk = f.shap > 0;
@@ -179,11 +260,9 @@ export function ShapWaterfall({
 
                 {/* Signed Diverging Bar */}
                 <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden flex relative">
-                  {/* Center vertical reference line */}
                   <div className="absolute left-1/2 top-0 bottom-0 w-px bg-slate-700 z-10" />
 
                   {isRisk ? (
-                    // Bar extends right from center (50%)
                     <div className="w-full h-full flex">
                       <div className="w-1/2 h-full" />
                       <div className="w-1/2 h-full flex items-center">
@@ -194,7 +273,6 @@ export function ShapWaterfall({
                       </div>
                     </div>
                   ) : (
-                    // Bar extends left from center (50%)
                     <div className="w-full h-full flex">
                       <div className="w-1/2 h-full flex items-center justify-end">
                         <div
@@ -210,7 +288,6 @@ export function ShapWaterfall({
             );
           })}
 
-          {/* Aggregated Other Features Row */}
           {remaining.length > 0 && (
             <div className="pt-2 border-t border-slate-800 text-xs">
               <div className="flex items-center justify-between mb-0.5 text-slate-400">
@@ -223,8 +300,70 @@ export function ShapWaterfall({
             </div>
           )}
         </div>
-      ) : (
-        /* Detailed Measurement vs Attribution Table */
+      )}
+
+      {/* 2. Physiological Factor Breakdown (Domains) View */}
+      {viewMode === 'domains' && (
+        <div className="space-y-3 pt-1 max-h-[380px] overflow-y-auto pr-1">
+          {domainGroups.map((dg) => {
+            const Icon = dg.icon;
+            const isNetRisk = dg.netShap > 0;
+            return (
+              <div
+                key={dg.id}
+                className="p-3 rounded-xl bg-slate-950/70 border border-slate-800/80 space-y-2 hover:border-slate-700 transition-colors"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-xs">{dg.name}</h4>
+                      <p className="text-[10px] text-slate-400">{dg.desc}</p>
+                    </div>
+                  </div>
+
+                  <div className="text-right font-mono">
+                    <span
+                      className={`text-xs font-bold ${
+                        isNetRisk ? 'text-red-400' : dg.netShap < 0 ? 'text-emerald-400' : 'text-slate-400'
+                      }`}
+                    >
+                      {dg.netShap > 0 ? `+${dg.netShap.toFixed(3)}` : dg.netShap.toFixed(3)}
+                    </span>
+                    <span className="text-[10px] text-slate-500 block">net domain impact</span>
+                  </div>
+                </div>
+
+                {/* Top Features inside Domain */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 border-t border-slate-900">
+                  {dg.features.slice(0, 4).map((f) => (
+                    <div
+                      key={f.feature}
+                      className="flex items-center justify-between p-1.5 rounded-lg bg-slate-900/60 text-[11px]"
+                    >
+                      <span className="text-slate-300 truncate max-w-[65%]" title={f.label}>
+                        {f.label}
+                      </span>
+                      <span
+                        className={`font-mono font-semibold ${
+                          f.shap > 0 ? 'text-red-400' : 'text-emerald-400'
+                        }`}
+                      >
+                        {f.shap > 0 ? `+${f.shap.toFixed(3)}` : f.shap.toFixed(3)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 3. Detailed Measurement vs Attribution Table */}
+      {viewMode === 'table' && (
         <div className="max-h-[380px] overflow-y-auto rounded-xl border border-slate-800">
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-950/80 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800 sticky top-0">

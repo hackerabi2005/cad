@@ -47,3 +47,17 @@ Operating thresholds are tuned on out-of-fold predictions to prioritize screenin
 | LAD | 0.882 ± 0.072 | 0.622 ± 0.080 | 0.767 | 0.799 |
 | LCX | 0.916 ± 0.063 | 0.351 ± 0.079 | 0.479 | 0.869 |
 | RCA | 0.892 ± 0.069 | 0.387 ± 0.079 | 0.469 | 0.869 |
+
+## 3. Decision Curve Analysis (Clinical Net Benefit)
+
+Per Vickers & Elkin (2006), Decision Curve Analysis evaluates whether clinical risk modeling delivers positive utility over universal intervention ("Treat All") or inaction ("Treat None") across clinical decision probability thresholds ($p_t \in [0.05, 0.50]$):
+
+| Target | Prevalence | Operating Cutoff | Model Net Benefit | Treat All Net Benefit | Net Benefit Gain (&Delta;NB) | Clinical Utility Conclusion |
+|---|---|---|---|---|---|---|
+| **Cath** | 71.6% | 0.611 | **0.569** | 0.270 | **+0.299 (+29.9%)** | Strong positive net benefit over all strategies |
+| **LAD** | 58.4% | 0.469 | **0.377** | 0.217 | **+0.160 (+16.0%)** | Substantially outperforms empirical referral |
+| **LCX** | 39.3% | 0.217 | **0.242** | 0.224 | **+0.018 (+1.8%)** | Positive net benefit at screening operating point |
+| **RCA** | 37.6% | 0.213 | **0.228** | 0.207 | **+0.021 (+2.1%)** | Positive net benefit at screening operating point |
+
+*See `reports/decision_curve.png` for complete visual decision curves.*
+

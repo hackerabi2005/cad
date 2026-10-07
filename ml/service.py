@@ -34,6 +34,15 @@ def validate_patient_payload(payload: Dict[str, Any], schema: Dict[str, Any]) ->
     return out_of_bounds
 
 
+def compute_risk_ci(p: float, n_eff: int = 303, z: float = 1.96) -> List[float]:
+    """Computes asymptotic 95% confidence interval for risk probability estimate."""
+    p_clamped = max(1e-4, min(1.0 - 1e-4, p))
+    se = float(np.sqrt(p_clamped * (1.0 - p_clamped) / n_eff))
+    lower = max(0.0, p - z * se)
+    upper = min(1.0, p + z * se)
+    return [round(float(lower), 4), round(float(upper), 4)]
+
+
 def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[str, Any]:
     """
     Executes end-to-end inference and SHAP attribution for a single patient record.
@@ -92,6 +101,7 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
         v_nest_sens = thresholds[v].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
         vessel_results[v] = {
             "prob": p,
+            "confidence_interval": compute_risk_ci(p),
             "label": "Stenotic" if p >= 0.50 else "Normal",
             "high_sens_label": "Stenotic" if p >= v_thresh else "Normal",
             "threshold": 0.50,
@@ -118,6 +128,7 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
             "prob": coherent_cad_prob,
             "raw_prob": raw_cad_prob,
             "coherent_prob": coherent_cad_prob,
+            "confidence_interval": compute_risk_ci(coherent_cad_prob),
             "label": cad_label,
             "high_sens_label": cad_high_sens_label,
             "threshold": 0.50,

@@ -59,6 +59,13 @@ def load_artifacts():
     schema = load_schema()
     ml_state["schema"] = schema
 
+    dca_path = ARTIFACTS_DIR / "decision_curve.json"
+    if dca_path.exists():
+        with open(dca_path, "r", encoding="utf-8") as f:
+            ml_state["dca"] = json.load(f)
+    else:
+        ml_state["dca"] = {}
+
     # Load 3 representative sample patients (low, mid, high risk)
     X, _ = load_raw_dataset(DEFAULT_DATA_PATH)
     cad_pipe = ml_state["pipelines"]["Cath"]
@@ -168,6 +175,7 @@ def get_metrics():
         "metrics": ml_state["metrics"],
         "shap_global": ml_state["shap_global"],
         "model_card": ml_state["model_card"],
+        "dca": ml_state.get("dca", {}),
     }
 
 

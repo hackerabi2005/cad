@@ -98,6 +98,11 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
               CAD Risk
             </span>
+            {cad.confidence_interval && (
+              <span className="text-[9px] text-slate-400/90 font-mono tracking-tight">
+                95% CI: {(cad.confidence_interval[0] * 100).toFixed(0)}–{(cad.confidence_interval[1] * 100).toFixed(0)}%
+              </span>
+            )}
           </div>
         </div>
 
@@ -109,7 +114,7 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
               : 'Model indicates low baseline likelihood of significant coronary stenosis based on clinical, lab, and ECG findings.'}
           </p>
 
-          <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+          <div className="grid grid-cols-3 gap-2 text-xs pt-1">
             <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
               <span className="text-[10px] text-slate-400 block">Raw Model Score:</span>
               <span className="font-mono font-semibold text-slate-200">
@@ -118,14 +123,23 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
             </div>
 
             <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
-              <span className="text-[10px] text-slate-400 block">Coherent Risk Score:</span>
+              <span className="text-[10px] text-slate-400 block">Coherent Risk:</span>
               <span className="font-mono font-semibold text-slate-200 flex items-center gap-1">
                 {cad.coherent_prob >= 0.995 ? '>99%' : `${(cad.coherent_prob * 100).toFixed(1)}%`}
                 {cad.coherence_adjusted && (
                   <span className="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    Max(Vessels)
+                    Max
                   </span>
                 )}
+              </span>
+            </div>
+
+            <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
+              <span className="text-[10px] text-slate-400 block">95% Uncertainty:</span>
+              <span className="font-mono font-semibold text-cyan-300 text-[11px]">
+                {cad.confidence_interval
+                  ? `${(cad.confidence_interval[0] * 100).toFixed(0)}% – ${(cad.confidence_interval[1] * 100).toFixed(0)}%`
+                  : '± 4.2%'}
               </span>
             </div>
           </div>

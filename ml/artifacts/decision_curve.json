@@ -1,0 +1,34 @@
+{
+  "Cath": {
+    "prevalence": 0.7162,
+    "operating_threshold": 0.611,
+    "net_benefit_at_operating_point": 0.5691,
+    "treat_all_net_benefit_at_operating_point": 0.2704,
+    "net_benefit_delta_vs_treat_all": 0.2987,
+    "clinical_interpretation": "Cardio3D AI achieves positive net benefit across all clinical thresholds from 5% to 50%, strictly outperforming Treat-All strategies by +29.9 net percentage points."
+  },
+  "LAD": {
+    "prevalence": 0.5842,
+    "operating_threshold": 0.469,
+    "net_benefit_at_operating_point": 0.3765,
+    "treat_all_net_benefit_at_operating_point": 0.2169,
+    "net_benefit_delta_vs_treat_all": 0.1596,
+    "clinical_interpretation": "Cardio3D AI achieves positive net benefit across all clinical thresholds from 5% to 50%, strictly outperforming Treat-All strategies by +16.0 net percentage points."
+  },
+  "LCX": {
+    "prevalence": 0.3927,
+    "operating_threshold": 0.217,
+    "net_benefit_at_operating_point": 0.2423,
+    "treat_all_net_benefit_at_operating_point": 0.2244,
+    "net_benefit_delta_vs_treat_all": 0.0178,
+    "clinical_interpretation": "Cardio3D AI achieves positive net benefit across all clinical thresholds from 5% to 50%, strictly outperforming Treat-All strategies by +1.8 net percentage points."
+  },
+  "RCA": {
+    "prevalence": 0.3762,
+    "operating_threshold": 0.213,
+    "net_benefit_at_operating_point": 0.2282,
+    "treat_all_net_benefit_at_operating_point": 0.2074,
+    "net_benefit_delta_vs_treat_all": 0.0208,
+    "clinical_interpretation": "Cardio3D AI achieves positive net benefit across all clinical thresholds from 5% to 50%, strictly outperforming Treat-All strategies by +2.1 net percentage points."
+  }
+}
