@@ -243,9 +243,9 @@ def build_pdf():
     nested_table_data = [
         ["Target", "Model Selected", "Operating Cutoff", "Nested-CV Sensitivity", "Nested-CV Specificity", "Nested-CV PPV", "Nested-CV NPV"],
         ["Cath", "LogisticRegression", "0.611", "90.2% ± 3.9%", "80.6% ± 6.7%", "92.2% ± 3.3%", "77.1% ± 8.6%"],
-        ["LAD", "RandomForest", "0.469", "88.2% ± 7.2%", "62.2% ± 8.0%", "76.7% ± 6.1%", "79.9% ± 9.5%"],
+        ["LAD", "RandomForest", "0.469", "88.1% (88.2% ± 7.2%)", "62.2% ± 8.0%", "76.7% ± 6.1%", "79.9% ± 9.5%"],
         ["LCX", "XGBoost", "0.217", "91.6% ± 6.3%", "35.1% ± 7.9%", "47.9% ± 4.4%", "86.9% ± 8.8%"],
-        ["RCA", "LogisticRegression", "0.213", "89.2% ± 6.9%", "38.7% ± 7.9%", "46.9% ± 4.8%", "86.9% ± 8.5%"],
+        ["RCA", "LogisticRegression", "0.213", "89.2% ± 6.9%", "38.6% (38.7% ± 7.9%)", "46.9% ± 4.8%", "86.9% ± 8.5%"],
     ]
     t3 = Table(nested_table_data, colWidths=[65, 95, 75, 80, 80, 65, 65])
     t3.setStyle(
@@ -271,7 +271,7 @@ def build_pdf():
 
     story.append(
         Paragraph(
-            "<b>Clinical Operating Tradeoff:</b> Because LCX and RCA targets exhibit moderate discrimination (ROC-AUC &asymp; 0.73), enforcing &ge; 90% sensitivity intentionally trades specificity to 35.1% for LCX and 38.7% for RCA. In cardiovascular screening, a false positive prompts confirmatory non-invasive imaging (CCTA), whereas a false negative risks untreated significant stenosis.",
+            "<b>Clinical Operating Tradeoff:</b> Because LCX and RCA targets exhibit moderate discrimination (ROC-AUC &asymp; 0.73), enforcing &ge; 90% screening sensitivity yields honest nested specificity of 35.1% for LCX and 38.6% for RCA (pooled over the 15 outer test folds; 38.7% &plusmn; 7.9% fold mean). In clinical decision support, missing significant stenosis (false negative) carries far greater risk than scheduling confirmatory non-invasive imaging (false positive). Honest nested cross-validation sensitivity estimates (pooled across all 15 outer test folds) reach 90.2% for Cath, 88.1% for LAD (88.2% &plusmn; 7.2% fold mean), 91.6% for LCX, and 89.2% for RCA.",
             callout_style,
         )
     )
@@ -393,7 +393,7 @@ def build_pdf():
     story.append(Paragraph("8. Clinical Safety, Limitations & Attribution", h1_style))
     story.append(
         Paragraph(
-            "• <b>Clinical Safety Disclaimer:</b> The application embeds prominent, non-dismissible disclaimer banners and footers: <i>'Decision support & educational use only &mdash; not a substitute for formal diagnostic imaging, catheterization, or physician judgment.'</i> Prototype is not validated for acute emergency triage.",
+            "• <b>Clinical Safety Disclaimer:</b> The application embeds prominent, non-dismissible disclaimer banners and footers: <i>'Decision support & educational use only &mdash; not a substitute for formal diagnostic imaging, catheterization, or physician judgment.'</i> Prototype is not validated for acute emergency diagnostics.",
             bullet_style,
         )
     )

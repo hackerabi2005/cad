@@ -15,4 +15,4 @@ Cardio3D AI incorporates third-party data and anatomical models under the follow
 ### 2. Clinical Dataset (`data/raw/extention of Z-Alizadeh sani dataset.xlsx`)
 - **Source**: UCI Machine Learning Repository — *extention of Z-Alizadeh sani dataset* (UCI ID: 411).
 - **License**: Creative Commons Attribution 4.0 International (CC BY 4.0).
-- **Citation**: Alizadehsani, R., Roshanzamir, M., & Sani, Z. (2013). *extention of Z-Alizadeh sani dataset* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5461K
+- **Citation**: Alizadehsani, R., Roshanzamir, M., & Sani, Z. (2013). extention of Z-Alizadeh sani dataset [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C5461K.

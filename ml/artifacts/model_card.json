@@ -184,7 +184,7 @@
     "os": "Windows 11 (AMD64)",
     "runner": "local-windows",
     "provenance": "Trained locally on Windows (Python 3.14.5); verified clean virtualenv execution on Python 3.12 (Linux/WSL).",
-    "git_commit": "7fb33286d9b63e616140e6a79ac4a3fb57daf2dc",
+    "git_commit": "f8d5fd3dfdf9a2621e5c4f6eda57b53a5d4acdee",
     "seed": 42,
     "libraries": {
       "scikit_learn_version": "1.9.1",
