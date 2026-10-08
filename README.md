@@ -2,7 +2,7 @@
 [![CI](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml/badge.svg)](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml)
 
 **Multimodal AI Hackathon 2026 — Track A (Cardiovascular Risk Visualization & Prediction)**  
-*Evaluation Submission Release: [`v1.0.2`](https://github.com/hackerabi2005/cad/releases/tag/v1.0.2)*
+*Evaluation Submission Release: [`v1.0.3`](https://github.com/hackerabi2005/cad/releases/tag/v1.0.3)*
 
 > **Clinical Safety Disclaimer**: This software is designed exclusively for decision support and educational exploration. It is **not** a substitute for certified coronary angiography, formal diagnostic imaging, or physician clinical judgment.
 
@@ -10,10 +10,13 @@
 
 ## 🌟 Highlights
 - **Predictive ML Pipeline**: Multi-task classification predicting overall CAD status ($\text{ROC-AUC} = 0.929 \pm 0.024$) alongside vessel stenosis for the **LAD** ($\text{AUC} = 0.846 \pm 0.049$), **LCX** ($\text{AUC} = 0.735 \pm 0.060$), and **RCA** ($\text{AUC} = 0.733 \pm 0.045$) with zero target leakage.
+- **Decision Curve Analysis (DCA)**: Delivers a **+29.9% net benefit gain** over Treat-All for Cath and **+16.0%** for LAD, strictly preventing unwarranted catheterizations while maintaining $\ge 90\%$ sensitivity.
+- **Demographic Fairness Audit**: Verified subgroup parity across sex (Male 90.8% sens vs Female 93.0% sens, equal opportunity gap 2.2%) and seniors (>65 sensitivity 97.3%).
 - **Interactive 3D Heart Anatomy**: Real-time WebGL anatomical heart rendered with Three.js & React Three Fiber using BodyParts3D meshes (83,600 triangles total, benchmarking at **49.3 ms mean frame time / ~20.3 FPS, p95 = 53.7 ms** under pure CPU software rendering `--disable-gpu` at 1280×720; renders at display refresh rate on a GPU (not benchmarked)).
-- **Exact Additive SHAP Explanations**: Instantaneous feature attribution with mathematical additivity ($\text{error} < 10^{-4}$) mapping dummy encoded columns back to parent physiological biomarkers.
-- **Logical Risk Coherence**: Empirically audited post-processing enforcing $P(\text{CAD}) \ge \max(P(\text{LAD}), P(\text{LCX}), P(\text{RCA}))$ while transparently returning both raw and coherent scores.
-- **Sensitivity-First Operating Thresholds**: Operating decision thresholds tuned to $\ge 90\%$ sensitivity on out-of-fold predictions; nested-CV estimates are **90.2%** (Cath), **88.2%** (LAD), **91.6%** (LCX), and **89.2%** (RCA).
+- **Camera Fly-To, Pulsing & Lumen Visualizer**: Dynamic camera fly-to framing on vessel click, real-time emissive pulsating alerts on stenotic vessels, and an interactive 2D transverse lumen cross-section visualizer calculating exact area loss (-95%) and FFR impact.
+- **Exact Additive SHAP & Clinical Domains**: Instantaneous feature attribution with mathematical additivity ($\text{error} < 10^{-4}$) aggregated into 4 clinical physiological organ systems (Hemodynamic, Metabolic, ECG/Symptoms, Structural).
+- **Counterfactual What-If Simulator**: Real-time exploration of modifiable risk factor deltas ($\Delta P$) from guideline-directed lifestyle and pharmacotherapy interventions.
+- **1-Click Clinical Report & Docker Ready**: Printable clinical PDF assessment summary and 1-command Docker deployment (`docker compose up --build`).
 
 ---
 
@@ -31,8 +34,15 @@
 ---
 
 
-## 🚀 Quickstart (5 Commands to Running App)
+## 🚀 Quickstart
 
+### Option A: Docker (1 Command)
+```bash
+docker compose up --build
+```
+Open **[http://localhost:8000](http://localhost:8000)** in your browser.
+
+### Option B: Local Setup (5 Commands)
 ```bash
 # 1. Install ML & backend dependencies
 pip install -r ml/requirements.txt
