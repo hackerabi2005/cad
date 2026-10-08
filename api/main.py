@@ -136,7 +136,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title="Cardiovascular Risk & 3D Coronary Viewer API",
-    description="Multimodal CAD risk visualization & multi-vessel stenosis prediction system",
+    description="Clinical CAD risk visualization & multi-vessel stenosis prediction system",
     version="1.0.0",
     lifespan=lifespan,
 )

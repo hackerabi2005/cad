@@ -2,7 +2,7 @@
 [![CI](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml/badge.svg)](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml)
 
 **Multimodal AI Hackathon 2026 — Track A (Cardiovascular Risk Visualization & Prediction)**  
-*Evaluation Submission Release: [`v1.0.3`](https://github.com/hackerabi2005/cad/releases/tag/v1.0.3)*
+*Evaluation Submission Release: [`v1.1.0`](https://github.com/hackerabi2005/cad/releases/tag/v1.1.0)*
 
 > **Clinical Safety Disclaimer**: This software is designed exclusively for decision support and educational exploration. It is **not** a substitute for certified coronary angiography, formal diagnostic imaging, or physician clinical judgment.
 
@@ -10,13 +10,13 @@
 
 ## 🌟 Highlights
 - **Predictive ML Pipeline**: Multi-task classification predicting overall CAD status ($\text{ROC-AUC} = 0.929 \pm 0.024$) alongside vessel stenosis for the **LAD** ($\text{AUC} = 0.846 \pm 0.049$), **LCX** ($\text{AUC} = 0.735 \pm 0.060$), and **RCA** ($\text{AUC} = 0.733 \pm 0.045$) with zero target leakage.
-- **Decision Curve Analysis (DCA)**: Delivers a **+29.9% net benefit gain** over Treat-All for Cath and **+16.0%** for LAD, strictly preventing unwarranted catheterizations while maintaining $\ge 90\%$ sensitivity.
-- **Demographic Fairness Audit**: Verified subgroup parity across sex (Male 90.8% sens vs Female 93.0% sens, equal opportunity gap 2.2%) and seniors (>65 sensitivity 97.3%).
-- **Interactive 3D Heart Anatomy**: Real-time WebGL anatomical heart rendered with Three.js & React Three Fiber using BodyParts3D meshes (83,600 triangles total, benchmarking at **49.3 ms mean frame time / ~20.3 FPS, p95 = 53.7 ms** under pure CPU software rendering `--disable-gpu` at 1280×720; renders at display refresh rate on a GPU (not benchmarked)).
-- **Camera Fly-To, Pulsing & Lumen Visualizer**: Dynamic camera fly-to framing on vessel click, real-time emissive pulsating alerts on stenotic vessels, and an interactive 2D transverse lumen cross-section visualizer calculating exact area loss (-95%) and FFR impact.
+- **Decision Curve Analysis (DCA)**: Evaluated across clinical thresholds ($p_t \in [0.05, 0.50]$) on out-of-fold predictions. Delivers a **+29.6 net benefit gain per 100 patients** over Treat-All for Cath (+15.9 for LAD; modest gains of +1.7 to +2.2 per 100 patients for LCX and RCA due to sensitivity calibration), evaluating apparent single-centre clinical utility.
+- **Demographic Fairness Audit**: Evaluated across sex (Male 90.8% sens, 75.6% spec vs Female 93.0% sens, 85.4% spec) and age strata (Age ≤ 65 88.8% sens, 86.8% spec vs Age > 65 97.3% sens, 30.0% spec) with Wilson 95% intervals; no difference detectable at this sample size.
+- **Interactive 3D Heart Anatomy**: Real-time WebGL anatomical heart rendered with Three.js & React Three Fiber using BodyParts3D meshes (83,600 triangles total, benchmarking at **78.4 ms mean frame time / ~12.8 FPS, p95 = 88.0 ms** under pure CPU software rendering `--disable-gpu` at 1280×720; renders at display refresh rate on a GPU (not benchmarked)).
+- **Camera Fly-To, Pulsing & Lumen Schematic**: Dynamic camera fly-to framing on vessel click, real-time emissive pulsating alerts on stenotic vessels, and an interactive 2D transverse lumen cross-section schematic illustrating binary stenosis (normal vs. ≥ 50%).
 - **Exact Additive SHAP & Clinical Domains**: Instantaneous feature attribution with mathematical additivity ($\text{error} < 10^{-4}$) aggregated into 4 clinical physiological organ systems (Hemodynamic, Metabolic, ECG/Symptoms, Structural).
-- **Counterfactual What-If Simulator**: Real-time exploration of modifiable risk factor deltas ($\Delta P$) from guideline-directed lifestyle and pharmacotherapy interventions.
-- **1-Click Clinical Report & Docker Ready**: Printable clinical PDF assessment summary and 1-command Docker deployment (`docker compose up --build`).
+- **Model Sensitivity Explorer**: Interactive exploration of live changes in model score ($\Delta P$) when adjusting continuous and binary clinical inputs, with explicit notice that cross-sectional models do not estimate treatment effects.
+- **1-Click Clinical Report & Docker Ready**: Printable clinical assessment summary with empirical reference cohort Wilson 95% intervals, items for clinician review, repeated disclaimers, and 1-command Docker deployment (`docker compose up --build`).
 
 ---
 
@@ -124,7 +124,7 @@ Operating thresholds are tuned on out-of-fold predictions to prioritize screenin
   - `Aorta`: Ascending aorta and bulb (6,572 triangles).
   - `Heart_Muscle`: Decimated myocardium shell (30,530 triangles).
 - **Total Asset Size**: 1.67 MB GLB, 83,600 triangles (budget $\le 100,000$).
-- **Software Rendering Benchmark**: **49.3 ms mean frame time (~20.3 FPS continuous orbit, p95 = 53.7 ms)** under pure CPU software rendering (`--disable-gpu` at 1280×720 on 13th Gen Intel Core i5-13420H, Chromium 148; measured in [reports/fps_benchmark.json](reports/fps_benchmark.json)). Renders at the display refresh rate on a GPU (not benchmarked).
+- **Software Rendering Benchmark**: **78.4 ms mean frame time (~12.8 FPS continuous orbit, p95 = 88.0 ms)** under pure CPU software rendering (`--disable-gpu` at 1280×720 on 13th Gen Intel Core i5-13420H, Chromium 148; measured in [reports/fps_benchmark.json](reports/fps_benchmark.json)). Renders at the display refresh rate on a GPU (not benchmarked).
 
 ---
 

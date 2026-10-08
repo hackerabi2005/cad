@@ -164,7 +164,7 @@ export function App() {
               <h1 className="text-lg font-extrabold font-display tracking-tight text-white flex items-center gap-2">
                 Cardio3D AI
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
-                  Multimodal v2.0
+                  Clinical v2.0
                 </span>
               </h1>
               <p className="text-[11px] text-slate-400">
@@ -213,7 +213,7 @@ export function App() {
                 }`}
               >
                 <Sliders className="w-3.5 h-3.5" />
-                <span>What-If</span>
+                <span>Sensitivity Explorer</span>
               </button>
               <button
                 onClick={() => setActiveTab('global-shap')}

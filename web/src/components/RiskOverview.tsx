@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, ShieldAlert, ShieldCheck, HelpCircle } from 'lucide-react';
+import { Activity, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { CadPrediction } from '../types';
 import { getRiskColor } from './HeartViewer';
 
@@ -22,7 +22,6 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
   const displayPercentage = percentage >= 100 ? '>99%' : `${percentage}%`;
   const riskColor = getRiskColor(prob);
   const isHighRisk = cad.label === 'High Risk';
-  const isHighSensHigh = cad.high_sens_label === 'High Risk';
 
   // SVG Gauge calculations
   const radius = 54;
@@ -98,9 +97,13 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
             <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">
               CAD Risk
             </span>
-            {cad.confidence_interval && (
-              <span className="text-[9px] text-slate-400/90 font-mono tracking-tight">
-                95% CI: {(cad.confidence_interval[0] * 100).toFixed(0)}–{(cad.confidence_interval[1] * 100).toFixed(0)}%
+            {cad.similar_cohort ? (
+              <span className="text-[8px] text-slate-400 font-mono tracking-tight px-1 text-center" title={`Wilson 95%: ${(cad.similar_cohort.wilson_interval[0] * 100).toFixed(0)}%–${(cad.similar_cohort.wilson_interval[1] * 100).toFixed(0)}%`}>
+                n={cad.similar_cohort.n} ({(cad.similar_cohort.observed_rate * 100).toFixed(0)}%)
+              </span>
+            ) : (
+              <span className="text-[8px] text-slate-500 font-mono tracking-tight">
+                Empirical ref
               </span>
             )}
           </div>
@@ -135,14 +138,20 @@ export function RiskOverview({ cad, isLoading }: RiskOverviewProps) {
             </div>
 
             <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
-              <span className="text-[10px] text-slate-400 block">95% Uncertainty:</span>
-              <span className="font-mono font-semibold text-cyan-300 text-[11px]">
-                {cad.confidence_interval
-                  ? `${(cad.confidence_interval[0] * 100).toFixed(0)}% – ${(cad.confidence_interval[1] * 100).toFixed(0)}%`
-                  : '± 4.2%'}
+              <span className="text-[10px] text-slate-400 block">Similar Cohort:</span>
+              <span className="font-mono font-semibold text-cyan-300 text-[11px] block" title={cad.similar_cohort ? `Wilson 95%: ${(cad.similar_cohort.wilson_interval[0] * 100).toFixed(0)}%–${(cad.similar_cohort.wilson_interval[1] * 100).toFixed(0)}%` : undefined}>
+                {cad.similar_cohort
+                  ? `${(cad.similar_cohort.observed_rate * 100).toFixed(0)}% (n=${cad.similar_cohort.n})`
+                  : 'Uncertainty not quantified'}
               </span>
             </div>
           </div>
+
+          {cad.similar_cohort && (
+            <p className="text-[11px] text-slate-400 font-mono mt-1">
+              {cad.similar_cohort.summary} (95% Wilson: {(cad.similar_cohort.wilson_interval[0] * 100).toFixed(0)}%–{(cad.similar_cohort.wilson_interval[1] * 100).toFixed(0)}%)
+            </p>
+          )}
         </div>
       </div>
     </div>

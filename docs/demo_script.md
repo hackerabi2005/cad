@@ -31,13 +31,15 @@
   >
   > We utilized segmented 3D meshes from BodyParts3D, extracting the exact anatomical branches for the Left Anterior Descending artery (LAD), Left Circumflex (LCX), Right Coronary Artery (RCA), and Ascending Aorta.
   >
-  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under pure CPU software rendering with GPU disabled, the viewer benchmarks at 49.3 ms mean frame time (≈ 20.3 FPS); the GPU path is not benchmarked.
+  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under pure CPU software rendering with GPU disabled, the viewer benchmarks at 78.4 ms mean frame time (≈ 12.8 FPS); the GPU path is not benchmarked.
   >
-  > Notice the dynamic risk color-coding: each artery interpolates across a continuous green-to-red spectrum according to predicted stenosis probability, accompanied by 3D floating numeric risk badges."
+  > Notice the dynamic risk color-coding: each artery interpolates across a continuous green-to-red spectrum according to predicted stenosis probability, accompanied by 3D floating numeric risk badges.
+  >
+  > Clicking 'Lumen View' opens an illustrative 2D transverse cross-section schematic demonstrating binary stenosis (normal vs. ≥ 50%). Note the prominent caption: 'Schematic only — not patient imaging; stenosis severity is not predicted'—affirming that the underlying dataset records binary narrowing rather than continuous severity or FFR."
 
 ---
 
-### Shot 4: Real Patient Presets & Live Debounced Prediction (3:15 – 4:30)
+### Shot 4: Real Patient Presets & Live Debounced Prediction (3:15 – 4:15)
 - **Visual**: Click "Patient A — Low Risk Profile" preset. Show the heart turning green and overall risk dropping to 3%. Then click "Patient C — High Risk Stenosis" preset. Show the LAD and overall gauge turning crimson within 50 milliseconds.
 - **Narrator**:
   > "Let's test the interactive clinical workflow. The dashboard includes presets from actual patients in the cohort.
@@ -48,27 +50,25 @@
 
 ---
 
-### Shot 5: Exact Additive SHAP Explainability (4:30 – 5:45)
-- **Visual**: Click on the LAD card or 3D badge. Show the SHAP waterfall panel switching to LAD. Hover over the red bars and switch to the Table View.
+### Shot 5: Exact Additive SHAP Explainability & Sensitivity Explorer (4:15 – 5:30)
+- **Visual**: Click on the LAD card or 3D badge. Show the SHAP waterfall panel switching to LAD. Hover over the red bars. Then switch to the "Sensitivity Explorer" tab and adjust blood pressure or glucose sliders.
 - **Narrator**:
-  > "A black-box prediction is unacceptable in medicine. Cardio3D AI integrates exact additive SHAP explanations.
+  > "A black-box prediction is unacceptable in medicine. Cardio3D AI integrates exact additive SHAP explanations. Clicking the LAD artery immediately re-indexes the explainability panel to the vessel-specific LAD model.
   >
-  > Clicking the LAD artery immediately re-indexes the explainability panel to the vessel-specific LAD model.
+  > In the waterfall chart, red bars indicate features pushing risk upward, while green bars show protective factors. Crucially, our explainer maintains exact mathematical additivity: the base value plus the sum of all SHAP values equals the raw score within a numerical tolerance of 10^-5.
   >
-  > In the waterfall chart, red bars indicate features pushing risk upward—here, typical anginal chest pain (+0.38) and regional wall motion abnormalities (+0.24). Green bars show protective factors.
-  >
-  > Crucially, our explainer maintains exact mathematical additivity: the base value plus the sum of all SHAP values equals the raw score within a numerical tolerance of 10^-5. Dummy variables from one-hot encoding are aggregated back into their parent physiological measurements so clinicians see clean, interpretable clinical biomarkers."
+  > Under the 'Sensitivity Explorer' tab, clinicians can interactively explore how the model's score changes when inputs change—such as lowering systolic blood pressure or fasting blood sugar. A clear caption emphasizes that the model is trained on cross-sectional observational data and does not estimate treatment effects."
 
 ---
 
-### Shot 6: Rigorous Cross-Validation & Coherence Policy (5:45 – 6:30)
-- **Visual**: Click the "Model CV Validation" tab. Show the 15-fold cross-validation table and metrics.
+### Shot 6: Rigorous Validation, DCA, Fairness & Coherence (5:30 – 6:30)
+- **Visual**: Click the "Model CV Validation" tab. Show the 15-fold cross-validation table, Decision Curve Analysis, and demographic fairness metrics.
 - **Narrator**:
   > "Under our 'Model CV Validation' tab, we display full transparency into our 5-fold cross-validation with 3 repeats—15 folds total.
   >
-  > Our selected models achieve 0.929 ROC-AUC for overall CAD and 0.846 for LAD stenosis. To minimize dangerous false negatives in screening, we calibrated high-sensitivity operating cutoffs: 0.611 for Cath, 0.469 for LAD, 0.217 for LCX, and 0.213 for RCA.
+  > Our selected models achieve 0.929 ROC-AUC for overall CAD and 0.846 for LAD stenosis. Operating cutoffs ensure high sensitivity (90.2% for Cath, 88.1% for LAD).
   >
-  > Under rigorous nested cross-validation where thresholds are tuned strictly out-of-fold, honest sensitivity reaches 90.2% for Cath, 88.1% for LAD, 91.6% for LCX, and 89.2% for RCA (pooled over the 15 outer test folds). We are completely transparent about the tradeoff: catching 90%+ of branch disease means LCX and RCA nested specificity drop to 35.1% and 38.6% (pooled over the 15 outer test folds; 37.0% and 39.2% apparent OOF)—an intentional clinical screening-style stance.
+  > We evaluate clinical utility using Decision Curve Analysis (DCA), demonstrating a +29.6 net benefit gain per 100 patients over Treat All for Cath in single-centre out-of-fold validation. In our demographic fairness audit, sensitivity and specificity with Wilson 95% intervals are reported across sex and age subgroups, with no difference detectable at this sample size.
   >
   > Furthermore, our architecture audits logical coherence: because CAD is the union of individual vessels, P(CAD) must be at least the maximum vessel risk. Our system logs this check and enforces coherent risk display."
 

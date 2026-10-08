@@ -26,7 +26,7 @@ export function DisclaimerFooter() {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
         <div className="space-y-1">
           <p className="font-medium text-slate-300">
-            Cardio3D AI — Multimodal Cardiovascular Risk & 3D Coronary Stenosis Viewer
+            Cardio3D AI — Cardiovascular Risk & 3D Coronary Stenosis Viewer
           </p>
           <p className="text-[11px] text-slate-500">
             <strong>Clinical Safety Notice:</strong> Model predictions reflect statistical risk probabilities based on cohort features. Never make diagnostic or intervention decisions without certified angiographic imaging.

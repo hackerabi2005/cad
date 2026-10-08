@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Printer, Heart, Activity, ShieldCheck, AlertTriangle, FileText, CheckCircle2 } from 'lucide-react';
+import { X, Printer, Heart, ShieldAlert, FileText, CheckCircle2 } from 'lucide-react';
 import { PredictResponse, SchemaRegistry } from '../types';
 import vesselsConfig from '../vessels.json';
 import { VesselsConfig } from '../types';
@@ -55,7 +55,7 @@ export function ClinicalSummaryModal({
               className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
               title="Close Report"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
@@ -72,7 +72,7 @@ export function ClinicalSummaryModal({
                 </span>
               </div>
               <p className="text-slate-400 print:text-neutral-600 text-xs">
-                Multimodal 3D Coronary Anatomy & Multi-Vessel Stenosis Risk Evaluation
+                3D Coronary Anatomy & Multi-Vessel Stenosis Risk Evaluation
               </p>
               <p className="text-[11px] text-slate-500 print:text-neutral-500 font-mono mt-0.5">
                 Model: Calibrated Logistic-ElasticNet Pipeline · Version: 2.0.0 · Dual Cutoff Architecture
@@ -123,9 +123,16 @@ export function ClinicalSummaryModal({
                 <div className="text-3xl font-extrabold font-mono text-cyan-400 print:text-neutral-900">
                   {(cad.prob * 100).toFixed(1)}%
                 </div>
-                {cad.confidence_interval && (
+                {cad.similar_cohort ? (
                   <div className="text-[11px] font-mono text-cyan-300/80 print:text-neutral-600 mt-1">
-                    95% CI: [{(cad.confidence_interval[0] * 100).toFixed(1)}% – {(cad.confidence_interval[1] * 100).toFixed(1)}%]
+                    {cad.similar_cohort.summary}
+                    <div className="text-[10px] text-slate-400 print:text-neutral-500">
+                      Wilson 95% interval: [{(cad.similar_cohort.wilson_interval[0] * 100).toFixed(1)}% – {(cad.similar_cohort.wilson_interval[1] * 100).toFixed(1)}%]
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-[10px] text-slate-500 print:text-neutral-500 mt-1">
+                    Uncertainty not quantified
                   </div>
                 )}
               </div>
@@ -158,9 +165,9 @@ export function ClinicalSummaryModal({
                       <div className="text-lg font-extrabold font-mono text-cyan-300 print:text-black">
                         {(prob * 100).toFixed(1)}%
                       </div>
-                      {vData?.confidence_interval && (
+                      {vData?.similar_cohort && (
                         <div className="text-[9px] font-mono text-slate-400 print:text-neutral-600">
-                          CI: [{(vData.confidence_interval[0] * 100).toFixed(0)}%–{(vData.confidence_interval[1] * 100).toFixed(0)}%]
+                          Similar n={vData.similar_cohort.n}: {(vData.similar_cohort.observed_rate * 100).toFixed(0)}% stenotic [{(vData.similar_cohort.wilson_interval[0] * 100).toFixed(0)}%–{(vData.similar_cohort.wilson_interval[1] * 100).toFixed(0)}%]
                         </div>
                       )}
                       <div className="text-[9px] text-slate-500 print:text-neutral-500 truncate mt-1">
@@ -199,34 +206,36 @@ export function ClinicalSummaryModal({
             </div>
           </div>
 
-          {/* Evidence-Based Clinical Recommendations */}
+          {/* Items for Clinician Review (Replaces "Clinical Recommendations") */}
           <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 print:bg-neutral-50 print:border-neutral-200 space-y-2">
             <span className="text-[10px] uppercase font-bold text-cyan-400 print:text-neutral-800 block">
-              Clinical Action Plan & Decision Support
+              Items for Clinician Review
             </span>
             <ul className="space-y-1 text-slate-300 print:text-neutral-700 list-disc list-inside">
               {cad.prob >= 0.60 ? (
                 <>
-                  <li><strong>Invasive Coronary Angiography (ICA) or CCTA:</strong> High probability of significant coronary artery disease warrants anatomical confirmation and fractional flow reserve (FFR) evaluation.</li>
-                  <li><strong>Aggressive Guideline-Directed Medical Therapy (GDMT):</strong> Optimize statin therapy, dual antiplatelet therapy where indicated, and strict blood pressure control (&lt;130/80 mmHg).</li>
-                  <li><strong>Specialized Territory Surveillance:</strong> Priority attention directed to LAD ({((prediction.vessels.LAD?.prob ?? 0) * 100).toFixed(0)}% risk) due to anterior septal myocardial vulnerability.</li>
+                  <li><strong>Diagnostic Imaging Discussion:</strong> High probability of significant coronary artery disease warrants clinician review for anatomical evaluation (CCTA or Invasive Coronary Angiography).</li>
+                  <li><strong>Medical Risk Factor Review:</strong> Review lipid management, blood pressure targets (&lt;130/80 mmHg), and antiplatelet therapy indications per clinical judgment.</li>
+                  <li><strong>Territory Review:</strong> Correlate LAD risk ({((prediction.vessels.LAD?.prob ?? 0) * 100).toFixed(0)}%) with anterior myocardial symptoms and prior ECG tracings.</li>
                 </>
               ) : (
                 <>
-                  <li><strong>Non-Invasive Risk Stratification:</strong> Low-to-moderate probability supports outpatient functional stress testing or coronary calcium scoring (CAC).</li>
-                  <li><strong>Primary Prevention:</strong> Lifestyle intervention, smoking cessation, metabolic counseling, and annual cardiovascular follow-up.</li>
+                  <li><strong>Outpatient Risk Stratification:</strong> Low-to-moderate probability supports consideration of non-invasive stress testing or coronary calcium scoring (CAC).</li>
+                  <li><strong>Preventive Discussion:</strong> Review lifestyle factors, smoking status, and metabolic indicators at routine follow-up.</li>
                 </>
               )}
             </ul>
           </div>
 
-          {/* Validation & Compliance Statement */}
-          <div className="pt-3 border-t border-slate-800 print:border-neutral-300 text-[10px] text-slate-500 print:text-neutral-500 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <div>
-              Decision Curve Net Benefit: +29.9% over Treat-All · Fairness: &gt;90% sensitivity verified across sex/age subgroups.
+          {/* Required Printout Disclaimer, Model Version, and Date */}
+          <div className="pt-3 border-t border-slate-800 print:border-neutral-300 text-[10px] text-slate-400 print:text-neutral-600 space-y-1">
+            <div className="font-semibold text-slate-300 print:text-neutral-800">
+              {prediction.disclaimer}
             </div>
-            <div className="italic">
-              Cardio3D AI Decision Support Tool · For research & investigational use.
+            <div className="flex flex-wrap items-center justify-between text-slate-500 print:text-neutral-500 font-mono text-[9px]">
+              <span>Model Version: 2.0.0 · Dual Cutoff Architecture</span>
+              <span>Report Generated: {todayStr}</span>
+              <span>Decision Curve Analysis: Out-of-fold single-centre apparent utility</span>
             </div>
           </div>
         </div>

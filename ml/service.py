@@ -1,32 +1,23 @@
-"""
-Unified cardiac risk prediction and SHAP explanation service.
-Centralizes validation, model scoring, coherence enforcement, thresholding,
-and explanation generation in exactly one place.
-"""
-
-from typing import Any, Dict, List, Optional
 import numpy as np
 import pandas as pd
-
-from ml.explain import explain_sample
+from typing import Dict, Any, List, Optional, Tuple
 from ml.pipeline import TARGETS
+from ml.explain import explain_sample
 
 
-class ValidationError(ValueError):
-    """Raised when patient input feature values are outside plausible physiological limits."""
+class ValidationError(Exception):
     pass
 
 
 def validate_patient_payload(payload: Dict[str, Any], schema: Dict[str, Any]) -> List[str]:
-    """Validates patient numeric features against physiological bounds in schema."""
+    """Validates patient input features against physiological boundaries."""
     out_of_bounds = []
     for k, v in payload.items():
-        if v is not None and k in schema:
+        if k in schema and v is not None:
             meta = schema[k]
             if meta["encoding"] in ("numeric", "ordinal") and isinstance(v, (int, float)):
-                min_v = meta.get("min", -1e9)
-                max_v = meta.get("max", 1e9)
-                # Flag if value is outside plausible boundary (20% below min or 2.5x max)
+                min_v = meta.get("min", float("-inf"))
+                max_v = meta.get("max", float("inf"))
                 if v < min_v * 0.2 or v > max_v * 2.5:
                     out_of_bounds.append(
                         f"Field '{k}' value {v} is outside plausible physiological range [{min_v}, {max_v}]"
@@ -34,13 +25,61 @@ def validate_patient_payload(payload: Dict[str, Any], schema: Dict[str, Any]) ->
     return out_of_bounds
 
 
-def compute_risk_ci(p: float, n_eff: int = 303, z: float = 1.96) -> List[float]:
-    """Computes asymptotic 95% confidence interval for risk probability estimate."""
-    p_clamped = max(1e-4, min(1.0 - 1e-4, p))
-    se = float(np.sqrt(p_clamped * (1.0 - p_clamped) / n_eff))
-    lower = max(0.0, p - z * se)
-    upper = min(1.0, p + z * se)
-    return [round(float(lower), 4), round(float(upper), 4)]
+def compute_wilson_score_interval(k: int, n: int) -> Tuple[float, float]:
+    """Computes two-sided Wilson score interval for binomial proportion k/n at 95% confidence."""
+    if n <= 0:
+        return (0.0, 1.0)
+    # Using z for 95% confidence level: norm.ppf(0.975) = 1.959963984540054
+    z_val = 1.959963984540054
+    p_hat = k / n
+    denom = 1.0 + (z_val * z_val) / n
+    center = (p_hat + (z_val * z_val) / (2.0 * n)) / denom
+    margin = (z_val * np.sqrt((p_hat * (1.0 - p_hat)) / n + (z_val * z_val) / (4.0 * n * n))) / denom
+    lower = max(0.0, center - margin)
+    upper = min(1.0, center + margin)
+    return (round(float(lower), 4), round(float(upper), 4))
+
+
+def compute_similar_cohort_summary(
+    score: float,
+    tgt: str,
+    ml_state: Dict[str, Any],
+    k_neighbors: int = 50,
+) -> Optional[Dict[str, Any]]:
+    """
+    Finds nearest out-of-fold predictions to score, computing observed positive rate
+    and 95% Wilson score interval over the empirical reference cohort.
+    """
+    oof_bundle = ml_state.get("oof_predictions", {}).get(tgt)
+    if not oof_bundle:
+        return None
+
+    oof_scores = np.asarray(oof_bundle["probs"], dtype=float)
+    oof_labels = np.asarray(oof_bundle["labels"], dtype=int)
+
+    # Nearest out-of-fold scores
+    diffs = np.abs(oof_scores - score)
+    nearest_idx = np.argsort(diffs)[:k_neighbors]
+    sub_labels = oof_labels[nearest_idx]
+
+    n_count = len(sub_labels)
+    if n_count == 0:
+        return None
+
+    k_pos = int(np.sum(sub_labels))
+    obs_rate = float(k_pos / n_count)
+    w_low, w_high = compute_wilson_score_interval(k_pos, n_count)
+
+    outcome_desc = "confirmed CAD" if tgt == "Cath" else "confirmed stenosis"
+    pct_str = f"{int(round(obs_rate * 100))}%"
+    summary_text = f"Among {n_count} similar-scoring patients, {pct_str} had {outcome_desc}"
+
+    return {
+        "n": n_count,
+        "observed_rate": round(obs_rate, 4),
+        "wilson_interval": [w_low, w_high],
+        "summary": summary_text,
+    }
 
 
 def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[str, Any]:
@@ -101,7 +140,7 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
         v_nest_sens = thresholds[v].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
         vessel_results[v] = {
             "prob": p,
-            "confidence_interval": compute_risk_ci(p),
+            "similar_cohort": compute_similar_cohort_summary(p, v, ml_state),
             "label": "Stenotic" if p >= 0.50 else "Normal",
             "high_sens_label": "Stenotic" if p >= v_thresh else "Normal",
             "threshold": 0.50,
@@ -128,7 +167,7 @@ def predict_patient(payload: Dict[str, Any], ml_state: Dict[str, Any]) -> Dict[s
             "prob": coherent_cad_prob,
             "raw_prob": raw_cad_prob,
             "coherent_prob": coherent_cad_prob,
-            "confidence_interval": compute_risk_ci(coherent_cad_prob),
+            "similar_cohort": compute_similar_cohort_summary(coherent_cad_prob, "Cath", ml_state),
             "label": cad_label,
             "high_sens_label": cad_high_sens_label,
             "threshold": 0.50,

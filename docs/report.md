@@ -69,7 +69,7 @@ The system delivers exact, instantaneous feature attribution using **TreeSHAP** 
   $$\text{SHAP}(\text{Parent}) = \sum_{d \in \text{Dummies}} \text{SHAP}(d)$$
 - **Global Population Hierarchy**: Across the cohort, the strongest global predictors of CAD are **Typical Chest Pain**, **Age**, **Fasting Blood Sugar (FBS)**, **Region RWMA count**, **Ejection Fraction (EF-TTE)**, and **Dyslipidemia (DLP)**.
 - **Physiological Domain Aggregation**: Individual attributions are grouped into 4 clinical organ systems: Hemodynamic & Vitals, Metabolic & Lipid Profile, Anginal Symptoms & ECG, and Echocardiographic Structure.
-- **Interactive What-If Counterfactual Simulator**: Clinicians can interactively model counterfactual interventions (e.g. lowering systolic BP to <120 mmHg, glycemic control FBS <100 mg/dL, statin therapy LDL <70 mg/dL, and smoking cessation), visualizing the real-time absolute risk reduction ($\Delta P$) across CAD and individual coronary arteries in under 20 ms.
+- **Model Sensitivity Explorer**: Clinicians can interactively explore model sensitivity to physiological inputs (e.g. lowering systolic BP to <120 mmHg, fasting blood sugar FBS <100 mg/dL, LDL <70 mg/dL, and smoking cessation), visualizing the real-time change in model score ($\Delta P$) across CAD and individual coronary arteries with interactive re-prediction (measured p95 latency < 175 ms).
 
 ---
 
@@ -77,23 +77,23 @@ The system delivers exact, instantaneous feature attribution using **TreeSHAP** 
 The 3D interactive viewer is built on **Three.js** and **React Three Fiber (R3F)** using the open-source **BodyParts3D** anatomical model (Branch A: Separate Artery Meshes):
 - **Segment Extraction**: High-resolution anatomical meshes for the LAD (9 branches/trunks), LCX (4 branches/trunks), RCA (10 branches/trunks), and Ascending Aorta were combined and transformed into standard Three.js coordinates centered at the origin.
 - **Myocardium Shell & Decimation**: The 49 chamber walls and septa were decimated using quadric decimation by 70%, reducing the total triangle count from >160k to **83,600 triangles** (comfortably within the $\le 100,000$ triangle budget).
-- **Rendering Performance**: Under pure software rendering (`--disable-gpu` at 1280×720 on 13th Gen Intel Core i5-13420H), the 3D viewer benchmarks at **49.3 ms mean frame time (~20.3 FPS continuous orbit, p95 = 53.7 ms)**, recorded in `reports/fps_benchmark.json`. On standard hardware acceleration, it renders at the display refresh rate (not benchmarked).
+- **Rendering Performance**: Under pure software rendering (`--disable-gpu` at 1280×720 on 13th Gen Intel Core i5-13420H), the 3D viewer benchmarks at **78.4 ms mean frame time (~12.8 FPS continuous orbit, p95 = 88.0 ms)**, recorded in `reports/fps_benchmark.json`. On standard hardware acceleration, it renders at the display refresh rate (not benchmarked).
 - **Dynamic Risk Mapping**: Arteries interpolate across a continuous spectrum (Green $\to$ Lime $\to$ Amber $\to$ Orange $\to$ Red) with floating 3D numeric risk pills and interactive click-to-focus hit meshes.
-- **Smooth Camera Fly-To & Pulsating Alerts**: Clicking any vessel triggers smooth camera position and target interpolation (lerp) focusing on that vessel's territory. High-risk stenoses pulse with animated emissive glow ($0.5 + 0.5 \sin(4.5t)$), and an interactive 2D transverse lumen visualizer calculates exact luminal cross-sectional area loss (-95%) and estimated fractional flow reserve (FFR $\le 0.75$).
+- **Smooth Camera Fly-To & Pulsating Alerts**: Clicking any vessel triggers smooth camera position and target interpolation (lerp) focusing on that vessel's territory. High-risk stenoses pulse with animated emissive glow ($0.5 + 0.5 \sin(4.5t)$), and an interactive 2D transverse lumen schematic illustrates binary stenosis (normal vs. $\ge 50\%$).
 
 ---
 
 ## 7. Architectural Decisions: TimesFM & TabPFN
 - **TimesFM Considered & Rejected**: TimesFM 3.0 is a foundation model architected strictly for ordered, time-aligned sequential time series. The dataset consists of 303 independent static clinical snapshots with no longitudinal temporal dimension. Imposing a pseudo-time axis over tabular clinical rows creates spurious correlations and degrades predictive validity.
-- **TabPFN Not Evaluated**: TabPFN (v2.5+) imposes non-commercial licensing constraints, requires interactive browser authentication tokens for pre-trained weights, and introduces heavyweight specialized dependencies. Standard tuned tree and regularized linear models achieved high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with sub-millisecond local inference and exact SHAP guarantees.
+- **TabPFN Not Evaluated**: TabPFN (v2.5+) imposes non-commercial licensing constraints, requires interactive browser authentication tokens for pre-trained weights, and introduces heavyweight specialized dependencies. Standard tuned tree and regularized linear models achieved high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with measured p95 latency under 175 ms and exact SHAP guarantees.
 
 ---
 
 ## 8. Decision Curve Analysis, Fairness & Containerization
-- **Decision Curve Analysis (DCA)**: Evaluated across decision thresholds 5%–50%. Cardio3D AI delivers a **+29.9% net benefit gain** over 'Treat All' for Cath, **+16.0%** for LAD, strictly preventing unnecessary catheterizations while maintaining $\ge 90\%$ screening sensitivity.
-- **Demographic Fairness Audit**: Out-of-fold equal opportunity gap between male (90.8% sens) and female (93.0% sens) patients is 2.2%, with 97.3% sensitivity in seniors (>65), proving zero adverse demographic disparity.
+- **Decision Curve Analysis (DCA)**: Evaluated across clinical thresholds 5%–50%. Cardio3D AI delivers a **+29.6 net benefit gain per 100 patients** over 'Treat All' for Cath (+15.9 for LAD; modest gains for LCX and RCA due to sensitivity calibration), evaluating apparent clinical utility in single-centre out-of-fold validation.
+- **Demographic Fairness Audit**: Evaluated across sex (male 90.8% sens, 75.6% spec vs female 93.0% sens, 85.4% spec) and age strata (age ≤65 88.8% sens, 86.8% spec vs age >65 97.3% sens, 30.0% spec) with Wilson 95% intervals; no difference detectable at this sample size.
 - **Containerization & Deployment**: Multi-stage production `Dockerfile` and `docker-compose.yml` enable 1-command reproducible startup with automated client-side static bundle compilation, non-root runtime, and integrated health checks.
-- **Printable Clinical Summary**: A 1-click professional PDF/print assessment report embeds patient measurements, 95% asymptotic confidence bounds, localized vessel risks, top SHAP drivers, and guideline-directed recommendations.
+- **Printable Clinical Summary**: A 1-click professional PDF/print assessment report embeds patient measurements, empirical reference cohort Wilson 95% intervals, localized vessel risks, top SHAP drivers, items for clinician review, and repeated safety disclaimers with model version and date.
 
 ---
 

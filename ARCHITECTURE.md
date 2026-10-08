@@ -5,14 +5,14 @@
 ## 1. PROJECT OVERVIEW
 
 ### Core Purpose
-**Cardio3D AI** is a multimodal clinical decision-support and educational visualization platform for coronary artery disease (CAD) risk assessment (developed for the Multimodal AI Hackathon 2026). Given 54 patient demographic, symptom, examination, ECG, echocardiographic, and laboratory biomarkers, the system concurrently predicts overall CAD status alongside vessel-specific stenosis ($\ge 50\%$ diameter reduction) across three major coronary arteries: Left Anterior Descending (**LAD**), Left Circumflex (**LCX**), and Right Coronary Artery (**RCA**). Predictions are coupled with:
+**Cardio3D AI** is a clinical decision-support and educational visualization platform for coronary artery disease (CAD) risk assessment (developed for the Multimodal AI Hackathon 2026). Given 54 patient demographic, symptom, examination, ECG, echocardiographic, and laboratory biomarkers, the system concurrently predicts overall CAD status alongside vessel-specific stenosis ($\ge 50\%$ diameter reduction) across three major coronary arteries: Left Anterior Descending (**LAD**), Left Circumflex (**LCX**), and Right Coronary Artery (**RCA**). Predictions are coupled with:
 1. Exact additive local feature attributions via SHAP (LinearSHAP and TreeSHAP).
 2. Physiological grouping into 4 clinical organ system domains.
-3. Interactive counterfactual "What-If" modeling for lifestyle and medical therapy optimization.
-4. Asymptotic 95% binomial confidence bounds on all risk estimates.
-5. Decision Curve Analysis (DCA) verifying clinical net benefit over empiric referral.
-6. Demographic fairness audit verifying equal opportunity across sex and age subgroups.
-7. Dynamic 3D anatomical visualization featuring camera fly-to, pulsating stenosis alerts, and a 2D transverse lumen cross-section visualizer.
+3. Interactive Model Sensitivity Explorer examining how model scores change when clinical inputs vary.
+4. Empirical reference cohort positive rates with Wilson 95% intervals for similar patients.
+5. Decision Curve Analysis (DCA) evaluating out-of-fold net benefit across clinically plausible thresholds.
+6. Demographic fairness audit evaluating sensitivity and specificity across sex and age strata with Wilson 95% intervals.
+7. Dynamic 3D anatomical visualization featuring camera fly-to, pulsating stenosis alerts, and an illustrative 2D transverse lumen cross-section schematic.
 8. 1-click printable clinical assessment and decision support report.
 
 ### Technology Stack & Direct Dependencies
@@ -302,8 +302,8 @@ sequenceDiagram
     
     Clinician->>Viewer: Clicks "[Lumen View]" button
     Viewer->>Lumen: Opens modal with vesselId="LAD", prob=0.78
-    Lumen->>Lumen: Calculates area loss: 1 - (1 - 0.75)^2 = 94%
-    Lumen->>Lumen: Displays transverse artery SVG with atheroma plaque & FFR estimate
+    Lumen->>Lumen: Displays transverse artery schematic with fixed illustrative narrowing (normal vs. ≥ 50%)
+    Lumen->>Lumen: Displays caption: "Schematic only — not patient imaging; stenosis severity is not predicted"
 ```
 
 ---
@@ -324,19 +324,32 @@ sequenceDiagram
 - **Decision Curve Analysis (DCA)**:
   Evaluated across threshold probabilities $p_t \in [0.05, 0.60]$:
   $$\text{Net Benefit}(p_t) = \frac{\text{TP}}{N} - \frac{\text{FP}}{N} \left(\frac{p_t}{1 - p_t}\right)$$
-  - Cath model delivers a **+29.9% net benefit gain** over Treat-All at its operating cutoff ($0.611$).
-  - LAD model delivers a **+16.0% net benefit gain** over Treat-All at cutoff ($0.469$).
-  - Confirms strictly positive clinical utility across all actionable thresholds.
+  - Net-benefit difference per 100 patients vs. Treat-All across thresholds (95% bootstrap CI):
+    - $p_t = 0.10$: Cath $+0.18$ [$0.04, 0.37$], LAD $+0.00$, LCX $+0.21$ [$-0.88, 1.06$], RCA $+0.58$ [$-0.46, 1.43$]
+    - $p_t = 0.20$: Cath $+1.22$ [$0.25, 2.06$], LAD $+0.08$ [$0.00, 0.25$], LCX $+1.32$ [$-1.16, 3.80$], RCA $+1.89$ [$-0.83, 4.21$]
+    - $p_t = 0.30$: Cath $+2.61$ [$0.52, 4.67$], LAD $+2.53$ [$0.90, 4.27$], LCX $+6.83$ [$3.23, 10.68$], RCA $+6.28$ [$2.31, 10.47$]
+  - Gain at model operating cutoffs:
+    - Cath cutoff ($0.611$): **+29.6 net benefit gain per 100 patients** [$22.1, 37.1$]
+    - LAD cutoff ($0.469$): **+15.9 per 100** [$10.5, 20.8$]
+    - LCX cutoff ($0.217$) and RCA cutoff ($0.213$): modest gains (+1.7 to +2.2 per 100 patients, approximately +0.02 to +0.03 net benefit unit) due to safety-first sensitivity calibration.
+  - *Analysis nature*: Out-of-fold, single-centre and apparent clinical utility.
 - **Demographic Fairness & Subgroup Parity**:
-  Audited on out-of-fold predictions:
-  - Sex Parity: Male Sensitivity $90.8\%$ vs Female Sensitivity $93.0\%$ (Equal Opportunity gap $2.2\%$).
-  - Age Parity: Senior (>65) Sensitivity is $97.3\%$.
-  - Confirms zero adverse demographic disparity under sensitivity-first operating thresholds.
+  Audited on out-of-fold predictions with Wilson 95% intervals:
+  - Sex Comparison:
+    - Male ($n=176$, prevalence $74.4\%$): Sensitivity $90.8\%$ [$84.7\%–94.7\%$], Specificity $75.6\%$ [$61.3\%–85.8\%$].
+    - Female ($n=127$, prevalence $67.7\%$): Sensitivity $93.0\%$ [$85.6\%–96.8\%$], Specificity $85.4\%$ [$71.6\%–93.1\%$].
+    - Equal Opportunity sensitivity gap: $2.2\%$.
+  - Age Comparison:
+    - Age $\le 65$ ($n=219$, prevalence $65.3\%$): Sensitivity $88.8\%$ [$82.6\%–93.0\%$], Specificity $86.8\%$ [$77.5\%–92.7\%$].
+    - Age $> 65$ ($n=84$, prevalence $88.1\%$): Sensitivity $97.3\%$ [$90.7\%–99.3\%$], Specificity $30.0\%$ [$10.8\%–60.3\%$] (low specificity reflects high cohort prevalence with only 10 normal patients).
+  - *Finding*: No difference detectable at this sample size under sensitivity-first operating thresholds.
 
 ### 5.2. Unified Prediction Service (`ml/service.py`)
-Centralizes validation, inference, confidence bounds, coherence enforcement, and SHAP attribution into `predict_patient()`:
-- **Asymptotic 95% Confidence Bounds**:
-  $$\text{SE}(p) = \sqrt{\frac{p(1-p)}{n_{\text{eff}}}}, \quad n_{\text{eff}} = 303, \quad \text{CI}_{95} = \left[\max(0, p - 1.96 \cdot \text{SE}), \min(1, p + 1.96 \cdot \text{SE})\right]$$
+Centralizes validation, inference, similar cohort intervals, coherence enforcement, and SHAP attribution into `predict_patient()`:
+- **Empirical Reference Cohort & Wilson 95% Interval**:
+  Takes the 50 nearest out-of-fold scores to the patient's predicted probability, reporting observed positive rate $\hat{p} = k/n$ with Wilson 95% score interval:
+  $$w = \frac{\hat{p} + \frac{z^2}{2n} \pm z \sqrt{\frac{\hat{p}(1-\hat{p})}{n} + \frac{z^2}{4n^2}}}{1 + \frac{z^2}{n}}, \quad z \approx 1.96$$
+  reported as *"Among 50 similar-scoring patients, X% had confirmed disease"*.
 - **Bounds Validation**: Checks numeric inputs against physiological boundaries in `schema.json`.
 - **Cohort Defaults**: Fills unprovided features with training medians or modes, logging all defaults applied.
 - **Risk Coherence**: Enforces $P(\text{CAD}) \leftarrow \max(P(\text{CAD}), \max(P_{\text{vessels}}))$, returning both `raw_prob` and `coherent_prob`.
@@ -351,8 +364,8 @@ Centralizes validation, inference, confidence bounds, coherence enforcement, and
   - LCX: Pos `[1.4, 0.45, 1.5]`, Target `[0.55, 0.25, -0.05]`
   - RCA: Pos `[-1.3, 0.35, 1.7]`, Target `[-0.45, 0.18, 0.25]`
   - Overview: Pos `[0, 0.4, 3.2]`, Target `[0, 0, 0]`
-- **Pulsating Stenosis Glow**: In `useFrame`, arteries with $\ge 50\%$ stenosis or under active selection oscillate emissive intensity ($0.5 + 0.5\sin(4.5t)$).
-- **Transverse Lumen Visualizer (`LumenCrossSection.tsx`)**: Renders radial SVG cross-section of arterial wall, atheroma plaque, and patent lumen. Calculates caliper stenosis ($d$), luminal area loss $\Delta A = 1 - (1 - d)^2$, and FFR hemodynamic classification.
+- **Pulsating Stenosis Glow**: In `useFrame`, arteries with $\ge 50\%$ stenosis or under active selection oscillate emissive intensity ($0.5 + 0.5\sin(4.5t)$). When active, `frameloop="always"` maintains continuous pulse rendering.
+- **Transverse Lumen Schematic (`LumenCrossSection.tsx`)**: Renders radial SVG schematic of arterial wall, illustrative plaque, and patent lumen for binary stenosis (normal vs. $\ge 50\%$) with caption: *"Schematic only — not patient imaging; stenosis severity is not predicted"* (the dataset records only binary narrowing $\ge 50\%$).
 
 ### 5.4. Clinical Interpretability & Decision Support
 - **Physiological Domain Breakdown (`ShapWaterfall.tsx`)**:
@@ -361,10 +374,10 @@ Centralizes validation, inference, confidence bounds, coherence enforcement, and
   2. *Metabolic & Lipids*: Glycemia (FBS, DM), atherogenic lipids (LDL, HDL, TG), renal filtration (CR, BUN), BMI.
   3. *Symptoms & ECG*: Typical chest pain, ST-segment shifts, T-wave inversion, pathological Q waves.
   4. *Echocardiographic & Structural*: Left ventricular EF-TTE, regional wall motion abnormalities (RWMA count).
-- **Counterfactual What-If Simulator (`WhatIfSimulator.tsx`)**:
-  Enables clinicians to adjust modifiable clinical risk factors (Systolic BP, FBS, LDL, BMI, Smoking, Typical Angina) with sub-20 ms debounced re-prediction, rendering live before-vs-after risk deltas ($\Delta P$) and 1-click clinical presets (`Target GDMT`, `Lifestyle Target`).
-- **Printable Clinical Summary Report (`ClinicalSummaryModal.tsx`)**:
-  1-click printable PDF assessment report with patient biomarkers, 95% CIs, localized vessel risks, top SHAP drivers, and clinical recommendations.
+- **Model Sensitivity Explorer (`WhatIfSimulator.tsx`)**:
+  Enables clinicians to adjust modifiable clinical factors (Systolic BP, FBS, LDL, BMI, Smoking) with measured p95 latency under 175 ms, rendering live change in model score ($\Delta P$) and 1-click presets (`Example values A`, `Example values B`). Caption notes: *"Shows how the model's score changes when inputs change. The model is trained on cross-sectional data and does not estimate treatment effects."*
+- **Printable Clinical Assessment Report (`ClinicalSummaryModal.tsx`)**:
+  1-click printable PDF assessment report with patient biomarkers, empirical reference cohort Wilson 95% intervals, localized vessel risks, top SHAP drivers, items for clinician review, and repeated safety disclaimers with model version and date.
 
 ---
 
@@ -383,21 +396,31 @@ The canonical feature registry defines 54 active physiological features across 5
 ```json
 {
   "cad": {
-    "prob": 0.8421,
-    "raw_prob": 0.8124,
-    "coherent_prob": 0.8421,
-    "confidence_interval": [0.7981, 0.8861],
-    "label": "CAD",
-    "high_sens_label": "CAD",
+    "prob": 0.7643,
+    "raw_prob": 0.7643,
+    "coherent_prob": 0.7643,
+    "similar_cohort": {
+      "n": 50,
+      "observed_rate": 0.82,
+      "wilson_interval": [0.6920, 0.9023],
+      "summary": "Among 50 similar-scoring patients, 82% had confirmed CAD"
+    },
+    "label": "High Risk",
+    "high_sens_label": "High Risk",
     "threshold": 0.50,
     "high_sensitivity_threshold": 0.611,
     "nested_sensitivity": 0.9018,
-    "coherence_adjusted": true
+    "coherence_adjusted": false
   },
   "vessels": {
     "LAD": {
-      "prob": 0.7850,
-      "confidence_interval": [0.7380, 0.8320],
+      "prob": 0.5565,
+      "similar_cohort": {
+        "n": 50,
+        "observed_rate": 0.54,
+        "wilson_interval": [0.4040, 0.6703],
+        "summary": "Among 50 similar-scoring patients, 54% had confirmed stenosis"
+      },
       "label": "Stenotic",
       "high_sens_label": "Stenotic",
       "threshold": 0.50,
@@ -405,17 +428,27 @@ The canonical feature registry defines 54 active physiological features across 5
       "nested_sensitivity": 0.8816
     },
     "LCX": {
-      "prob": 0.5210,
-      "confidence_interval": [0.4650, 0.5770],
-      "label": "Stenotic",
-      "high_sens_label": "Stenotic",
+      "prob": 0.1190,
+      "similar_cohort": {
+        "n": 50,
+        "observed_rate": 0.08,
+        "wilson_interval": [0.0315, 0.1884],
+        "summary": "Among 50 similar-scoring patients, 8% had confirmed stenosis"
+      },
+      "label": "Normal",
+      "high_sens_label": "Normal",
       "threshold": 0.50,
       "high_sensitivity_threshold": 0.217,
       "nested_sensitivity": 0.9159
     },
     "RCA": {
-      "prob": 0.4800,
-      "confidence_interval": [0.4240, 0.5360],
+      "prob": 0.3277,
+      "similar_cohort": {
+        "n": 50,
+        "observed_rate": 0.38,
+        "wilson_interval": [0.2586, 0.5185],
+        "summary": "Among 50 similar-scoring patients, 38% had confirmed stenosis"
+      },
       "label": "Normal",
       "high_sens_label": "Stenotic",
       "threshold": 0.50,
@@ -424,10 +457,10 @@ The canonical feature registry defines 54 active physiological features across 5
     }
   },
   "explain": {
-    "Cath": { "raw_score": 1.674, "base_value": 0.932, "additive_error": 1.2e-5, "features": [...] },
-    "LAD": { "raw_score": 0.785, "base_value": 0.584, "additive_error": 3.4e-5, "features": [...] },
-    "LCX": { "raw_score": 0.084, "base_value": -0.435, "additive_error": 2.1e-5, "features": [...] },
-    "RCA": { "raw_score": -0.080, "base_value": -0.508, "additive_error": 1.8e-5, "features": [...] }
+    "Cath": { "raw_score": 1.17616, "base_value": 1.68457, "additive_error": 7e-06, "features": [...] },
+    "LAD": { "raw_score": 0.55647, "base_value": 0.59069, "additive_error": 9e-06, "features": [...] },
+    "LCX": { "raw_score": -2.00237, "base_value": -0.42473, "additive_error": 3e-06, "features": [...] },
+    "RCA": { "raw_score": -0.71857, "base_value": -0.66684, "additive_error": 3.7e-05, "features": [...] }
   },
   "cohort_defaults_applied": [],
   "disclaimer": "Decision support / educational use only — not a substitute for formal diagnostic imaging."
@@ -477,7 +510,7 @@ graph TD
         InstallPy["pip install -r ml/requirements.txt"]
         CopyCode["COPY api/ ml/ data/ docs/ reports/"]
         CopyWeb["COPY --from=frontend-builder /app/web/dist -> ./web/dist"]
-        Health["HEALTHCHECK: curl http://localhost:8000/api/health"]
+        Health["HEALTHCHECK: python urllib http://127.0.0.1:8000/api/health"]
         RunCMD["CMD: uvicorn api.main:app --host 0.0.0.0 --port 8000"]
     end
 
@@ -490,7 +523,7 @@ graph TD
     Health --> RunCMD
 ```
 
-- **`Dockerfile`**: Multi-stage build ensuring minimal container image size, no Node.js build dependencies in the final runtime, non-buffered logging, and container health checking.
+- **`Dockerfile`**: Multi-stage build ensuring minimal container image size, no Node.js build dependencies in the final runtime, non-buffered logging, and container health checking via Python standard library `urllib`.
 - **`docker-compose.yml`**: Single-command startup:
   ```bash
   docker compose up --build
@@ -505,7 +538,7 @@ graph TD
 TimesFM 3.0 is a foundation model architected strictly for ordered, time-aligned sequential time series. The dataset consists of 303 independent static patient snapshots with no longitudinal temporal dimension. Imposing a pseudo-time axis over tabular clinical rows creates spurious cross-patient temporal correlations and degrades predictive validity.
 
 ### TabPFN Consideration
-TabPFN was not evaluated: weights from v2.5 onward require interactive browser login tokens, impose non-commercial licensing constraints, and require specialized dependencies. The tuned tree and regularized linear pipelines achieve high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with sub-millisecond local execution, deterministic outputs, and exact SHAP additivity.
+TabPFN was not evaluated: weights from v2.5 onward require interactive browser login tokens, impose non-commercial licensing constraints, and require specialized dependencies. The tuned tree and regularized linear pipelines achieve high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with measured p95 latency under 175 ms, deterministic outputs, and exact SHAP additivity.
 
 ### Deployment & Offline Execution
 The application runs offline once built. The compiled web frontend (`web/dist/`) vendors all assets locally and uses system font stacks with zero external font or CDN network requests.

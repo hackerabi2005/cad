@@ -379,7 +379,7 @@ export function HeartViewer({ prediction, selectedVessel, onSelectVessel }: Hear
               ? 'bg-rose-500/25 text-rose-300 border-rose-500/40 shadow-sm'
               : 'bg-slate-900/70 text-slate-300 border-slate-800/70 hover:bg-slate-800'
           }`}
-          title="Inspect 2D Lumen Cross-Section & Area Stenosis"
+          title="Inspect 2D Lumen Cross-Section Schematic"
         >
           <Layers className="w-3.5 h-3.5" />
           <span>Lumen View</span>

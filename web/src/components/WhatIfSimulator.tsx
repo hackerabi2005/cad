@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Sliders, Sparkles, TrendingDown, ArrowRight, RefreshCw, Check, Activity, Heart, ShieldAlert } from 'lucide-react';
+import { Sliders, Sparkles, ArrowRight, RefreshCw, Check, Activity, Info } from 'lucide-react';
 import { PredictResponse } from '../types';
 import vesselsConfig from '../vessels.json';
 import { VesselsConfig } from '../types';
@@ -63,8 +63,8 @@ export function WhatIfSimulator({
     setAppliedSuccess(false);
   };
 
-  // Quick Clinical Presets
-  const applyIntensiveGDMT = () => {
+  // Example Values Presets
+  const applyExampleA = () => {
     setSimData((prev) => ({
       ...prev,
       BP: 118,
@@ -75,7 +75,7 @@ export function WhatIfSimulator({
     }));
   };
 
-  const applyLifestyle = () => {
+  const applyExampleB = () => {
     setSimData((prev) => ({
       ...prev,
       BMI: 23.5,
@@ -99,8 +99,8 @@ export function WhatIfSimulator({
   const simulatedProb = simPrediction?.cad.prob ?? baselineProb;
   const riskDelta = simulatedProb - baselineProb;
   const riskDeltaPercent = (riskDelta * 100).toFixed(1);
-  const relativeReduction =
-    baselineProb > 0 ? (((baselineProb - simulatedProb) / baselineProb) * 100).toFixed(0) : '0';
+  const relativeShift =
+    baselineProb > 0 ? (((simulatedProb - baselineProb) / baselineProb) * 100).toFixed(0) : '0';
 
   const config = vesselsConfig as VesselsConfig;
 
@@ -110,38 +110,41 @@ export function WhatIfSimulator({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
         <div>
           <span className="text-xs font-semibold uppercase tracking-wider text-cyan-400">
-            Interactive Counterfactual Modeling
+            Interactive Input Sensitivity
           </span>
           <h3 className="text-lg font-bold text-white font-display flex items-center gap-2">
-            What-If Risk Reduction Simulator
+            Model Sensitivity Explorer
             <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
-              Live Real-Time
+              Live Interactive
             </span>
           </h3>
+          <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            Shows how the model's score changes when inputs change. The model is trained on cross-sectional data and does not estimate treatment effects.
+          </p>
         </div>
 
-        {/* Quick Clinical Intervention Actions */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        {/* Example Values Presets */}
+        <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-center">
           <button
-            onClick={applyIntensiveGDMT}
+            onClick={applyExampleA}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500/30 transition-colors"
-            title="Intensive medical therapy (BP <120, LDL <70, FBS <100, Stop Smoking)"
+            title="Example values: BP 118, LDL 68, FBS 92, non-smoker"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Target GDMT</span>
+            <span>Example values A</span>
           </button>
           <button
-            onClick={applyLifestyle}
+            onClick={applyExampleB}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-semibold hover:bg-sky-500/30 transition-colors"
-            title="Lifestyle optimization (BMI 23.5, BP 124, Non-smoker)"
+            title="Example values: BMI 23.5, BP 124, FBS 95, non-smoker"
           >
             <Activity className="w-3.5 h-3.5" />
-            <span>Lifestyle Target</span>
+            <span>Example values B</span>
           </button>
           <button
             onClick={resetToCurrent}
             className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700/60 text-xs font-medium hover:bg-slate-700 transition-colors"
-            title="Reset simulator values to current patient profile"
+            title="Reset to current inputs"
           >
             <RefreshCw className="w-3 h-3" />
             <span>Reset</span>
@@ -149,12 +152,12 @@ export function WhatIfSimulator({
         </div>
       </div>
 
-      {/* Primary Comparative Risk Delta Bar */}
+      {/* Primary Comparative Model Score Bar */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-xl bg-slate-950/70 border border-slate-800">
-        {/* Baseline Risk Card */}
+        {/* Baseline Score Card */}
         <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800/80 text-center">
           <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">
-            Current Patient Risk
+            Current Model Score
           </span>
           <div
             className="text-2xl font-black font-mono"
@@ -170,7 +173,7 @@ export function WhatIfSimulator({
         {/* Arrow & Delta Summary */}
         <div className="flex flex-col items-center justify-center text-center p-2">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-xs text-slate-400">Simulated Delta</span>
+            <span className="text-xs text-slate-400">Change in Model Score</span>
             <ArrowRight className="w-4 h-4 text-cyan-400" />
           </div>
           <div
@@ -181,18 +184,16 @@ export function WhatIfSimulator({
             {riskDelta > 0 ? `+${riskDeltaPercent}%` : `${riskDeltaPercent}%`}
           </div>
           <span className="text-[10px] text-slate-400">
-            {riskDelta < 0
-              ? `Relative reduction: ~${relativeReduction}%`
-              : riskDelta > 0
-              ? 'Increased stenosis probability'
+            {riskDelta !== 0
+              ? `Relative shift: ${Number(relativeShift) > 0 ? '+' : ''}${relativeShift}%`
               : 'No modification'}
           </span>
         </div>
 
-        {/* Counterfactual Simulated Risk Card */}
+        {/* Adjusted Simulated Score Card */}
         <div className="p-3 rounded-lg bg-slate-900/80 border border-cyan-500/40 text-center">
           <span className="text-[10px] uppercase font-bold text-cyan-400 block mb-1">
-            Counterfactual Risk
+            Simulated Model Score
           </span>
           <div
             className="text-2xl font-black font-mono"
@@ -209,7 +210,7 @@ export function WhatIfSimulator({
       {/* Target Vessels Impact Comparison */}
       <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2">
         <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
-          Coronary Artery Branch Occlusion Deltas
+          Coronary Artery Branch Score Deltas
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {config.vessels.map((v) => {
@@ -247,10 +248,10 @@ export function WhatIfSimulator({
         </div>
       </div>
 
-      {/* Modifiable Risk Factor Sliders */}
+      {/* Modifiable Input Factor Sliders */}
       <div className="space-y-4">
         <span className="text-xs font-semibold uppercase tracking-wider text-slate-400 block">
-          Adjust Modifiable Clinical Targets
+          Adjust Continuous Clinical Inputs
         </span>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -270,9 +271,9 @@ export function WhatIfSimulator({
               className="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>90 mmHg (Ideal)</span>
+              <span>90 mmHg</span>
               <span>120</span>
-              <span>140 (HTN)</span>
+              <span>140</span>
               <span>200</span>
             </div>
           </div>
@@ -293,9 +294,9 @@ export function WhatIfSimulator({
               className="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>70 (Normal)</span>
-              <span>100 (Impaired)</span>
-              <span>126 (Diabetic)</span>
+              <span>70</span>
+              <span>100</span>
+              <span>126</span>
               <span>250</span>
             </div>
           </div>
@@ -316,7 +317,7 @@ export function WhatIfSimulator({
               className="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>&lt;55 (Target High-Risk)</span>
+              <span>40</span>
               <span>70</span>
               <span>100</span>
               <span>250</span>
@@ -339,15 +340,15 @@ export function WhatIfSimulator({
               className="w-full h-1.5 bg-slate-800 rounded-lg cursor-pointer accent-cyan-400"
             />
             <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-              <span>18.5 (Normal)</span>
-              <span>25.0 (Overweight)</span>
-              <span>30.0 (Obese)</span>
+              <span>18.5</span>
+              <span>25.0</span>
+              <span>30.0</span>
               <span>40</span>
             </div>
           </div>
         </div>
 
-        {/* Categorical Modifiers (Smoking, Typical Angina) */}
+        {/* Categorical Modifiers (Smoking only - Typical Chest Pain is a symptom, removed) */}
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <label className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 cursor-pointer hover:border-slate-700">
             <input
@@ -358,23 +359,13 @@ export function WhatIfSimulator({
             />
             <span>Active Cigarette Smoker</span>
           </label>
-
-          <label className="flex items-center gap-2 p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-slate-300 cursor-pointer hover:border-slate-700">
-            <input
-              type="checkbox"
-              checked={Boolean(simData['Typical Chest Pain'])}
-              onChange={(e) => updateField('Typical Chest Pain', e.target.checked ? 1 : 0)}
-              className="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0"
-            />
-            <span>Typical Angina Symptoms</span>
-          </label>
         </div>
       </div>
 
-      {/* Apply Counterfactual to Active Patient Button */}
+      {/* Apply Values to Active Patient Button */}
       <div className="pt-3 border-t border-slate-800 flex items-center justify-between">
         <span className="text-[11px] text-slate-400">
-          Save counterfactual parameters to active patient form for full multi-target analysis.
+          Save explorer parameters to active patient form for full multi-target analysis.
         </span>
 
         <button
@@ -389,7 +380,7 @@ export function WhatIfSimulator({
           ) : (
             <>
               <Sliders className="w-4 h-4" />
-              <span>Apply Counterfactual to Patient</span>
+              <span>Apply Explored Values to Patient</span>
             </>
           )}
         </button>

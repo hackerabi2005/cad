@@ -735,6 +735,13 @@ def main():
         "seed": 42,
         "test_sample_inputs": sample_patients,
         "test_sample_predictions": sample_preds,
+        "oof_predictions": {
+            tgt: {
+                "probs": (p_cad_displayed if tgt == "Cath" else oof_predictions[tgt][selected_models[tgt]]).tolist(),
+                "labels": y_dict[tgt].values.tolist(),
+            }
+            for tgt in TARGETS
+        },
     }
 
     bundle_path = ARTIFACTS_DIR / "model_bundle.joblib"

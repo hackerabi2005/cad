@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, AlertCircle, Activity, Droplet, ShieldAlert } from 'lucide-react';
+import { X, Droplet, ShieldAlert } from 'lucide-react';
 import vesselsConfig from '../vessels.json';
 import { VesselsConfig } from '../types';
 import { getRiskColor } from './HeartViewer';
@@ -26,11 +26,10 @@ export function LumenCrossSection({
     description: 'Coronary perfusion vessel',
   };
 
-  // Estimate stenosis severity percentage from model probability
-  // Model predicts probability of ≥50% stenosis; map to representative luminal narrowing
-  const stenosisPercent = Math.min(95, Math.max(10, Math.round(20 + prob * 70)));
-  const areaReductionPercent = Math.min(99, Math.round((1 - Math.pow(1 - stenosisPercent / 100, 2)) * 100));
+  // Fixed illustrative narrowing (normal vs. ≥ 50%)
+  const isStenotic = prob >= 0.50;
   const riskColor = getRiskColor(prob);
+  const predictedLabel = isStenotic ? 'Likely Stenotic (≥ 50%)' : 'Likely Normal (< 50%)';
 
   // SVG dimensions & geometry
   const cx = 100;
@@ -39,26 +38,8 @@ export function LumenCrossSection({
   const mediaRadius = 70; // Tunica media
   const normalLumenRadius = 58; // Healthy lumen radius
 
-  // Calculate occluded lumen radius based on stenosis percentage
-  const patentRadius = Math.max(12, normalLumenRadius * (1 - stenosisPercent / 100 * 0.75));
-
-  // Determine hemodynamic status
-  let hemodynamicStatus = 'Normal Basal Perfusion';
-  let ffrEstimate = '> 0.85 (Negative for Ischemia)';
-  let clinicalAction = 'Optimal medical therapy and lifestyle management.';
-  let severityTier = 'Mild / Non-obstructive';
-
-  if (stenosisPercent >= 75 || prob >= 0.70) {
-    hemodynamicStatus = 'Critical Flow Limitation';
-    ffrEstimate = '≤ 0.75 (Significant Ischemia)';
-    clinicalAction = 'Consider invasive coronary angiography & revascularization (PCI/CABG).';
-    severityTier = 'Severe Obstructive Stenosis';
-  } else if (stenosisPercent >= 50 || prob >= 0.45) {
-    hemodynamicStatus = 'Exercise-Induced Ischemia';
-    ffrEstimate = '0.75 - 0.80 (Gray Zone / Physiological Testing)';
-    clinicalAction = 'Non-invasive stress imaging or physiological FFR assessment recommended.';
-    severityTier = 'Moderate / Borderline Stenosis';
-  }
+  // Fixed illustrative patent radius: normal vs >= 50%
+  const patentRadius = isStenotic ? 28 : normalLumenRadius;
 
   return (
     <div
@@ -70,7 +51,7 @@ export function LumenCrossSection({
         <div className="flex items-center gap-2">
           <Droplet className="w-4 h-4 text-rose-400" />
           <h3 className="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-            Luminal Stenosis Cross-Section
+            Luminal Stenosis Schematic
             <span
               className="text-xs px-2 py-0.5 rounded-full font-mono font-bold"
               style={{ backgroundColor: `${riskColor}22`, color: riskColor, border: `1px solid ${riskColor}66` }}
@@ -97,7 +78,7 @@ export function LumenCrossSection({
           <button
             onClick={onClose}
             className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors ml-1"
-            title="Close Cross-Section"
+            title="Close Schematic"
           >
             <X className="w-4 h-4" />
           </button>
@@ -149,24 +130,26 @@ export function LumenCrossSection({
               opacity="0.5"
             />
 
-            {/* Atherosclerotic Plaque Crescent */}
-            <path
-              d={`
-                M ${cx - normalLumenRadius * 0.95} ${cy}
-                A ${normalLumenRadius} ${normalLumenRadius} 0 0 1 ${cx + normalLumenRadius * 0.95} ${cy}
-                Q ${cx} ${cy - patentRadius * 0.3} ${cx - normalLumenRadius * 0.95} ${cy}
-                Z
-              `}
-              fill="url(#plaqueGrad)"
-              stroke="#f59e0b"
-              strokeWidth="1"
-              opacity="0.9"
-            />
+            {/* Atherosclerotic Plaque Crescent - only if narrowing >= 50% */}
+            {isStenotic && (
+              <path
+                d={`
+                  M ${cx - normalLumenRadius * 0.95} ${cy}
+                  A ${normalLumenRadius} ${normalLumenRadius} 0 0 1 ${cx + normalLumenRadius * 0.95} ${cy}
+                  Q ${cx} ${cy - patentRadius * 0.3} ${cx - normalLumenRadius * 0.95} ${cy}
+                  Z
+                `}
+                fill="url(#plaqueGrad)"
+                stroke="#f59e0b"
+                strokeWidth="1"
+                opacity="0.9"
+              />
+            )}
 
             {/* Residual Patent Lumen (blood channel) */}
             <circle
               cx={cx}
-              cy={cy + (normalLumenRadius - patentRadius) * 0.4}
+              cy={isStenotic ? cy + (normalLumenRadius - patentRadius) * 0.4 : cy}
               r={patentRadius}
               fill="url(#bloodFlowGrad)"
               stroke={riskColor}
@@ -176,7 +159,7 @@ export function LumenCrossSection({
             {/* Center Blood Velocity Arrow / Pulse */}
             <circle
               cx={cx}
-              cy={cy + (normalLumenRadius - patentRadius) * 0.4}
+              cy={isStenotic ? cy + (normalLumenRadius - patentRadius) * 0.4 : cy}
               r={patentRadius * 0.35}
               fill="#fca5a5"
               opacity="0.7"
@@ -187,49 +170,53 @@ export function LumenCrossSection({
               External Adventitia
             </text>
             <text x="100" y="190" fill={riskColor} fontSize="10" textAnchor="middle" fontWeight="bold" fontFamily="monospace">
-              Residual Patent Lumen
+              {isStenotic ? 'Illustrative Narrowed Lumen' : 'Illustrative Normal Lumen'}
             </text>
           </svg>
-          <span className="text-[10px] text-slate-400 mt-1 font-mono">Schematic Transverse Cut</span>
+          <span className="text-[10px] text-slate-400 mt-1 font-mono">
+            {isStenotic ? 'Fixed Narrowing (≥ 50%)' : 'Normal Lumen (< 50%)'}
+          </span>
         </div>
 
-        {/* Quantitative Luminal Metrics */}
+        {/* Model Probability & Classification (No Invented Severity) */}
         <div className="space-y-2.5 text-xs">
           <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800">
-            <span className="text-slate-400 text-[10px] uppercase font-bold block">Diameter Stenosis</span>
+            <span className="text-slate-400 text-[10px] uppercase font-bold block">Model Probability</span>
             <div className="flex items-baseline gap-2 mt-0.5">
               <span className="text-lg font-extrabold font-mono" style={{ color: riskColor }}>
-                ~{stenosisPercent}%
+                {(prob * 100).toFixed(1)}%
               </span>
-              <span className="text-[10px] text-slate-400">caliper estimate</span>
+              <span className="text-[10px] text-slate-400">P(Stenosis ≥ 50%)</span>
             </div>
           </div>
 
           <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800">
-            <span className="text-slate-400 text-[10px] uppercase font-bold block">Cross-Sectional Area Loss</span>
-            <div className="flex items-baseline gap-2 mt-0.5">
-              <span className="text-lg font-extrabold font-mono text-amber-400">
-                -{areaReductionPercent}%
-              </span>
-              <span className="text-[10px] text-slate-400">lumen area loss</span>
+            <span className="text-slate-400 text-[10px] uppercase font-bold block">Model Prediction</span>
+            <div className="text-[12px] font-bold mt-0.5 font-mono" style={{ color: riskColor }}>
+              {predictedLabel}
             </div>
+            <span className="text-[10px] text-slate-400">Binary cutoff: 50%</span>
           </div>
 
           <div className="p-2 rounded-lg bg-slate-950/70 border border-slate-800">
-            <span className="text-slate-400 text-[10px] uppercase font-bold block">FFR Physiological Impact</span>
+            <span className="text-slate-400 text-[10px] uppercase font-bold block">Target Vessel</span>
             <div className="text-[11px] font-semibold text-slate-200 mt-0.5">
-              {ffrEstimate}
+              {vesselMeta.name} ({vesselMeta.abbreviation})
             </div>
           </div>
         </div>
       </div>
 
-      {/* Clinical Guidance Footnote */}
-      <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800/90 text-[11px] flex items-start gap-2">
-        <Activity className="w-4 h-4 text-cyan-400 flex-shrink-0 mt-0.5" />
+      {/* Mandatory Disclaimer Caption */}
+      <div className="p-2.5 rounded-xl bg-slate-950/80 border border-amber-500/30 text-[11px] flex items-start gap-2">
+        <ShieldAlert className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
         <div>
-          <span className="font-semibold text-slate-200 block">{severityTier}</span>
-          <span className="text-slate-400 text-[10px]">{clinicalAction}</span>
+          <span className="font-semibold text-amber-300 block">
+            Schematic only — not patient imaging; stenosis severity is not predicted
+          </span>
+          <span className="text-slate-400 text-[10px]">
+            The underlying clinical dataset records binary stenosis (≥ 50%). Continuous percentage narrowing and physiological flow indices are not predicted.
+          </span>
         </div>
       </div>
     </div>

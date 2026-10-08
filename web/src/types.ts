@@ -30,10 +30,18 @@ export interface TargetExplanation {
   features: FeatureContribution[];
 }
 
+export interface SimilarCohortInfo {
+  n: number;
+  observed_rate: number;
+  wilson_interval: [number, number];
+  summary: string;
+}
+
 export interface CadPrediction {
   prob: number;
+  raw_prob?: number;
   coherent_prob: number;
-  confidence_interval?: [number, number];
+  similar_cohort?: SimilarCohortInfo;
   label: string;
   high_sens_label: string;
   threshold: number;
@@ -44,7 +52,7 @@ export interface CadPrediction {
 
 export interface VesselPrediction {
   prob: number;
-  confidence_interval?: [number, number];
+  similar_cohort?: SimilarCohortInfo;
   label: string;
   high_sens_label: string;
   threshold: number;

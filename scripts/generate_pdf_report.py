@@ -312,19 +312,19 @@ def build_pdf():
 
     story.append(
         Paragraph(
-            "• <b>Decision Curve Analysis (DCA):</b> Evaluated across decision thresholds 5%–50%. Cardio3D AI delivers a +29.9% net benefit gain over 'Treat All' for Cath, +16.0% for LAD, strictly preventing unnecessary catheterizations while maintaining &ge;90% screening sensitivity.",
+            "• <b>Decision Curve Analysis (DCA):</b> Evaluated across clinical thresholds 5%–50%. Cardio3D AI delivers a +29.6 net benefit gain per 100 patients over 'Treat All' for Cath (+15.9 for LAD; modest gains for LCX and RCA due to sensitivity calibration), evaluating apparent clinical utility in single-centre out-of-fold validation.",
             bullet_style,
         )
     )
     story.append(
         Paragraph(
-            "• <b>Demographic Fairness Audit:</b> Out-of-fold equal opportunity gap between male (90.8% sens) and female (93.0% sens) patients is 2.2%, with 97.3% sensitivity in seniors (>65), proving zero adverse demographic disparity.",
+            "• <b>Demographic Fairness Audit:</b> Evaluated across sex (male 90.8% sens, 75.6% spec vs female 93.0% sens, 85.4% spec) and age strata (age &le;65 88.8% sens, 86.8% spec vs age >65 97.3% sens, 30.0% spec) with Wilson 95% intervals; no difference detectable at this sample size.",
             bullet_style,
         )
     )
 
     # 5. Explainable AI & SHAP
-    story.append(Paragraph("5. Explainable AI, Clinical Domains & What-If Simulation", h1_style))
+    story.append(Paragraph("5. Explainable AI, Clinical Domains & Sensitivity Explorer", h1_style))
     story.append(
         Paragraph(
             "The system delivers real-time feature attributions using <b>LinearSHAP</b> (Logistic Regression) and <b>TreeSHAP</b> (Random Forest, XGBoost):",
@@ -351,7 +351,7 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>Interactive What-If Simulator:</b> Clinicians model counterfactual risk reductions (&Delta;P) from guideline-directed targets (BP &lt;120, FBS &lt;100, smoking cessation) with live sub-20ms multi-target re-estimation.",
+            "• <b>Model Sensitivity Explorer:</b> Clinicians inspect live changes in model score from adjusting continuous and binary clinical inputs (BP, FBS, LDL, BMI, smoking). Explanatory caption notes that the model is trained on cross-sectional data and does not estimate treatment effects.",
             bullet_style,
         )
     )
@@ -384,13 +384,13 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>Measured Frame-Rate Benchmark:</b> Evaluated under pure CPU software rendering (<code>--disable-gpu</code> at 1280&times;720 on 13th Gen Intel Core i5-13420H), achieving a <b>mean frame time of 49.3 ms (~20.3 FPS continuous orbit, p95 = 53.7 ms)</b>, recorded in <code>reports/fps_benchmark.json</code>. On a discrete GPU, rendering executes at the display refresh rate (not benchmarked).",
+            "• <b>Measured Frame-Rate Benchmark:</b> Evaluated under pure CPU software rendering (<code>--disable-gpu</code> at 1280&times;720 on 13th Gen Intel Core i5-13420H), achieving a <b>mean frame time of 78.4 ms (~12.8 FPS continuous orbit, p95 = 88.0 ms)</b>, recorded in <code>reports/fps_benchmark.json</code>. On a discrete GPU, rendering executes at the display refresh rate (not benchmarked).",
             bullet_style,
         )
     )
     story.append(
         Paragraph(
-            "• <b>Dynamic Camera Fly-To, Pulsing & Lumen Cross-Section:</b> Clicking any vessel card or 3D artery smoothly lerps camera orientation to frame that coronary territory. High-risk stenoses pulse with animated emissive glow, and an interactive 2D transverse lumen visualizer calculates exact luminal area loss (-95%) and estimated fractional flow reserve (FFR &le; 0.75).",
+            "• <b>Dynamic Camera Fly-To, Pulsing & Lumen Schematic:</b> Clicking any vessel card or 3D artery smoothly lerps camera orientation to frame that coronary territory. High-risk stenoses pulse with animated emissive glow, and an interactive 2D transverse lumen schematic illustrates binary stenosis (normal vs. &ge; 50%).",
             bullet_style,
         )
     )
@@ -415,7 +415,7 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>TabPFN Not Evaluated:</b> TabPFN v2.5+ weights require non-commercial licensing agreements and interactive browser download authentication unsuitable for a self-contained, reproducible pipeline. In addition, TabPFN does not provide real-time exact additive TreeSHAP explainability. Tuned clinical models achieve high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with sub-millisecond deterministic inference.",
+            "• <b>TabPFN Not Evaluated:</b> TabPFN v2.5+ weights require non-commercial licensing agreements and interactive browser download authentication unsuitable for a self-contained, reproducible pipeline. In addition, TabPFN does not provide real-time exact additive TreeSHAP explainability. Tuned clinical models achieve high discriminative power (Cath AUC 0.929, LAD AUC 0.846) with measured p95 latency under 175 ms.",
             bullet_style,
         )
     )
