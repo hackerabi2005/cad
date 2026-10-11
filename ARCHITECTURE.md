@@ -514,10 +514,10 @@ The canonical feature registry defines 54 active physiological features across 5
 The codebase is backed by an automated test suite verifying correctness, stability, and reproducibility:
 
 ```bash
-# Run backend test suite (57 passed, 0 failed)
+# Run backend test suite (69 passed, 0 failed)
 python -m pytest ml/tests api/tests -v
 
-# Run frontend test suite (67 passed, 0 failed)
+# Run frontend test suite (68 passed, 0 failed)
 cd web && npm test -- --run
 
 # Run Playwright E2E browser interactions & FPS benchmark

@@ -104,7 +104,7 @@ def test_decision_curve_net_benefit_from_confusion_counts():
     """
     Recomputes clinical net benefit directly from 2x2 confusion matrix counts
     per Vickers & Elkin (2006) and asserts exact mathematical bounds:
-    - Delta over Treat-All at pt=0.400 equals +8.91 per 100 patients (+8.64 bootstrap mean)
+    - Delta over Treat-All at pt=0.400 equals +8.91 per 100 patients (+8.87 bootstrap mean)
     - Recomputed delta is strictly <= theoretical ceiling of +18.92 per 100 patients: (1 - prev) * (pt / (1 - pt))
     - Explicitly proves that the stale +29.6 headline is impossible under pt=0.400.
     """

@@ -201,7 +201,7 @@ def test_ui():
             report_btn.click(force=True)
             time.sleep(0.5)
             assert page.locator("text=Items for Clinician Review").is_visible(), "'Items for Clinician Review' header not found!"
-            assert page.locator("text=Decision support & educational use only").is_visible(), "Repeated disclaimer not visible in report!"
+            assert page.locator("text=Decision support / educational purposes only").is_visible(), "Repeated disclaimer not visible in report!"
             assert page.locator("text=Model Version: 2.0.0").is_visible(), "Model version not visible in report!"
             assert page.locator("text=Report Generated:").is_visible(), "Report generated date not visible in report!"
             page.screenshot(path=str(SCREENSHOTS_DIR / "12_clinical_summary_modal.png"))

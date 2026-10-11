@@ -59,7 +59,7 @@ export function AboutModelModal({ onClose }: AboutModelModalProps) {
               Clinical Intended Use & Safety Disclaimer
             </h3>
             <p>
-              Cardio3D AI is designed for <strong>decision support / educational use only — not a substitute for formal diagnostic imaging</strong>. Formal bedside clinical evaluation, invasive coronary angiography, or formal cardiac imaging (CCTA/SPECT) remain mandatory.
+              Cardio3D AI is designed for <strong>decision support / educational purposes only — not a substitute for formal diagnostic imaging</strong>. Formal bedside clinical evaluation, invasive coronary angiography, or formal cardiac imaging (CCTA/SPECT) remain mandatory.
             </p>
           </div>
 

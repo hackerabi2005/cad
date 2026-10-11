@@ -346,26 +346,26 @@ def build_pdf():
     story.append(Paragraph("4. Logical Risk Coherence Policy & Quantitative Evaluation", h1_style))
     story.append(
         Paragraph(
-            "Because CAD is the clinical union of coronary stenosis ($P(\\text{CAD}) \\ge \\max(P(\\text{LAD}), P(\\text{LCX}), P(\\text{RCA}))$), independent model outputs can violate logical consistency. Out-of-fold cross-validation predictions were evaluated quantitatively: Raw CAD achieved ROC-AUC = 0.9302 and Brier = 0.0967; coherent CAD achieved ROC-AUC = 0.9291 and Brier = 0.1017 (AUC drop = 0.0012 &le; 0.010, Brier delta = +0.0050 &le; +0.010). The criteria were met and the continuous coherence rule is <b>retained</b>. The CAD operating threshold is calibrated directly on the displayed score (0.611).",
+            "Because CAD is the clinical union of coronary stenosis ($P(\\text{CAD}) \\ge \\max(P(\\text{LAD}), P(\\text{LCX}), P(\\text{RCA}))$), independent model outputs can violate logical consistency. Out-of-fold cross-validation predictions were evaluated quantitatively: Raw CAD (Cath alone) achieved ROC-AUC = 0.9302 and Brier = 0.0967 (Sensitivity 95.9%, 208/217, Specificity 62.8%, 54/86); coherent CAD achieved ROC-AUC = 0.9291 and Brier = 0.1017 (AUC drop = 0.0012 &le; 0.010, Brier delta = +0.0050 &le; +0.010). The continuous coherence rule is <b>retained</b>, shifting probabilities upwards for <b>65 out of 303 patients (21.5%)</b> where a branch model predicted higher local stenosis. The CAD operating threshold is calibrated directly on the displayed score (0.611).",
             body_style,
         )
     )
     story.append(
         Paragraph(
-            "• <b>Discrete Disjunctive Rule:</b> Overall CAD is flagged if $P(\\text{CAD}) \\ge \\text{cutoff}$ OR any vessel is flagged positive ($CAD \\equiv LAD \\lor LCX \\lor RCA$). On pooled out-of-fold validation, sensitivity rises to <b>96.3% (209/217)</b> while specificity drops to <b>57.0% (49/86)</b>, completely eliminating contradictory states (e.g., Patient B) in clinical triage.",
+            "• <b>Discrete Disjunctive Rule (Deployed Flag):</b> Overall CAD is flagged if $P(\\text{CAD}) \\ge \\text{cutoff}$ OR any vessel is flagged positive ($CAD \\equiv LAD \\lor LCX \\lor RCA$). On pooled out-of-fold validation, sensitivity rises to <b>96.3% (209/217)</b> while specificity drops to <b>57.0% (49/86)</b> (net benefit gain &approx; +8.1 per 100), completely eliminating contradictory states (e.g., Patient B) in clinical triage.",
             bullet_style,
         )
     )
 
     story.append(
         Paragraph(
-            "• <b>Decision Curve Analysis (DCA):</b> Evaluated across clinical thresholds 5%–50%. At the screening cutoff 0.400 (&pi; = 71.6%, Se = 95.9%, Sp = 62.8%), Cardio3D AI delivers a <b>+8.91 net benefit gain per 100 patients [5.06, 12.43]</b> over 'Treat All' for Cath (+12.23 for LAD; +4.13 for LCX; +2.93 for RCA), evaluating apparent clinical utility in single-centre out-of-fold validation. (Theoretical max gain at pt = 0.400 is +18.92 per 100).",
+            "• <b>Decision Curve Analysis (DCA):</b> Evaluated across clinical thresholds 5%–50%. At the screening cutoff 0.400 (&pi; = 71.6%, Se = 95.9%, Sp = 62.8%), Cardio3D AI delivers a <b>+8.91 net benefit gain per 100 patients [5.06, 12.43]</b> over 'Treat All' for Cath alone (+12.31 for LAD; +5.19 for LCX; +4.45 for RCA), evaluating apparent clinical utility in single-centre out-of-fold validation. (Theoretical max gain at pt = 0.400 is +18.92 per 100; deployed OR rule yields &approx; +8.1 per 100).",
             bullet_style,
         )
     )
     story.append(
         Paragraph(
-            "• <b>Demographic Fairness Audit:</b> Evaluated across sex (male 95.4% sens, 57.8% spec vs female 96.5% sens, 68.3% spec) and age strata (age &le;65 93.7% sens, 67.1% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Strata sum exactly to the pooled confusion matrix (208 TP / 54 TN). Senior specificity reflects small normal sample size (3/10 normal correctly identified at 88.1% prevalence), reported as an explicit clinical limitation.",
+            "• <b>Demographic Fairness Audit:</b> Evaluated across sex (male 95.4% sens, 57.8% spec vs female 96.5% sens, 68.3% spec) and age strata (age &le;65 93.7% sens, 67.1% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Strata sum identically to the pooled confusion matrix (208 TP / 54 TN / 9 FN / 32 FP). Senior specificity reflects small normal sample size (3/10 normal correctly identified at 88.1% prevalence), reported as an explicit clinical limitation.",
             bullet_style,
         )
     )
@@ -456,7 +456,7 @@ def build_pdf():
     story.append(Paragraph("7. Clinical Safety, Limitations & Attribution", h1_style))
     story.append(
         Paragraph(
-            "• <b>Clinical Safety Disclaimer:</b> The application embeds prominent, non-dismissible disclaimer banners and footers: <i>'Decision support / educational use only &mdash; not a substitute for formal diagnostic imaging.'</i> Invasive angiography or formal cardiac imaging (CCTA/SPECT) remain mandatory diagnostic standards.",
+            "• <b>Clinical Safety Disclaimer:</b> The application embeds prominent, non-dismissible disclaimer banners and footers: <i>'Decision support / educational purposes only &mdash; not a substitute for formal diagnostic imaging.'</i> Invasive angiography or formal cardiac imaging (CCTA/SPECT) remain mandatory diagnostic standards.",
             bullet_style,
         )
     )

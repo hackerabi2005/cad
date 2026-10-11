@@ -99,7 +99,7 @@ def main():
     w = c.post("/api/whatif", json={"baseline": base, "modified": mod})
     ok_w = w.status_code == 200 and abs(w.json()["delta_cad_prob"] - (w.json()["modified_cad_prob"] - w.json()["baseline_cad_prob"])) < 1e-6
     check("whatif delta math", ok_w, f"status={w.status_code}")
-    check("disclaimer invariant", "Decision support / educational use only" in rp.json().get("disclaimer", ""), "")
+    check("disclaimer invariant", "Decision support / educational purposes only" in rp.json().get("disclaimer", ""), "")
 
     # 7. Ensemble margin identity (B6/A6, no retrain, uses ml/ensemble.py only)
     import numpy as np

@@ -55,16 +55,17 @@ By medical domain logic, CAD is the logical union of stenosis across major coron
 $$P(\text{CAD}) \ge \max(P(\text{LAD}), P(\text{LCX}), P(\text{RCA}))$$
 
 We quantitatively audited out-of-fold cross-validation predictions to verify whether applying this post-processing rule preserves model calibration:
-- **Raw CAD Model**: ROC-AUC = 0.9302, Brier score = 0.0967.
-- **Coherent CAD ($P_{\text{coherent}} = \max(P_{\text{CAD}}, \max(P_{\text{vessels}}))$)**: ROC-AUC = 0.9291, Brier score = 0.1017.
+- **Raw CAD Model (Cath Alone)**: ROC-AUC = 0.9302, Brier score = 0.0967. At screening cutoff 0.400, achieves Sensitivity 95.9% (208/217), Specificity 62.8% (54/86), and net benefit gain +8.91 per 100 [5.06, 12.43].
+- **Coherent CAD ($P_{\text{coherent}} = \max(P_{\text{CAD}}, \max(P_{\text{vessels}}))$)**: ROC-AUC = 0.9291, Brier score = 0.1017. Shifting probabilities upwards for **65 out of 303 patients (21.5%)** where a branch vessel predicted higher local stenosis likelihood.
 - **Criterion Evaluation**: AUC drop of $0.0012 \le 0.010$, Brier change of $+0.0050 \le +0.010$. The criteria are satisfied.
 - **Continuous Coherence Rule**: The continuous `max()` coherence rule is retained ($P_{\text{coherent}} = \max(P_{\text{CAD}}, \max(P_{\text{vessels}}))$). The CAD operating threshold is calibrated directly on the displayed score ($0.611$). The API transparently returns both `raw_prob` and `prob`.
-- **Discrete Disjunctive Coherence Rule**: By clinical anatomical definition, $\text{CAD} \equiv \text{LAD} \lor \text{LCX} \lor \text{RCA}$. Therefore, overall CAD is flagged positive if $P(\text{CAD}) \ge \text{cutoff}$ OR any individual vessel is flagged positive. Re-evaluating this disjunctive rule on pooled out-of-fold validation (303 patients):
-  - **Sensitivity rises to 96.3\% (209 / 217)** (vs. 90.3\% raw).
-  - **Specificity drops to 57.0\% (49 / 86)** (vs. 77.9\% raw).
-  - **PPV**: 85.0\% (209 / 246) (vs. 91.2\% raw).
-  - **Accuracy**: 85.2\% (258 / 303) (vs. 86.8\% raw).
-  This eliminates contradictory states (e.g., Patient B: LCX flagged above 0.217 cutoff while CAD prob 0.40 would otherwise read unflagged), prioritizing the clinical safety imperative of zero missed multivessel stenoses.
+- **Discrete Disjunctive Coherence Rule (OR Flag)**: By clinical anatomical definition, $\text{CAD} \equiv \text{LAD} \lor \text{LCX} \lor \text{RCA}$. Overall CAD is flagged positive if $P(\text{CAD}) \ge \text{cutoff}$ OR any individual vessel is flagged positive. On pooled out-of-fold validation (303 patients):
+  - **Sensitivity rises to 96.3\% (209 / 217)** (vs. 95.9\% Cath alone).
+  - **Specificity drops to 57.0\% (49 / 86)** (vs. 62.8\% Cath alone).
+  - **Net Benefit Gain**: $\approx +8.1$ per 100 patients over Treat-All at $p_t = 0.400$.
+  - **PPV**: 85.0\% (209 / 246).
+  - **Accuracy**: 85.2\% (258 / 303).
+  This eliminates contradictory states (e.g., Patient B: LCX flagged above 0.248 cutoff while CAD prob 0.40 would otherwise read unflagged), prioritizing the clinical safety imperative of zero missed multivessel stenoses.
 
 ---
 
@@ -89,11 +90,9 @@ The 3D interactive viewer is built on **Three.js** and **React Three Fiber (R3F)
 
 ---
 
----
-
 ## 7. Decision Curve Analysis, Fairness & Containerization
-- **Decision Curve Analysis (DCA)**: Evaluated across clinical thresholds 5%–50%. At screening cutoff 0.400 (prevalence $\pi = 71.6\%$, sensitivity $95.9\%$, specificity $62.8\%$), Cardio3D AI delivers a **+8.64 net benefit gain per 100 patients [4.95, 12.10]** over 'Treat All' for Cath (+12.23 for LAD; +4.13 for LCX; +2.93 for RCA), evaluating apparent clinical utility in single-centre out-of-fold validation. (Theoretical maximum gain over Treat-All at $p_t = 0.400$ is $+18.92$ per 100).
-- **Demographic Fairness Audit**: Evaluated across sex (male 96.2% sens, 53.3% spec vs female 96.5% sens, 63.4% spec) and age strata (age ≤65 94.4% sens, 61.8% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Senior specificity reflects small non-CAD sample size (3/10 normal correctly identified at 88.1% prevalence) and is documented as an explicit clinical limitation.
+- **Decision Curve Analysis (DCA)**: Evaluated across clinical thresholds 5%–50%. At screening cutoff 0.400 (prevalence $\pi = 71.6\%$, sensitivity $95.9\%$, specificity $62.8\%$), Cardio3D AI delivers a **+8.91 net benefit gain per 100 patients [5.06, 12.43]** over 'Treat All' for Cath alone (+12.31 for LAD; +5.19 for LCX; +4.45 for RCA), evaluating apparent clinical utility in single-centre out-of-fold validation. (Theoretical maximum gain over Treat-All at $p_t = 0.400$ is $+18.92$ per 100). The deployed disjunctive OR rule delivers $\approx +8.1$ net benefit gain per 100.
+- **Demographic Fairness Audit**: Evaluated across sex (male 95.4% sens, 57.8% spec vs female 96.5% sens, 68.3% spec) and age strata (age ≤65 93.7% sens, 67.1% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Strata sum identically to pooled counts (208 TP / 54 TN / 9 FN / 32 FP). Senior specificity reflects small non-CAD sample size (3/10 normal correctly identified at 88.1% prevalence) and is documented as an explicit clinical limitation.
 - **Containerization & Deployment**: Multi-stage production `Dockerfile` and `docker-compose.yml` enable 1-command reproducible startup with automated client-side static bundle compilation, non-root runtime, and integrated health checks.
 - **Printable Clinical Summary**: A 1-click professional PDF/print assessment report embeds patient measurements, empirical reference cohort Wilson 95% intervals, localized vessel risks, top SHAP drivers, items for clinician review, and repeated safety disclaimers with model version and date.
 
@@ -102,7 +101,7 @@ The 3D interactive viewer is built on **Three.js** and **React Three Fiber (R3F)
 ## 8. Limitations & Clinical Safety Disclaimer
 - **Cohort Scale & Referral Bias**: The dataset comprises 303 referred patients from Shaheed Rajaei Cardiovascular, Medical and Research Center in Tehran with high 71.6% CAD prevalence (217 CAD, 86 Normal); everyone underwent catheterization. Multi-center external validation on racially and geographically diverse cohorts is essential prior to prospective clinical adoption.
 - **RWMA Non-Spatial Nature**: While `Region RWMA` (number of abnormal motion regions) is an informative numerical feature, the dataset provides no spatial Cartesian lesion coordinates. RWMA is treated as a clinical biomarker, not an anatomical texture map. Whole vessels are colored uniformly because lesion location is absent from tabular angiography records.
-- **Safety Disclaimer**: The UI features an indelible, prominent disclaimer banner and footer stating: **"Decision support / educational use only — not a substitute for formal diagnostic imaging."**
+- **Safety Disclaimer**: The UI features an indelible, prominent disclaimer banner and footer stating: **"Decision support / educational purposes only — not a substitute for formal diagnostic imaging."**
 - **Open-Source Attribution & Licenses**:
   - Code: MIT License (see `LICENSE`).
   - Dataset: Alizadehsani et al. (2017), Shaheed Rajaei Cardiovascular, Medical and Research Center in Tehran (UCI Machine Learning Repository, CC BY 4.0, DOI: 10.17632/bgf5czvpg2.1).

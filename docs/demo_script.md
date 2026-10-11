@@ -7,7 +7,7 @@
 ### Shot 1: Title & Clinical Safety Disclaimer (0:00 – 0:45)
 - **Visual**: Screen capture of browser opening `http://localhost:8000/`. Highlight the amber **Clinical Safety Disclaimer Banner** at the top.
 - **Narrator**:
-  > "Welcome to this demonstration of Cardio3D AI, built for the Multimodal AI Hackathon 2026 Track A. Before we begin, please note the persistent clinical safety disclaimer displayed across the system: this software is designed strictly for clinical decision support and educational exploration. It is not an automated diagnostic tool or a substitute for certified coronary angiography.
+  > "Welcome to this demonstration of Cardio3D AI, built for the Multimodal AI Hackathon 2026 Track A. Before we begin, please note the persistent clinical safety disclaimer displayed across the system: this software is designed strictly for decision support and educational purposes only — not a substitute for formal diagnostic imaging.
   >
   > Cardiovascular disease remains the leading cause of death globally. While statistical algorithms can output risk percentages, numbers alone cannot convey *where* and *how* critical stenosis is developing. Today, we demonstrate a unified system that bridges rigorous machine learning with real-time 3D anatomical visualization."
 
@@ -62,13 +62,13 @@
 ---
 
 ### Shot 6: Rigorous Validation, DCA, Fairness & Coherence (5:30 – 6:30)
-- **Visual**: Click the "Model CV Validation" tab. Show the 15-fold cross-validation table, Decision Curve Analysis, and demographic fairness metrics.
+- **Visual**: Click the "Model CV Validation" tab. Show the Repeated Stratified K-Fold cross-validation table, Decision Curve Analysis, and demographic fairness metrics.
 - **Narrator**:
-  > "Under our 'Model CV Validation' tab, we display full transparency into our 5-fold cross-validation with 3 repeats—15 folds total.
+  > "Under our 'Model CV Validation' tab, we display full transparency into our 5-fold cross-validation with 3 repeats (15 folds total).
   >
-  > Our selected models achieve 0.929 ROC-AUC for overall CAD and 0.846 for LAD stenosis. Operating cutoffs ensure high sensitivity (90.2% for Cath, 88.1% for LAD).
+  > Our selected models achieve 0.930 ROC-AUC for overall CAD and 0.841 for LAD stenosis. Operating cutoffs ensure high sensitivity (90.2% for Cath, 88.1% for LAD).
   >
-  > We evaluate clinical utility using Decision Curve Analysis (DCA), demonstrating a +8.91 net benefit gain per 100 patients at the 0.400 screening threshold (+8.64 at 0.300) over Treat All for Cath in single-centre out-of-fold validation. In our demographic fairness audit, sensitivity and specificity with Wilson 95% intervals are reported across sex and age subgroups, with no difference detectable at this sample size.
+  > We evaluate clinical utility using Decision Curve Analysis (DCA), demonstrating a +8.91 net benefit gain per 100 patients at the 0.400 screening threshold over Treat All for Cath in single-centre out-of-fold validation. In our demographic fairness audit, sensitivity and specificity with Wilson 95% intervals are reported across sex and age subgroups, with confusion matrix counts strictly conserved.
   >
   > Furthermore, our architecture audits logical coherence: because CAD is the union of individual vessels, P(CAD) must be at least the maximum vessel risk. Our system logs this check and enforces coherent risk display."
 

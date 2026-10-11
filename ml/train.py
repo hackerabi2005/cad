@@ -875,7 +875,7 @@ def main():
                 "numpy_version": "2.5.0",
             },
         },
-        "disclaimer": "Decision support / educational use only — not a substitute for formal diagnostic imaging.",
+        "disclaimer": "Decision support / educational purposes only — not a substitute for formal diagnostic imaging.",
     }
 
     model_card_path = ARTIFACTS_DIR / "model_card.json"

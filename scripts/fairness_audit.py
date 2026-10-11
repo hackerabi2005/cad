@@ -164,29 +164,29 @@ def main():
         "for the primary CAD model across both operating modes (Screening 0.400 and Balanced 0.500). ",
         "All metrics are calculated on out-of-fold predictions with Wilson 95% confidence intervals.\n",
         "## 1. Screening Mode Subgroup Performance (Cutoff 0.400 / High Sensitivity)\n",
-        "| Stratum | n | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Stratum | n | TP | FN | TN | FP | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
 
-    for m in [m_male, m_female, m_younger, m_senior]:
+    for m in [m_male, m_female, m_younger, m_senior, m_pooled_scr]:
         sens_str = f"{m['sensitivity']:.1%} [{m['sensitivity_ci'][0]:.1%}–{m['sensitivity_ci'][1]:.1%}]"
         spec_str = f"{m['specificity']:.1%} [{m['specificity_ci'][0]:.1%}–{m['specificity_ci'][1]:.1%}]"
         lines.append(
-            f"| **{m['group']}** | {m['count']} | {m['prevalence']:.1%} | {m['auc']:.3f} | "
+            f"| **{m['group']}** | {m['count']} | {m['tp']} | {m['fn']} | {m['tn']} | {m['fp']} | {m['prevalence']:.1%} | {m['auc']:.3f} | "
             f"{sens_str} | {spec_str} | {m['ppv']:.1%} | {m['npv']:.1%} |"
         )
 
     lines.extend([
         "\n## 2. Balanced Mode Subgroup Performance (Cutoff 0.500)\n",
-        "| Stratum | n | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Stratum | n | TP | FN | TN | FP | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ])
 
-    for m in [bal_male, bal_female, bal_younger, bal_senior]:
+    for m in [bal_male, bal_female, bal_younger, bal_senior, bal_pooled]:
         sens_str = f"{m['sensitivity']:.1%} [{m['sensitivity_ci'][0]:.1%}–{m['sensitivity_ci'][1]:.1%}]"
         spec_str = f"{m['specificity']:.1%} [{m['specificity_ci'][0]:.1%}–{m['specificity_ci'][1]:.1%}]"
         lines.append(
-            f"| **{m['group']}** | {m['count']} | {m['prevalence']:.1%} | {m['auc']:.3f} | "
+            f"| **{m['group']}** | {m['count']} | {m['tp']} | {m['fn']} | {m['tn']} | {m['fp']} | {m['prevalence']:.1%} | {m['auc']:.3f} | "
             f"{sens_str} | {spec_str} | {m['ppv']:.1%} | {m['npv']:.1%} |"
         )
 

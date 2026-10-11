@@ -64,7 +64,7 @@ def test_dca_net_benefit_theoretical_upper_bound():
     perfect_delta_per_100 = (perfect_nb - all_nb) * 100.0
 
     assert abs(perfect_delta_per_100 - max_possible_delta) < 1e-6
-    actual_delta_per_100 = 8.64
+    actual_delta_per_100 = 8.91
     assert actual_delta_per_100 < max_possible_delta
 
 

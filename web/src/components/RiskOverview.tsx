@@ -126,8 +126,11 @@ export function RiskOverview({ cad, isLoading, mode = 'balanced', onToggleMode }
               CAD Risk
             </span>
             {cad.coherence_adjusted ? (
-              <span className="text-[9px] text-amber-300 font-mono tracking-tight px-1 font-semibold" title={`Cath raw model probability was ${((cad.raw_prob ?? cad.prob) * 100).toFixed(1)}%, adjusted to match ${cad.driving_vessel || 'vessel'} by max rule`}>
-                Raw: {((cad.raw_prob ?? cad.prob) * 100).toFixed(1)}%
+              <span
+                className="text-[8px] text-amber-300 font-mono tracking-tight px-1 font-semibold"
+                title={`Cath model alone: ${((cad.raw_prob ?? cad.prob) * 100).toFixed(1)}%; raised to ${cad.driving_vessel || 'vessel'}’s ${(cad.coherent_prob * 100).toFixed(1)}%.`}
+              >
+                Cath alone: {((cad.raw_prob ?? cad.prob) * 100).toFixed(1)}%
               </span>
             ) : cad.similar_cohort ? (
               <span className="text-[8px] text-slate-400 font-mono tracking-tight px-1 text-center" title={`Wilson 95%: ${(cad.similar_cohort.wilson_interval[0] * 100).toFixed(0)}%–${(cad.similar_cohort.wilson_interval[1] * 100).toFixed(0)}%`}>
