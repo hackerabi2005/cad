@@ -2,7 +2,7 @@
 [![CI](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml/badge.svg)](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml)
 
 **Multimodal AI Hackathon 2026 — Track A (Cardiovascular Risk Visualization & Prediction)**  
-*Evaluation Submission Release: [`v1.1.0`](https://github.com/hackerabi2005/cad/releases/tag/v1.1.0)*
+*Evaluation Submission Release: [`v1.1.0`](https://github.com/hackerabi2005/cad/releases/tag/v1.1.0) (Release Tag: `v1.1.0`)*
 
 > **Clinical Safety Disclaimer**: Decision support / educational purposes only — not a substitute for formal diagnostic imaging.
 
