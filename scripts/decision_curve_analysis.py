@@ -190,10 +190,14 @@ def main():
             f"| **{tgt}** | {d['operating_threshold']:.3f} | {t10_str} | {t20_str} | {t30_str} | **{cut_str}** |"
         )
 
+    cath_d = dca_summary["Cath"]
+    lad_d = dca_summary["LAD"]
+    lcx_d = dca_summary["LCX"]
+    rca_d = dca_summary["RCA"]
     md_lines.extend([
         "\n## Contextual Notes\n",
-        "- **Overall CAD (Cath)**: At screening cutoff 0.400 (prevalence π = 71.6%, sensitivity = 95.9%, specificity = 62.8%), the CAD model yields an apparent net-benefit delta of **+8.64 [4.95, 12.10] per 100 patients** over Treat-All (and +8.91 per 100 on pooled OOF). At the balanced cutoff 0.500, the net-benefit delta is approximately +18.8 per 100 patients.\n",
-        "- **Branch Vessel Models**: At branch cutoffs (LAD 0.420: +12.23, LCX 0.248: +4.13, RCA 0.232: +2.93 per 100 patients), sensitivity calibration maintains positive clinical net benefit across decision thresholds.\n",
+        f"- **Overall CAD (Cath)**: At screening cutoff 0.400 (prevalence π = {cath_d['prevalence']*100:.1f}%), the CAD model yields an apparent net-benefit delta of **+{cath_d['net_benefit_delta_at_cutoff_per_100']:.2f} [{cath_d['cutoff_delta_ci_95'][0]:.2f}, {cath_d['cutoff_delta_ci_95'][1]:.2f}] per 100 patients** over Treat-All on pooled out-of-fold validation. At the balanced cutoff 0.500, the net-benefit delta is approximately +18.8 per 100 patients.\n",
+        f"- **Branch Vessel Models**: At branch cutoffs (LAD 0.420: +{lad_d['net_benefit_delta_at_cutoff_per_100']:.2f} [{lad_d['cutoff_delta_ci_95'][0]:.2f}, {lad_d['cutoff_delta_ci_95'][1]:.2f}], LCX 0.248: +{lcx_d['net_benefit_delta_at_cutoff_per_100']:.2f} [{lcx_d['cutoff_delta_ci_95'][0]:.2f}, {lcx_d['cutoff_delta_ci_95'][1]:.2f}], RCA 0.232: +{rca_d['net_benefit_delta_at_cutoff_per_100']:.2f} [{rca_d['cutoff_delta_ci_95'][0]:.2f}, {rca_d['cutoff_delta_ci_95'][1]:.2f}] per 100 patients), sensitivity calibration maintains positive clinical net benefit across decision thresholds.\n",
         "- **Study Limitations**: This analysis is strictly out-of-fold, single-centre and apparent; external multicentre validation is necessary before clinical deployment.\n",
     ])
 

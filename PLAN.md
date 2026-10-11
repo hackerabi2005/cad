@@ -28,9 +28,9 @@
    - Shipped model weights and artifacts were trained locally on Windows 11 (Python 3.14.5, seed 42) and verified on Python 3.12 (Linux/WSL2).
    - Dependencies strictly pinned in `ml/requirements.txt` and `.python-version`.
 
-5. **TimesFM & TabPFN Decisions**:
-   - TimesFM 3.0: Considered and rejected; strictly designed for sequential time series, inappropriate for static cross-sectional clinical observations.
-   - TabPFN: Not evaluated; v2.5+ imposes non-commercial licensing constraints, interactive browser login tokens, and heavy specialized dependencies.
+5. **Model Family Decisions**:
+   - Temporal sequence architectures: Inappropriate for static cross-sectional clinical observations without temporal records.
+   - Non-standard tabular models: Require heavy external dependencies or specialized cloud login tokens; standard scikit-learn, XGBoost, and LightGBM provide fully reproducible, offline, deterministic deployments.
 
 6. **Operating Decision Thresholds**:
    - Operating thresholds are tuned on out-of-fold predictions to enforce $\ge 90\%$ screening sensitivity.

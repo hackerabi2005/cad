@@ -15,8 +15,8 @@ All estimates are apparent out-of-fold results from a single-centre cross-sectio
 
 ## Contextual Notes
 
-- **Overall CAD (Cath)**: At screening cutoff 0.400 (prevalence π = 71.6%, sensitivity = 95.9%, specificity = 62.8%), the CAD model yields an apparent net-benefit delta of **+8.64 [4.95, 12.10] per 100 patients** over Treat-All (and +8.91 per 100 on pooled OOF). At the balanced cutoff 0.500, the net-benefit delta is approximately +18.8 per 100 patients.
+- **Overall CAD (Cath)**: At screening cutoff 0.400 (prevalence π = 71.6%), the CAD model yields an apparent net-benefit delta of **+8.91 [5.06, 12.43] per 100 patients** over Treat-All on pooled out-of-fold validation. At the balanced cutoff 0.500, the net-benefit delta is approximately +18.8 per 100 patients.
 
-- **Branch Vessel Models**: At branch cutoffs (LAD 0.420: +12.23, LCX 0.248: +4.13, RCA 0.232: +2.93 per 100 patients), sensitivity calibration maintains positive clinical net benefit across decision thresholds.
+- **Branch Vessel Models**: At branch cutoffs (LAD 0.420: +12.31 [7.64, 16.83], LCX 0.248: +5.19 [2.34, 8.02], RCA 0.232: +4.45 [1.67, 7.15] per 100 patients), sensitivity calibration maintains positive clinical net benefit across decision thresholds.
 
 - **Study Limitations**: This analysis is strictly out-of-fold, single-centre and apparent; external multicentre validation is necessary before clinical deployment.
