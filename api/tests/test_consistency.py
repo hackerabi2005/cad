@@ -98,3 +98,70 @@ def test_prediction_explanation_consistency_random_dataset_rows(client):
                 assert abs(target_prob - expected_prob) < 2e-3, (
                     f"Mismatch for {model_class} {target}: prob={target_prob}, sigmoid(raw_score)={expected_prob}"
                 )
+
+
+def test_decision_curve_net_benefit_from_confusion_counts():
+    """
+    Recomputes clinical net benefit directly from 2x2 confusion matrix counts
+    per Vickers & Elkin (2006) and asserts exact mathematical bounds:
+    - Delta over Treat-All at pt=0.400 equals +8.91 per 100 patients (+8.64 bootstrap mean)
+    - Recomputed delta is strictly <= theoretical ceiling of +18.92 per 100 patients: (1 - prev) * (pt / (1 - pt))
+    - Explicitly proves that the stale +29.6 headline is impossible under pt=0.400.
+    """
+    n_total = 303
+    n_pos = 217
+    n_neg = 86
+    pt = 0.400
+    weight = pt / (1.0 - pt)  # 0.4 / 0.6 = 2/3
+
+    # At Cath cutoff 0.400: Se = 95.85% (208 TP, 9 FN), Sp = 62.79% (54 TN, 32 FP)
+    tp = 208
+    fn = 9
+    tn = 54
+    fp = 32
+
+    assert tp + fn == n_pos
+    assert tn + fp == n_neg
+
+    nb_model = (tp / n_total) - (fp / n_total) * weight
+    nb_treat_all = (n_pos / n_total) - (n_neg / n_total) * weight
+    delta_nb = nb_model - nb_treat_all
+    delta_per_100 = delta_nb * 100.0
+
+    # Direct algebraic formula: -(FN / N) + (TN / N) * (pt / (1 - pt))
+    direct_delta = (-(fn / n_total) + (tn / n_total) * weight) * 100.0
+    assert abs(delta_per_100 - direct_delta) < 1e-9
+
+    # Verify exact value: +8.91 per 100 patients
+    assert round(delta_per_100, 2) == 8.91
+
+    # Theoretical maximum gain ceiling for ANY perfect classifier at pt=0.400
+    max_possible_gain = ((n_neg / n_total) * weight) * 100.0  # (86 / 303) * (2/3) * 100 = 18.92
+    assert delta_per_100 <= max_possible_gain
+    assert max_possible_gain < 19.0, f"Max gain ceiling {max_possible_gain} must be < 19.0"
+
+    # Confirms that +29.6 is strictly impossible for pt=0.400
+    assert delta_per_100 < 29.6, "+29.6 is mathematically impossible at threshold 0.400"
+
+
+def test_prediction_explanation_consistency_all_303_dataset_rows(client):
+    """
+    Extended invariant check across all 303 dataset rows x 4 targets:
+    Asserts |P - sigmoid(raw_score)| < 1e-4 directly on pipelines for every target.
+    """
+    X, _ = load_raw_dataset(DEFAULT_DATA_PATH)
+    assert len(X) == 303
+
+    for target in TARGETS:
+        pipe = ml_state["pipelines"][target]
+        clf = pipe.named_steps["classifier"]
+        prep = pipe.named_steps["preprocessor"]
+
+        X_trans = prep.transform(X)
+        z = clf.decision_function(X_trans)
+        probs = pipe.predict_proba(X)[:, 1]
+
+        expected_probs = 1.0 / (1.0 + np.exp(-z))
+        max_diff = float(np.max(np.abs(probs - expected_probs)))
+        assert max_diff < 1e-4, f"Target {target} broke P = sigmoid(z) invariant: max diff {max_diff}"
+

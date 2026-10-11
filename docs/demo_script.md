@@ -31,9 +31,9 @@
   >
   > We utilized segmented 3D meshes from BodyParts3D, extracting the exact anatomical branches for the Left Anterior Descending artery (LAD), Left Circumflex (LCX), Right Coronary Artery (RCA), and Ascending Aorta.
   >
-  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under pure CPU software rendering with GPU disabled, the viewer benchmarks at 78.4 ms mean frame time (≈ 12.8 FPS); the GPU path is not benchmarked.
+  > By applying quadric decimation to the ventricular myocardium shell, we optimized the entire asset down to 83,600 triangles—well under our 100,000 triangle budget. Under pure CPU software rendering with GPU disabled, the viewer benchmarks at 113.5 ms mean frame time (114.5 ms median, ≈ 8.8 FPS); the GPU path is not benchmarked.
   >
-  > Notice the dynamic risk color-coding: each artery interpolates across a continuous green-to-red spectrum according to predicted stenosis probability, accompanied by 3D floating numeric risk badges.
+  > Notice the dynamic risk color-coding: each artery dynamically reflects its cutoff-relative threshold (emerald green when below cutoff, amber or high-risk crimson when threshold is breached), accompanied by 3D floating numeric risk badges.
   >
   > Clicking 'Lumen View' opens an illustrative 2D transverse cross-section schematic demonstrating binary stenosis (normal vs. ≥ 50%). Note the prominent caption: 'Schematic only — not patient imaging; stenosis severity is not predicted'—affirming that the underlying dataset records binary narrowing rather than continuous severity or FFR."
 
@@ -68,7 +68,7 @@
   >
   > Our selected models achieve 0.929 ROC-AUC for overall CAD and 0.846 for LAD stenosis. Operating cutoffs ensure high sensitivity (90.2% for Cath, 88.1% for LAD).
   >
-  > We evaluate clinical utility using Decision Curve Analysis (DCA), demonstrating a +29.6 net benefit gain per 100 patients over Treat All for Cath in single-centre out-of-fold validation. In our demographic fairness audit, sensitivity and specificity with Wilson 95% intervals are reported across sex and age subgroups, with no difference detectable at this sample size.
+  > We evaluate clinical utility using Decision Curve Analysis (DCA), demonstrating a +8.91 net benefit gain per 100 patients at the 0.400 screening threshold (+8.64 at 0.300) over Treat All for Cath in single-centre out-of-fold validation. In our demographic fairness audit, sensitivity and specificity with Wilson 95% intervals are reported across sex and age subgroups, with no difference detectable at this sample size.
   >
   > Furthermore, our architecture audits logical coherence: because CAD is the union of individual vessels, P(CAD) must be at least the maximum vessel risk. Our system logs this check and enforces coherent risk display."
 

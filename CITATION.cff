@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use Cardio3D AI in clinical machine learning research, please cite it as below."
+authors:
+  - family-names: "Abishek"
+    given-names: "Ji"
+    affiliation: "Cardio3D AI Team"
+title: "Cardio3D AI: Interactive 3D Coronary Risk Visualization & Multi-Vessel Stenosis Prediction"
+version: 1.0.3
+date-released: 2026-10-08
+url: "https://github.com/hackerabi2005/cad"
+license: "MIT"
+preferred-citation:
+  type: software
+  authors:
+    - family-names: "Abishek"
+      given-names: "Ji"
+  title: "Cardio3D AI: Interactive 3D Coronary Risk Visualization & Multi-Vessel Stenosis Prediction"
+  year: 2026
+  url: "https://github.com/hackerabi2005/cad"
+references:
+  - type: data
+    authors:
+      - family-names: "Alizadehsani"
+        given-names: "Roohallah"
+      - family-names: "Roshanzamir"
+        given-names: "Mohamad"
+      - family-names: "Sani"
+        given-names: "Zahra Alizadeh"
+    title: "extention of Z-Alizadeh sani dataset"
+    year: 2017
+    doi: "10.17632/bgf5czvpg2.1"
+    url: "https://data.mendeley.com/datasets/bgf5czvpg2/1"
+

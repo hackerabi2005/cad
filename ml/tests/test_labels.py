@@ -54,3 +54,26 @@ def test_unaligned_cath_matches_raw_counts():
     X, y_dict = load_raw_dataset(DEFAULT_DATA_PATH, align_row_93=False)
     assert y_dict["Cath"].sum() == 216
     assert (y_dict["Cath"] == 0).sum() == 87
+
+
+def test_row_93_sensitivity_analysis():
+    """Verify that training on unaligned (216/87) vs aligned (217/86) shifts CV ROC-AUC by < 0.01."""
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.pipeline import Pipeline
+    from sklearn.model_selection import StratifiedKFold, cross_val_score
+    from ml.pipeline import DEFAULT_DATA_PATH, load_raw_dataset, build_preprocessor, load_schema
+
+    schema = load_schema()
+    preprocessor = build_preprocessor(schema)
+    clf = LogisticRegression(C=0.1, max_iter=500, random_state=42)
+    pipe = Pipeline([("preprocessor", preprocessor), ("clf", clf)])
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+
+    X_raw, y_raw = load_raw_dataset(DEFAULT_DATA_PATH, align_row_93=False)
+    score_raw = cross_val_score(pipe, X_raw, y_raw["Cath"], cv=cv, scoring="roc_auc").mean()
+
+    X_aln, y_aln = load_raw_dataset(DEFAULT_DATA_PATH, align_row_93=True)
+    score_aln = cross_val_score(pipe, X_aln, y_aln["Cath"], cv=cv, scoring="roc_auc").mean()
+
+    delta = abs(score_aln - score_raw)
+    assert delta < 0.01, f"Row 93 alignment caused unexpected large shift: {delta}"

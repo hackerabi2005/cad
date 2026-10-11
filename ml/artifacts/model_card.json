@@ -1,182 +1,506 @@
 {
   "dataset": {
-    "name": "Extension of Z-Alizadeh Sani CAD Dataset (UCI ML Repository)",
+    "name": "Extension of Z-Alizadeh Sani CAD Dataset (UCI ML Repository, CC BY 4.0, DOI: 10.17632/bgf5czvpg2.1)",
+    "collection_site": "Shaheed Rajaei Cardiovascular, Medical and Research Center, Tehran, Iran",
     "records": 303,
     "features": 54,
+    "published_split": "216 CAD / 87 Normal (71.3%)",
+    "aligned_split": "217 CAD / 86 Normal (71.6%)",
     "sha256": "739343245c2ba578b541370217531750d8e936022f928b83e0d91756caa3ff0b",
-    "target_alignment": "Row 93 aligned to CAD to match dataset definition (CAD = >= 1 stenotic vessel)"
+    "target_alignment": "Row 93 (spreadsheet row 95) had LAD='Stenotic', LCX='Normal', RCA='Normal', Cath='Normal'. By clinical definition (CAD = >= 1 stenotic vessel, Cath = LAD | LCX | RCA), aligned Cath to 1. Sensitivity analysis confirms metrics under original vs aligned label vary by < 0.002 AUC."
   },
-  "validation_strategy": "Repeated Stratified 5-Fold Cross-Validation (3 repeats = 15 folds)",
+  "validation_strategy": "5-fold × 3 repeats (3×5-fold repeated stratified CV)",
   "selected_models": {
-    "Cath": "LogisticRegression",
-    "LAD": "RandomForest",
-    "LCX": "XGBoost",
-    "RCA": "LogisticRegression"
+    "Cath": "LogitEnsemble",
+    "LAD": "LogitEnsemble",
+    "LCX": "LogitEnsemble",
+    "RCA": "LogitEnsemble"
   },
+  "model_architecture": "LogitEnsemble(LogisticRegression, XGB_rngfree) with exact log-odds SHAP additivity (< 1e-9)",
   "coherence_policy": {
-    "cv_violation_rate": 0.2145,
-    "max_violation_delta": 0.2881,
+    "cv_violation_rate": 0.1089,
+    "max_violation_delta": 0.1808,
     "coherence_fix_applied": true,
     "rule": "P(CAD_coherent) = max(P(CAD), P(LAD), P(LCX), P(RCA))",
     "decision": "Kept: displayed Brier <= raw + 0.01 and AUC drop <= 0.01"
   },
   "operating_thresholds": {
     "Cath": {
-      "selected_model": "LogisticRegression",
+      "selected_model": "LogitEnsemble",
       "default_threshold": 0.5,
-      "high_sensitivity_threshold": 0.611,
-      "target_sensitivity": 0.9,
+      "high_sensitivity_threshold": 0.4,
+      "target_sensitivity": 0.95,
       "metrics_at_05": {
-        "sensitivity": 0.9355,
-        "specificity": 0.6977,
-        "ppv": 0.8865,
-        "npv": 0.8108,
-        "f1": 0.9103,
-        "accuracy": 0.868
+        "sensitivity": 0.9447,
+        "specificity": 0.7093,
+        "ppv": 0.8913,
+        "npv": 0.8356,
+        "f1": 0.9172,
+        "accuracy": 0.8779,
+        "roc_auc": 0.93,
+        "pr_auc": 0.9718,
+        "brier": 0.0966,
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.8383,
+            0.9142
+          ],
+          "precision": [
+            0.8496,
+            0.9298
+          ],
+          "recall": [
+            0.9132,
+            0.9721
+          ],
+          "specificity": [
+            0.6104,
+            0.8025
+          ],
+          "npv": [
+            0.8356,
+            0.8356
+          ],
+          "f1": [
+            0.8879,
+            0.9427
+          ],
+          "roc_auc": [
+            0.8982,
+            0.9569
+          ],
+          "pr_auc": [
+            0.955,
+            0.9846
+          ],
+          "brier": [
+            0.0774,
+            0.1176
+          ]
+        }
       },
       "metrics_at_operating_threshold": {
-        "threshold": 0.611,
-        "sensitivity": 0.9032,
-        "specificity": 0.8256,
-        "ppv": 0.9289,
-        "npv": 0.7717,
-        "f1": 0.9159,
-        "accuracy": 0.8812,
-        "tuning_method": "apparent (OOF tuned)"
+        "threshold": 0.4,
+        "sensitivity": 0.9585,
+        "specificity": 0.6279,
+        "ppv": 0.8667,
+        "npv": 0.8571,
+        "f1": 0.9103,
+        "accuracy": 0.8647,
+        "roc_auc": 0.93,
+        "pr_auc": 0.9718,
+        "brier": 0.0966,
+        "tuning_method": "apparent (OOF tuned)",
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.8251,
+            0.901
+          ],
+          "precision": [
+            0.8219,
+            0.9079
+          ],
+          "recall": [
+            0.93,
+            0.9818
+          ],
+          "specificity": [
+            0.525,
+            0.7317
+          ],
+          "npv": [
+            0.8571,
+            0.8571
+          ],
+          "f1": [
+            0.8811,
+            0.936
+          ],
+          "roc_auc": [
+            0.8982,
+            0.9569
+          ],
+          "pr_auc": [
+            0.955,
+            0.9846
+          ],
+          "brier": [
+            0.0774,
+            0.1176
+          ]
+        }
       },
       "nested_cv_operating_metrics": {
-        "sensitivity_mean": 0.9018,
-        "sensitivity_std": 0.0394,
-        "specificity_mean": 0.8057,
-        "specificity_std": 0.0674,
-        "sensitivity_pooled": 0.9017,
-        "specificity_pooled": 0.8062,
-        "ppv_mean": 0.922,
-        "npv_mean": 0.7708
+        "sensitivity_mean": 0.9539,
+        "sensitivity_std": 0.0304,
+        "specificity_mean": 0.6477,
+        "specificity_std": 0.0906,
+        "sensitivity_pooled": 0.9539,
+        "specificity_pooled": 0.6473
       },
-      "achieved_sensitivity": 0.9032,
-      "achieved_specificity": 0.8256,
-      "cv_roc_auc": 0.9291,
-      "cv_brier": 0.0978
+      "achieved_sensitivity": 0.9585,
+      "achieved_specificity": 0.6279,
+      "cv_roc_auc": 0.9317,
+      "cv_brier": 0.0962
     },
     "LAD": {
-      "selected_model": "RandomForest",
+      "selected_model": "LogitEnsemble",
       "default_threshold": 0.5,
-      "high_sensitivity_threshold": 0.469,
+      "high_sensitivity_threshold": 0.42,
       "target_sensitivity": 0.9,
       "metrics_at_05": {
-        "sensitivity": 0.8757,
-        "specificity": 0.6349,
-        "ppv": 0.7711,
-        "npv": 0.7843,
-        "f1": 0.8201,
-        "accuracy": 0.7756
+        "sensitivity": 0.8531,
+        "specificity": 0.6905,
+        "ppv": 0.7947,
+        "npv": 0.7699,
+        "f1": 0.8229,
+        "accuracy": 0.7855,
+        "roc_auc": 0.8406,
+        "pr_auc": 0.8797,
+        "brier": 0.1583,
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.7393,
+            0.8284
+          ],
+          "precision": [
+            0.7365,
+            0.8493
+          ],
+          "recall": [
+            0.7978,
+            0.9034
+          ],
+          "specificity": [
+            0.6091,
+            0.7685
+          ],
+          "npv": [
+            0.7699,
+            0.7699
+          ],
+          "f1": [
+            0.7797,
+            0.8639
+          ],
+          "roc_auc": [
+            0.794,
+            0.8813
+          ],
+          "pr_auc": [
+            0.8332,
+            0.9172
+          ],
+          "brier": [
+            0.1379,
+            0.1807
+          ]
+        }
       },
       "metrics_at_operating_threshold": {
-        "threshold": 0.469,
+        "threshold": 0.42,
         "sensitivity": 0.904,
-        "specificity": 0.6032,
-        "ppv": 0.7619,
-        "npv": 0.8172,
-        "f1": 0.8269,
-        "accuracy": 0.7789,
-        "tuning_method": "apparent (OOF tuned)"
+        "specificity": 0.5952,
+        "ppv": 0.7583,
+        "npv": 0.8152,
+        "f1": 0.8247,
+        "accuracy": 0.7756,
+        "roc_auc": 0.8406,
+        "pr_auc": 0.8797,
+        "brier": 0.1583,
+        "tuning_method": "apparent (OOF tuned)",
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.7294,
+            0.8218
+          ],
+          "precision": [
+            0.7,
+            0.8148
+          ],
+          "recall": [
+            0.8593,
+            0.9434
+          ],
+          "specificity": [
+            0.5114,
+            0.6803
+          ],
+          "npv": [
+            0.8152,
+            0.8152
+          ],
+          "f1": [
+            0.7828,
+            0.8635
+          ],
+          "roc_auc": [
+            0.794,
+            0.8813
+          ],
+          "pr_auc": [
+            0.8332,
+            0.9172
+          ],
+          "brier": [
+            0.1379,
+            0.1807
+          ]
+        }
       },
       "nested_cv_operating_metrics": {
-        "sensitivity_mean": 0.8816,
-        "sensitivity_std": 0.0717,
-        "specificity_mean": 0.6218,
-        "specificity_std": 0.0799,
-        "sensitivity_pooled": 0.8814,
-        "specificity_pooled": 0.6217,
-        "ppv_mean": 0.7671,
-        "npv_mean": 0.7993
+        "sensitivity_mean": 0.8853,
+        "sensitivity_std": 0.0674,
+        "specificity_mean": 0.609,
+        "specificity_std": 0.0989,
+        "sensitivity_pooled": 0.8851,
+        "specificity_pooled": 0.6085
       },
       "achieved_sensitivity": 0.904,
-      "achieved_specificity": 0.6032,
-      "cv_roc_auc": 0.8462,
-      "cv_brier": 0.1681
+      "achieved_specificity": 0.5952,
+      "cv_roc_auc": 0.8395,
+      "cv_brier": 0.1608
     },
     "LCX": {
-      "selected_model": "XGBoost",
+      "selected_model": "LogitEnsemble",
       "default_threshold": 0.5,
-      "high_sensitivity_threshold": 0.217,
+      "high_sensitivity_threshold": 0.248,
       "target_sensitivity": 0.9,
       "metrics_at_05": {
-        "sensitivity": 0.4874,
-        "specificity": 0.8207,
-        "ppv": 0.6374,
-        "npv": 0.7123,
-        "f1": 0.5524,
-        "accuracy": 0.6898
+        "sensitivity": 0.5042,
+        "specificity": 0.7989,
+        "ppv": 0.6186,
+        "npv": 0.7136,
+        "f1": 0.5556,
+        "accuracy": 0.6832,
+        "roc_auc": 0.7323,
+        "pr_auc": 0.5912,
+        "brier": 0.2036,
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.6304,
+            0.7327
+          ],
+          "precision": [
+            0.52,
+            0.7089
+          ],
+          "recall": [
+            0.4182,
+            0.595
+          ],
+          "specificity": [
+            0.7389,
+            0.85
+          ],
+          "npv": [
+            0.7136,
+            0.7136
+          ],
+          "f1": [
+            0.47,
+            0.6271
+          ],
+          "roc_auc": [
+            0.6765,
+            0.7875
+          ],
+          "pr_auc": [
+            0.507,
+            0.689
+          ],
+          "brier": [
+            0.1826,
+            0.2243
+          ]
+        }
       },
       "metrics_at_operating_threshold": {
-        "threshold": 0.217,
+        "threshold": 0.248,
         "sensitivity": 0.9076,
-        "specificity": 0.3696,
-        "ppv": 0.4821,
-        "npv": 0.8608,
-        "f1": 0.6297,
-        "accuracy": 0.5809,
-        "tuning_method": "apparent (OOF tuned)"
+        "specificity": 0.4402,
+        "ppv": 0.5118,
+        "npv": 0.8804,
+        "f1": 0.6545,
+        "accuracy": 0.6238,
+        "roc_auc": 0.7323,
+        "pr_auc": 0.5912,
+        "brier": 0.2036,
+        "tuning_method": "apparent (OOF tuned)",
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.571,
+            0.6767
+          ],
+          "precision": [
+            0.4454,
+            0.5785
+          ],
+          "recall": [
+            0.8525,
+            0.9569
+          ],
+          "specificity": [
+            0.3684,
+            0.5138
+          ],
+          "npv": [
+            0.8804,
+            0.8804
+          ],
+          "f1": [
+            0.5933,
+            0.7104
+          ],
+          "roc_auc": [
+            0.6765,
+            0.7875
+          ],
+          "pr_auc": [
+            0.507,
+            0.689
+          ],
+          "brier": [
+            0.1826,
+            0.2243
+          ]
+        }
       },
       "nested_cv_operating_metrics": {
-        "sensitivity_mean": 0.9159,
-        "sensitivity_std": 0.0634,
-        "specificity_mean": 0.3514,
-        "specificity_std": 0.0794,
+        "sensitivity_mean": 0.9162,
+        "sensitivity_std": 0.0731,
+        "specificity_mean": 0.3713,
+        "specificity_std": 0.1079,
         "sensitivity_pooled": 0.916,
-        "specificity_pooled": 0.3514,
-        "ppv_mean": 0.4787,
-        "npv_mean": 0.869
+        "specificity_pooled": 0.3714
       },
       "achieved_sensitivity": 0.9076,
-      "achieved_specificity": 0.3696,
-      "cv_roc_auc": 0.7353,
-      "cv_brier": 0.2038
+      "achieved_specificity": 0.4402,
+      "cv_roc_auc": 0.7238,
+      "cv_brier": 0.2062
     },
     "RCA": {
-      "selected_model": "LogisticRegression",
+      "selected_model": "LogitEnsemble",
       "default_threshold": 0.5,
-      "high_sensitivity_threshold": 0.213,
+      "high_sensitivity_threshold": 0.232,
       "target_sensitivity": 0.9,
       "metrics_at_05": {
-        "sensitivity": 0.4386,
-        "specificity": 0.8042,
-        "ppv": 0.5747,
-        "npv": 0.7037,
-        "f1": 0.4975,
-        "accuracy": 0.6667
+        "sensitivity": 0.4561,
+        "specificity": 0.8571,
+        "ppv": 0.6582,
+        "npv": 0.7232,
+        "f1": 0.5389,
+        "accuracy": 0.7063,
+        "roc_auc": 0.7439,
+        "pr_auc": 0.6207,
+        "brier": 0.1955,
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.6568,
+            0.7558
+          ],
+          "precision": [
+            0.5542,
+            0.7595
+          ],
+          "recall": [
+            0.3694,
+            0.5463
+          ],
+          "specificity": [
+            0.8064,
+            0.9059
+          ],
+          "npv": [
+            0.7232,
+            0.7232
+          ],
+          "f1": [
+            0.4545,
+            0.6188
+          ],
+          "roc_auc": [
+            0.6851,
+            0.7985
+          ],
+          "pr_auc": [
+            0.5271,
+            0.722
+          ],
+          "brier": [
+            0.1744,
+            0.2165
+          ]
+        }
       },
       "metrics_at_operating_threshold": {
-        "threshold": 0.213,
+        "threshold": 0.232,
         "sensitivity": 0.9035,
-        "specificity": 0.3915,
-        "ppv": 0.4725,
-        "npv": 0.8706,
-        "f1": 0.6205,
-        "accuracy": 0.5842,
-        "tuning_method": "apparent (OOF tuned)"
+        "specificity": 0.4286,
+        "ppv": 0.4882,
+        "npv": 0.8804,
+        "f1": 0.6338,
+        "accuracy": 0.6073,
+        "roc_auc": 0.7439,
+        "pr_auc": 0.6207,
+        "brier": 0.1955,
+        "tuning_method": "apparent (OOF tuned)",
+        "bootstrap_ci_95": {
+          "accuracy": [
+            0.5512,
+            0.6601
+          ],
+          "precision": [
+            0.4171,
+            0.5535
+          ],
+          "recall": [
+            0.8462,
+            0.9524
+          ],
+          "specificity": [
+            0.3583,
+            0.5
+          ],
+          "npv": [
+            0.8804,
+            0.8804
+          ],
+          "f1": [
+            0.5674,
+            0.6925
+          ],
+          "roc_auc": [
+            0.6851,
+            0.7985
+          ],
+          "pr_auc": [
+            0.5271,
+            0.722
+          ],
+          "brier": [
+            0.1744,
+            0.2165
+          ]
+        }
       },
       "nested_cv_operating_metrics": {
-        "sensitivity_mean": 0.8922,
-        "sensitivity_std": 0.069,
-        "specificity_mean": 0.3866,
-        "specificity_std": 0.0791,
-        "sensitivity_pooled": 0.8918,
-        "specificity_pooled": 0.3862,
-        "ppv_mean": 0.4687,
-        "npv_mean": 0.8686
+        "sensitivity_mean": 0.8951,
+        "sensitivity_std": 0.0707,
+        "specificity_mean": 0.3671,
+        "specificity_std": 0.1042,
+        "sensitivity_pooled": 0.8947,
+        "specificity_pooled": 0.3668
       },
       "achieved_sensitivity": 0.9035,
-      "achieved_specificity": 0.3915,
-      "cv_roc_auc": 0.7325,
-      "cv_brier": 0.2017
+      "achieved_specificity": 0.4286,
+      "cv_roc_auc": 0.7405,
+      "cv_brier": 0.1978
     }
   },
   "aggregation_and_metrics_notes": {
-    "pr_auc_definition": "Table 1 PR-AUC reports the unweighted macro-average across 15 validation folds (1/K sum PR-AUC_k). Earlier README versions reported pooled out-of-fold average_precision_score over concatenated predictions, which yields slight Jensen's inequality deltas (e.g. LCX pooled 0.652 vs fold-macro 0.615; RCA pooled 0.655 vs fold-macro 0.617) due to class imbalance in small per-fold validation subsets (n=60).",
-    "vessel_target_invariance": "Row-93 alignment modified only Cath (Normal -> CAD) based on LAD='Stenotic'. Vessel targets (LAD, LCX, RCA) were not altered; minor specificity shifts (0.003-0.005) reflect standardized fold-macro averaging and deterministic StratifiedKFold seeding.",
+    "pr_auc_definition": "Table 1 PR-AUC reports the unweighted macro-average across 15 validation folds (1/K sum PR-AUC_k).",
+    "vessel_target_invariance": "Row-93 alignment modified only Cath (Normal -> CAD) based on LAD='Stenotic'. Vessel targets (LAD, LCX, RCA) were not altered.",
     "nested_cv_evaluation": "Operating thresholds are tuned strictly on inner out-of-fold predictions within each training fold, ensuring unbiased out-of-sample nested-CV sensitivity estimates."
   },
   "environment": {
@@ -184,7 +508,7 @@
     "os": "Windows 11 (AMD64)",
     "runner": "local-windows",
     "provenance": "Trained locally on Windows (Python 3.14.5); verified clean virtualenv execution on Python 3.12 (Linux/WSL).",
-    "git_commit": "e3c619eb8ea2e35b0fb2108f19fedefd332b950a",
+    "git_commit": "a04c7b74e99aa56743341a33cfd55775e12a0cca",
     "seed": 42,
     "libraries": {
       "scikit_learn_version": "1.9.1",

@@ -1,0 +1,14 @@
+{
+  "bundle": "model_bundle.joblib",
+  "sha256": "c0a9ea3d78cd138cf7da9ba4d7a3c0a80edda38a511c3e92f64978a73a420137",
+  "git_commit": "a04c7b74e99aa56743341a33cfd55775e12a0cca",
+  "libs": {
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1",
+    "shap": "0.52.0",
+    "pandas": "3.0.3",
+    "numpy": "2.5.0",
+    "fastapi": "0.139.2",
+    "pydantic": "2.12.5"
+  }
+}

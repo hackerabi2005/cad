@@ -4,9 +4,9 @@
 Coronary artery disease (CAD) is defined as significant stenosis ($\ge 50\%$) in at least one major coronary artery (LAD, LCX, or RCA).
 Logically, the event $\text{CAD} = \text{LAD} \lor \text{LCX} \lor \text{RCA}$ implies $P(\text{CAD}) \ge \max(P_{\text{LAD}}, P_{\text{LCX}}, P_{\text{RCA}})$.
 
-However, because separate machine learning models are trained for each clinical target (Logistic Regression for Cath and RCA; Random Forest for LAD; XGBoost for LCX), tree-based probability distributions can be compressed or calibrated differently from linear models. Applying a naive $\max()$ post-processing rule could theoretically allow a weaker model (e.g., LAD AUC $\approx 0.85$ or LCX AUC $\approx 0.73$) to override the well-calibrated, high-performing overall CAD model (Cath AUC $\approx 0.93$).
+However, while LogitEnsemble is trained across all four clinical targets, local branch models and the systemic CAD classifier are optimized independently. Applying a naive $\max()$ post-processing rule could theoretically allow a branch model (e.g., LAD AUC $\approx 0.84$ or LCX AUC $\approx 0.73$) to override the well-calibrated, high-performing overall CAD model (Cath AUC $\approx 0.93$).
 
-Per FIX_PLAN Decision 3 and Fix F2, we empirically evaluate out-of-fold (OOF) cross-validation predictions to determine whether to retain the coherence rule:
+To validate this design decision, we empirically evaluate out-of-fold (OOF) cross-validation predictions to determine whether to retain the coherence rule:
 **Retain `max()` only if displayed Brier $\le$ raw Brier $+ 0.01$ and AUC drop $\le 0.01$.**
 
 ---
@@ -38,5 +38,22 @@ Per FIX_PLAN Decision 3 and Fix F2, we empirically evaluate out-of-fold (OOF) cr
    The API provides both `raw_prob` (the pure CAD logistic regression output) and `prob` (the coherent displayed score), along with a boolean `coherence_adjusted` flag.
 3. **Thresholding on Displayed Score**:
    The clinical operating threshold for CAD is calibrated directly on the displayed score (0.611) to maintain $\ge 90\%$ sensitivity on the final displayed probability.
-4. **No Discrete Label Rule**:
-   We explicitly reject an "any vessel High $\implies$ overall High" label override. Vessel models use sensitivity-first thresholds ($\sim 0.21$–$0.47$) tuned to capture subtle localized disease; applying discrete OR label overriding would sharply degrade specificity, flagging excessive false positives.
+4. **Logical Status Harmonization (Clinical Disjunctive Rule)**:
+   To eliminate clinical contradictions where an individual vessel is flagged as Stenotic while overall CAD is marked Low Risk (e.g., a patient where $P_{\text{LCX}} \ge 0.248$ while $P_{\text{CAD}} < 0.646$), the diagnostic status engine evaluates:
+   $$\text{CAD Flagged} \iff (P(\text{CAD})_{\text{coherent}} \ge \text{cutoff}_{\text{CAD}}) \lor (\text{LAD Flagged}) \lor (\text{LCX Flagged}) \lor (\text{RCA Flagged})$$
+
+   ### Definition of Discordant States & Empirical Frequencies (303 Out-of-Fold Patients)
+   We distinguish two distinct directional states of discordance:
+
+   1. **Direction 1: Vessel-Positive / CAD-Negative Contradiction**
+      - *Definition*: At least one vessel model is flagged ($\ge \text{cutoff}_V$), but the baseline CAD model was below threshold ($< \text{cutoff}_{\text{CAD}}$).
+      - *Baseline rate*: **10.89% (33 / 303 patients)** were contradictory before status harmonization.
+      - *Harmonized rate*: **0.0% (0 / 303 patients)**. This contradiction is eliminated **strictly by construction** through the disjunctive rule ($A \lor B \implies A \text{ is flagged if } B \text{ is flagged}$).
+      - *Trade-off*: Harmonization ensures clinical consistency; when lowering thresholds for screening, sensitivity rises (94.5% $\to$ 96.3%) while specificity drops (70.9% $\to$ 57.0%). The disjunctive rule buys consistency, not standalone classifier accuracy.
+
+   2. **Direction 2: CAD-Positive / Zero-Vessels-Flagged Discordance (Reverse Discordance)**
+      - *Definition*: Overall CAD model flags elevated risk ($\ge \text{cutoff}_{\text{CAD}}$), but no single epicardial vessel crosses its respective branch cutoff.
+      - *Occurrence rate*:
+        - **Balanced Mode (0.50 cutoff)**: 33 / 303 patients (10.9%)
+        - **Screening Mode**: 24 / 303 patients (7.9%)
+      - *Clinical Interpretation*: Occurs when diffuse systemic features (advanced age, severe dyslipidemia, systemic hypertension) drive global ischemic probability above cutoff, but branch-specific signals (localized ECG changes or wall motion abnormalities) are insufficient to localize stenosis to LAD, LCX, or RCA. The workstation explicitly informs the clinician: *"Overall model above cutoff; no vessel model above its cutoff; location not determined."*

@@ -48,10 +48,9 @@
     }
   ],
   "colorScale": [
-    { "stop": 0.0, "color": "#10b981", "label": "Low Risk (<25%)" },
-    { "stop": 0.35, "color": "#84cc16", "label": "Mild (25-45%)" },
-    { "stop": 0.50, "color": "#f59e0b", "label": "Borderline / Moderate (50%)" },
-    { "stop": 0.70, "color": "#f97316", "label": "High Risk (70%)" },
-    { "stop": 1.0, "color": "#ef4444", "label": "Critical Stenosis (≥80%)" }
+    { "stop": 0.0, "color": "#10b981", "label": "Lower (<25%)" },
+    { "stop": 0.35, "color": "#84cc16", "label": "Intermediate-Low (25-50%)" },
+    { "stop": 0.50, "color": "#f59e0b", "label": "Intermediate-High (50-75%)" },
+    { "stop": 0.75, "color": "#ef4444", "label": "Higher (≥75%)" }
   ]
 }

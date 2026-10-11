@@ -7,7 +7,14 @@ export interface SchemaItem {
   max?: number;
   mean?: number;
   median?: number;
+  mode?: string | number;
   categories?: (string | number)[];
+  ref_low?: number;
+  ref_high?: number;
+  phys_min?: number;
+  phys_max?: number;
+  source?: string;
+  reviewed?: boolean;
 }
 
 export type SchemaRegistry = Record<string, SchemaItem>;
@@ -20,6 +27,7 @@ export interface FeatureContribution {
   value: number | string | null;
   shap: number;
   pct: number;
+  is_imputed?: boolean;
 }
 
 export interface TargetExplanation {
@@ -28,6 +36,8 @@ export interface TargetExplanation {
   reconstructed_score: number;
   additive_error: number;
   features: FeatureContribution[];
+  shap_unit?: 'probability' | 'log-odds';
+  unit_label?: string;
 }
 
 export interface SimilarCohortInfo {
@@ -40,6 +50,8 @@ export interface SimilarCohortInfo {
 export interface CadPrediction {
   prob: number;
   raw_prob?: number;
+  displayed_prob?: number;
+  driving_vessel?: 'LAD' | 'LCX' | 'RCA' | null;
   coherent_prob: number;
   similar_cohort?: SimilarCohortInfo;
   label: string;
@@ -48,6 +60,16 @@ export interface CadPrediction {
   high_sensitivity_threshold: number;
   nested_sensitivity?: number;
   coherence_adjusted: boolean;
+  flagged_by_vessel?: boolean;
+  flagged_vessels_screening?: string[];
+  flagged_vessels_balanced?: string[];
+  diseased_vessels_count?: number;
+  flagged_vessels_count?: number;
+  diffuse_or_non_focal?: boolean;
+  diffuse_or_non_focal_screening?: boolean;
+  diffuse_or_non_focal_balanced?: boolean;
+  diffuse_cad_message?: string;
+  plain_language_summary?: string;
 }
 
 export interface VesselPrediction {
@@ -57,7 +79,20 @@ export interface VesselPrediction {
   high_sens_label: string;
   threshold: number;
   high_sensitivity_threshold: number;
+  cutoff_applied?: number;
   nested_sensitivity?: number;
+  ppv?: number;
+}
+
+export interface CompletenessGroup {
+  provided: number;
+  total: number;
+}
+
+export interface CompletenessInfo {
+  provided: number;
+  total: number;
+  by_group: Record<string, CompletenessGroup>;
 }
 
 export interface PredictResponse {
@@ -65,6 +100,11 @@ export interface PredictResponse {
   vessels: Record<'LAD' | 'LCX' | 'RCA', VesselPrediction>;
   explain: Record<string, TargetExplanation>;
   cohort_defaults_applied: string[];
+  missing_features?: string[];
+  imputed_values?: Record<string, any>;
+  completeness?: CompletenessInfo;
+  reliability?: 'high' | 'moderate' | 'low';
+  warnings?: string[];
   disclaimer: string;
 }
 
@@ -73,6 +113,9 @@ export interface SamplePatient {
   name: string;
   description: string;
   data: Record<string, any>;
+  ground_truth_cath?: number;
+  cv_estimated_prob?: number;
+  seen_in_training?: boolean;
 }
 
 export interface GlobalShapItem {
@@ -89,6 +132,37 @@ export interface ModelMetricsResponse {
   shap_global: Record<string, GlobalShapItem[]>;
   model_card: Record<string, any>;
   dca?: Record<string, any>;
+  eval_curves?: {
+    roc: Record<string, { fpr: number[]; tpr: number[]; thresholds: number[]; auc: number }>;
+    pr: Record<string, { precision: number[]; recall: number[]; thresholds: number[]; pr_auc: number }>;
+    calibration: Record<string, { prob_true: number[]; prob_pred: number[]; brier: number }>;
+    confusion_matrices: Record<string, Record<string, any>>;
+    decision_curve: Record<string, any>;
+  };
+  full_operating_metrics_table?: Record<string, any>;
+  vessel_count_confusion?: {
+    balanced_05: {
+      matrix: number[][];
+      column_totals: number[];
+      row_totals: number[];
+      total_patients: number;
+    };
+    screening: {
+      matrix: number[][];
+      column_totals: number[];
+      row_totals: number[];
+      total_patients: number;
+    };
+  };
+}
+
+export interface WhatIfResponse {
+  baseline_cad_prob: number;
+  modified_cad_prob: number;
+  delta_cad_prob: number;
+  vessel_deltas: Record<string, number>;
+  baseline_prediction: PredictResponse;
+  modified_prediction: PredictResponse;
 }
 
 export interface VesselDef {

@@ -1,31 +1,41 @@
 # Demographic Fairness & Subgroup Validation Audit
 
 This audit evaluates predictive characteristics across demographic strata (Sex and Age) 
-for the primary CAD model at the clinical operating threshold (0.611). 
+for the primary CAD model across both operating modes (Screening 0.400 and Balanced 0.500). 
 All metrics are calculated on out-of-fold predictions with Wilson 95% confidence intervals.
 
-## 1. Subgroup Performance Breakdown
+## 1. Screening Mode Subgroup Performance (Cutoff 0.400 / High Sensitivity)
 
 | Stratum | n | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |
 |---|---|---|---|---|---|---|---|
-| **Male (n=176)** | 176 | 74.4% | 0.911 | 90.8% [84.7%–94.7%] | 75.6% [61.3%–85.8%] | 91.5% | 73.9% |
-| **Female (n=127)** | 127 | 67.7% | 0.952 | 93.0% [85.6%–96.8%] | 85.4% [71.6%–93.1%] | 93.0% | 85.4% |
-| **Age ≤ 65 (n=219)** | 219 | 65.3% | 0.937 | 88.8% [82.6%–93.0%] | 86.8% [77.5%–92.7%] | 92.7% | 80.5% |
-| **Age > 65 (n=84)** | 84 | 88.1% | 0.838 | 97.3% [90.7%–99.3%] | 30.0% [10.8%–60.3%] | 91.1% | 60.0% |
+| **Male (n=176)** | 176 | 74.4% | 0.912 | 95.4% [90.4%–97.9%] | 57.8% [43.3%–71.0%] | 86.8% | 81.2% |
+| **Female (n=127)** | 127 | 67.7% | 0.952 | 96.5% [90.2%–98.8%] | 68.3% [53.0%–80.4%] | 86.5% | 90.3% |
+| **Age ≤ 65 (n=219)** | 219 | 65.3% | 0.936 | 93.7% [88.5%–96.7%] | 67.1% [55.9%–76.6%] | 84.3% | 85.0% |
+| **Age > 65 (n=84)** | 84 | 88.1% | 0.826 | 100.0% [95.1%–100.0%] | 30.0% [10.8%–60.3%] | 91.4% | 100.0% |
 
-## 2. Fairness and Subgroup Comparisons
+## 2. Balanced Mode Subgroup Performance (Cutoff 0.500)
+
+| Stratum | n | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |
+|---|---|---|---|---|---|---|---|
+| **Male (n=176)** | 176 | 74.4% | 0.912 | 93.1% [87.5%–96.3%] | 68.9% [54.3%–80.5%] | 89.7% | 77.5% |
+| **Female (n=127)** | 127 | 67.7% | 0.952 | 96.5% [90.2%–98.8%] | 73.2% [58.1%–84.3%] | 88.3% | 90.9% |
+| **Age ≤ 65 (n=219)** | 219 | 65.3% | 0.936 | 92.3% [86.8%–95.7%] | 76.3% [65.6%–84.5%] | 88.0% | 84.1% |
+| **Age > 65 (n=84)** | 84 | 88.1% | 0.826 | 98.6% [92.7%–99.8%] | 30.0% [10.8%–60.3%] | 91.2% | 75.0% |
+
+## 3. Subgroup Comparisons & Parity
 
 - **Sex Comparison (Female vs. Male)**:
   - **Sample Size**: Male n=176 (131 CAD / 45 normal), Female n=127 (86 CAD / 41 normal).
-  - **Sensitivity**: Male 90.8% (95% CI: 84.7%–94.7%) vs Female 93.0% (95% CI: 85.6%–96.8%), gap = 2.2%.
-  - **Specificity**: Male 75.6% (95% CI: 61.3%–85.8%) vs Female 85.4% (95% CI: 71.6%–93.1%).
-  - **ROC-AUC**: Male 0.911 vs Female 0.952 (delta = 0.040).
-  - **Disparate Impact Ratio**: 0.917 (selection rates reflect underlying disease prevalence: 67.7% vs 74.4%).
+  - **Screening Sensitivity**: Male 95.4% (95% CI: 90.4%–97.9%) vs Female 96.5% (95% CI: 90.2%–98.8%), gap = 1.1%.
+  - **Screening Specificity**: Male 57.8% (95% CI: 43.3%–71.0%) vs Female 68.3% (95% CI: 53.0%–80.4%).
+  - **ROC-AUC**: Male 0.912 vs Female 0.952 (delta = 0.040).
+  - **Disparate Impact Ratio**: 0.924 (selection rates reflect underlying disease prevalence: 67.7% vs 74.4%).
 
 - **Age Comparison (Age > 65 vs. Age ≤ 65)**:
   - **Sample Size**: Age ≤ 65 n=219 (143 CAD / 76 normal), Age > 65 n=84 (74 CAD / 10 normal).
-  - **Sensitivity**: Age > 65 is 97.3% (95% CI: 90.7%–99.3%) vs Age ≤ 65 is 88.8% (95% CI: 82.6%–93.0%), gap = 8.5%.
-  - **Specificity**: Age > 65 is 30.0% (95% CI: 10.8%–60.3%) due to very high prevalence (88.1%, only 10 normal patients) vs Age ≤ 65 is 86.8% (95% CI: 77.5%–92.7%).
+  - **Screening Sensitivity**: Age > 65 is 100.0% (95% CI: 95.1%–100.0%) vs Age ≤ 65 is 93.7% (95% CI: 88.5%–96.7%), gap = 6.3%.
+  - **Screening Specificity**: Age > 65 is 30.0% (95% CI: 10.8%–60.3%) vs Age ≤ 65 is 67.1% (95% CI: 55.9%–76.6%).
 
-## 3. Clinical Takeaway
-The screening operating point prioritizes safety-first sensitivity (>88%) across all demographic subgroups. There is no difference detectable at this sample size; apparent specificity differences in seniors reflect high cohort prevalence and small subgroup sample size.
+## 4. Clinical Takeaway & Documented Limitations
+- **Safety Sensitivity**: Screening operating point prioritizes safety-first sensitivity (>93%) across both male and female groups with low sex disparity (gap = 1.1%).
+- **Known Limitation (Senior Specificity)**: In seniors aged > 65, specificity is markedly reduced (30.0%, 95% CI: 10.8%–60.3%, 3/10 normal patients identified) compared to younger adults (67.1% at screening, 76.3% balanced). This reflects severe referral bias and cohort imbalance in elderly patients (88.1% CAD prevalence, only 10 normal patients). Clinicians must note that positive flags in patients over 65 carry an elevated false-alarm rate.

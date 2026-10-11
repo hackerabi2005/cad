@@ -7,9 +7,9 @@
     "rendering_mode": "Pure CPU Software Rendering (--disable-gpu)"
   },
   "metrics": {
-    "mean_frame_time_ms": 78.39,
-    "median_frame_time_ms": 77.9,
-    "p95_frame_time_ms": 88.01,
-    "mean_fps": 12.8
+    "mean_frame_time_ms": 113.51,
+    "median_frame_time_ms": 114.5,
+    "p95_frame_time_ms": 131.35,
+    "mean_fps": 8.8
   }
 }

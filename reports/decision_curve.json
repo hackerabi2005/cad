@@ -1,37 +1,37 @@
 {
   "Cath": {
     "prevalence": 0.7162,
-    "operating_threshold": 0.611,
-    "net_benefit_at_operating_point": 0.5691,
-    "treat_all_net_benefit_at_operating_point": 0.2704,
-    "net_benefit_delta_at_cutoff_per_100": 29.73,
+    "operating_threshold": 0.4,
+    "net_benefit_at_operating_point": 0.6161,
+    "treat_all_net_benefit_at_operating_point": 0.527,
+    "net_benefit_delta_at_cutoff_per_100": 8.91,
     "cutoff_delta_ci_95": [
-      21.39,
-      38.17
+      5.06,
+      12.43
     ],
     "threshold_evaluations_per_100": {
       "pt_10": {
         "threshold": 0.1,
-        "delta_per_100": 0.18,
+        "delta_per_100": 0.04,
         "ci_95": [
-          0.04,
-          0.37
+          0.0,
+          0.11
         ]
       },
       "pt_20": {
         "threshold": 0.2,
-        "delta_per_100": 1.24,
+        "delta_per_100": 0.48,
         "ci_95": [
-          0.17,
-          2.15
+          -0.66,
+          1.49
         ]
       },
       "pt_30": {
         "threshold": 0.3,
-        "delta_per_100": 2.64,
+        "delta_per_100": 2.69,
         "ci_95": [
-          0.38,
-          4.76
+          0.24,
+          4.95
         ]
       }
     },
@@ -39,37 +39,37 @@
   },
   "LAD": {
     "prevalence": 0.5842,
-    "operating_threshold": 0.469,
-    "net_benefit_at_operating_point": 0.3765,
-    "treat_all_net_benefit_at_operating_point": 0.2169,
-    "net_benefit_delta_at_cutoff_per_100": 15.87,
+    "operating_threshold": 0.42,
+    "net_benefit_at_operating_point": 0.4062,
+    "treat_all_net_benefit_at_operating_point": 0.283,
+    "net_benefit_delta_at_cutoff_per_100": 12.31,
     "cutoff_delta_ci_95": [
-      10.34,
-      21.15
+      7.64,
+      16.83
     ],
     "threshold_evaluations_per_100": {
       "pt_10": {
         "threshold": 0.1,
-        "delta_per_100": -0.0,
+        "delta_per_100": 0.01,
         "ci_95": [
-          0.0,
-          0.0
+          -0.81,
+          0.48
         ]
       },
       "pt_20": {
         "threshold": 0.2,
-        "delta_per_100": 0.08,
+        "delta_per_100": 1.46,
         "ci_95": [
-          -0.0,
-          0.25
+          -0.25,
+          3.05
         ]
       },
       "pt_30": {
         "threshold": 0.3,
-        "delta_per_100": 2.52,
+        "delta_per_100": 4.9,
         "ci_95": [
-          0.71,
-          4.34
+          1.84,
+          7.69
         ]
       }
     },
@@ -77,37 +77,37 @@
   },
   "LCX": {
     "prevalence": 0.3927,
-    "operating_threshold": 0.217,
-    "net_benefit_at_operating_point": 0.2423,
-    "treat_all_net_benefit_at_operating_point": 0.2244,
-    "net_benefit_delta_at_cutoff_per_100": 1.71,
+    "operating_threshold": 0.248,
+    "net_benefit_at_operating_point": 0.2443,
+    "treat_all_net_benefit_at_operating_point": 0.1925,
+    "net_benefit_delta_at_cutoff_per_100": 5.19,
     "cutoff_delta_ci_95": [
-      -1.08,
-      4.62
+      2.34,
+      8.02
     ],
     "threshold_evaluations_per_100": {
       "pt_10": {
         "threshold": 0.1,
-        "delta_per_100": 0.2,
+        "delta_per_100": 0.27,
         "ci_95": [
-          -0.92,
-          1.03
+          -0.59,
+          0.84
         ]
       },
       "pt_20": {
         "threshold": 0.2,
-        "delta_per_100": 1.32,
+        "delta_per_100": 2.35,
         "ci_95": [
-          -1.24,
-          3.88
+          0.08,
+          4.46
         ]
       },
       "pt_30": {
         "threshold": 0.3,
-        "delta_per_100": 6.87,
+        "delta_per_100": 6.31,
         "ci_95": [
-          2.97,
-          10.85
+          2.45,
+          10.0
         ]
       }
     },
@@ -115,37 +115,37 @@
   },
   "RCA": {
     "prevalence": 0.3762,
-    "operating_threshold": 0.213,
-    "net_benefit_at_operating_point": 0.2282,
-    "treat_all_net_benefit_at_operating_point": 0.2074,
-    "net_benefit_delta_at_cutoff_per_100": 2.13,
+    "operating_threshold": 0.232,
+    "net_benefit_at_operating_point": 0.2323,
+    "treat_all_net_benefit_at_operating_point": 0.1878,
+    "net_benefit_delta_at_cutoff_per_100": 4.45,
     "cutoff_delta_ci_95": [
-      -0.83,
-      4.74
+      1.67,
+      7.15
     ],
     "threshold_evaluations_per_100": {
       "pt_10": {
         "threshold": 0.1,
-        "delta_per_100": 0.59,
+        "delta_per_100": 0.29,
         "ci_95": [
-          -0.4,
-          1.47
+          -0.44,
+          0.84
         ]
       },
       "pt_20": {
         "threshold": 0.2,
-        "delta_per_100": 1.85,
+        "delta_per_100": 2.52,
         "ci_95": [
-          -0.91,
-          4.29
+          0.08,
+          4.87
         ]
       },
       "pt_30": {
         "threshold": 0.3,
-        "delta_per_100": 6.2,
+        "delta_per_100": 7.03,
         "ci_95": [
-          2.07,
-          10.56
+          2.73,
+          11.51
         ]
       }
     },

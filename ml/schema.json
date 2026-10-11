@@ -7,7 +7,14 @@
     "min": 30.0,
     "max": 86.0,
     "mean": 58.9,
-    "median": 58.0
+    "median": 58.0,
+    "phys_min": 18.0,
+    "phys_max": 120.0,
+    "ref_low": 18.0,
+    "ref_high": 65.0,
+    "source": "Adult Cohort Non-Senior Range",
+    "reviewed": false,
+    "domain": "demographics"
   },
   "Weight": {
     "group": "demographic",
@@ -17,7 +24,10 @@
     "min": 48.0,
     "max": 120.0,
     "mean": 73.83,
-    "median": 74.0
+    "median": 74.0,
+    "phys_min": 25.0,
+    "phys_max": 300.0,
+    "domain": "demographics"
   },
   "Length": {
     "group": "demographic",
@@ -27,7 +37,10 @@
     "min": 140.0,
     "max": 188.0,
     "mean": 164.72,
-    "median": 165.0
+    "median": 165.0,
+    "phys_min": 100.0,
+    "phys_max": 250.0,
+    "domain": "demographics"
   },
   "Sex": {
     "group": "demographic",
@@ -37,7 +50,9 @@
     "categories": [
       "Male",
       "Fmale"
-    ]
+    ],
+    "mode": "Male",
+    "domain": "demographics"
   },
   "BMI": {
     "group": "demographic",
@@ -47,7 +62,14 @@
     "min": 18.115412710007302,
     "max": 40.90065778377467,
     "mean": 27.25,
-    "median": 26.775510204081634
+    "median": 26.775510204081634,
+    "phys_min": 10.0,
+    "phys_max": 80.0,
+    "ref_low": 18.5,
+    "ref_high": 24.9,
+    "source": "WHO International Classification",
+    "reviewed": false,
+    "domain": "demographics"
   },
   "DM": {
     "group": "symptoms-exam",
@@ -57,17 +79,21 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "symptoms_exam"
   },
   "HTN": {
     "group": "symptoms-exam",
     "encoding": "binary",
     "unit": "",
-    "label": "Hypertension",
+    "label": "Hypertension (app rule: BP >= 140)",
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 1,
+    "domain": "symptoms_exam"
   },
   "Current Smoker": {
     "group": "symptoms-exam",
@@ -77,7 +103,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "symptoms_exam"
   },
   "EX-Smoker": {
     "group": "symptoms-exam",
@@ -87,7 +115,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "symptoms_exam"
   },
   "FH": {
     "group": "symptoms-exam",
@@ -97,17 +127,21 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "symptoms_exam"
   },
   "Obesity": {
     "group": "symptoms-exam",
     "encoding": "binary",
     "unit": "",
-    "label": "Obesity",
+    "label": "Obesity flag (dataset definition: BMI > 25)",
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "Y",
+    "domain": "symptoms_exam"
   },
   "CRF": {
     "group": "symptoms-exam",
@@ -117,7 +151,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "CVA": {
     "group": "symptoms-exam",
@@ -127,7 +163,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Airway disease": {
     "group": "symptoms-exam",
@@ -137,7 +175,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Thyroid Disease": {
     "group": "symptoms-exam",
@@ -147,7 +187,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "CHF": {
     "group": "symptoms-exam",
@@ -157,17 +199,21 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "DLP": {
     "group": "symptoms-exam",
     "encoding": "binary",
     "unit": "",
-    "label": "Dyslipidemia",
+    "label": "Dyslipidemia (app rule: LDL >= 130 or TG >= 150)",
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "BP": {
     "group": "symptoms-exam",
@@ -177,7 +223,14 @@
     "min": 90.0,
     "max": 190.0,
     "mean": 129.55,
-    "median": 130.0
+    "median": 130.0,
+    "phys_min": 50.0,
+    "phys_max": 280.0,
+    "ref_low": 90.0,
+    "ref_high": 120.0,
+    "source": "AHA/ACC 2017 Guidelines",
+    "reviewed": false,
+    "domain": "symptoms_exam"
   },
   "PR": {
     "group": "symptoms-exam",
@@ -187,7 +240,14 @@
     "min": 50.0,
     "max": 110.0,
     "mean": 75.14,
-    "median": 70.0
+    "median": 70.0,
+    "phys_min": 30.0,
+    "phys_max": 250.0,
+    "ref_low": 60.0,
+    "ref_high": 100.0,
+    "source": "AHA Normal Resting Heart Rate",
+    "reviewed": false,
+    "domain": "symptoms_exam"
   },
   "Edema": {
     "group": "symptoms-exam",
@@ -197,7 +257,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "symptoms_exam"
   },
   "Weak Peripheral Pulse": {
     "group": "symptoms-exam",
@@ -207,7 +269,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Lung rales": {
     "group": "symptoms-exam",
@@ -217,7 +281,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Systolic Murmur": {
     "group": "symptoms-exam",
@@ -227,7 +293,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Diastolic Murmur": {
     "group": "symptoms-exam",
@@ -237,7 +305,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Typical Chest Pain": {
     "group": "symptoms-exam",
@@ -247,7 +317,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 1,
+    "domain": "symptoms_exam"
   },
   "Dyspnea": {
     "group": "symptoms-exam",
@@ -257,7 +329,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Function Class": {
     "group": "symptoms-exam",
@@ -267,7 +341,10 @@
     "min": 0.0,
     "max": 3.0,
     "mean": 0.66,
-    "median": 0.0
+    "median": 0.0,
+    "phys_min": 0.0,
+    "phys_max": 4.0,
+    "domain": "symptoms_exam"
   },
   "Atypical": {
     "group": "symptoms-exam",
@@ -277,7 +354,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Nonanginal": {
     "group": "symptoms-exam",
@@ -287,7 +366,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "LowTH Ang": {
     "group": "symptoms-exam",
@@ -297,7 +378,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "symptoms_exam"
   },
   "Q Wave": {
     "group": "ECG",
@@ -307,7 +390,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "ecg"
   },
   "St Elevation": {
     "group": "ECG",
@@ -317,7 +402,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "ecg"
   },
   "St Depression": {
     "group": "ECG",
@@ -327,7 +414,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "ecg"
   },
   "Tinversion": {
     "group": "ECG",
@@ -337,7 +426,9 @@
     "categories": [
       0,
       1
-    ]
+    ],
+    "mode": 0,
+    "domain": "ecg"
   },
   "LVH": {
     "group": "ECG",
@@ -347,7 +438,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "ecg"
   },
   "Poor R Progression": {
     "group": "ECG",
@@ -357,7 +450,9 @@
     "categories": [
       "N",
       "Y"
-    ]
+    ],
+    "mode": "N",
+    "domain": "ecg"
   },
   "BBB": {
     "group": "ECG",
@@ -368,7 +463,9 @@
       "N",
       "LBBB",
       "RBBB"
-    ]
+    ],
+    "mode": "N",
+    "domain": "ecg"
   },
   "FBS": {
     "group": "lab",
@@ -378,7 +475,14 @@
     "min": 62.0,
     "max": 400.0,
     "mean": 119.18,
-    "median": 98.0
+    "median": 98.0,
+    "phys_min": 20.0,
+    "phys_max": 600.0,
+    "ref_low": 70.0,
+    "ref_high": 99.0,
+    "source": "ADA 2024 Standards of Care",
+    "reviewed": false,
+    "domain": "labs"
   },
   "CR": {
     "group": "lab",
@@ -388,7 +492,14 @@
     "min": 0.5,
     "max": 2.2,
     "mean": 1.06,
-    "median": 1.0
+    "median": 1.0,
+    "phys_min": 0.1,
+    "phys_max": 20.0,
+    "ref_low": 0.6,
+    "ref_high": 1.2,
+    "source": "KDIGO Clinical Guidelines",
+    "reviewed": false,
+    "domain": "labs"
   },
   "TG": {
     "group": "lab",
@@ -398,7 +509,14 @@
     "min": 37.0,
     "max": 1050.0,
     "mean": 150.34,
-    "median": 122.0
+    "median": 122.0,
+    "phys_min": 20.0,
+    "phys_max": 2000.0,
+    "ref_low": 40.0,
+    "ref_high": 150.0,
+    "source": "NCEP ATP III Guidelines",
+    "reviewed": false,
+    "domain": "labs"
   },
   "LDL": {
     "group": "lab",
@@ -408,7 +526,14 @@
     "min": 18.0,
     "max": 232.0,
     "mean": 104.64,
-    "median": 100.0
+    "median": 100.0,
+    "phys_min": 10.0,
+    "phys_max": 500.0,
+    "ref_low": 50.0,
+    "ref_high": 100.0,
+    "source": "AHA/ACC Cholesterol Guidelines",
+    "reviewed": false,
+    "domain": "labs"
   },
   "HDL": {
     "group": "lab",
@@ -418,7 +543,14 @@
     "min": 15.9,
     "max": 111.0,
     "mean": 40.23,
-    "median": 39.0
+    "median": 39.0,
+    "phys_min": 5.0,
+    "phys_max": 200.0,
+    "ref_low": 40.0,
+    "ref_high": 60.0,
+    "source": "NCEP ATP III Guidelines",
+    "reviewed": false,
+    "domain": "labs"
   },
   "BUN": {
     "group": "lab",
@@ -428,7 +560,14 @@
     "min": 6.0,
     "max": 52.0,
     "mean": 17.5,
-    "median": 16.0
+    "median": 16.0,
+    "phys_min": 2.0,
+    "phys_max": 150.0,
+    "ref_low": 7.0,
+    "ref_high": 20.0,
+    "source": "Standard Clinical Chemistry",
+    "reviewed": false,
+    "domain": "labs"
   },
   "ESR": {
     "group": "lab",
@@ -438,7 +577,14 @@
     "min": 1.0,
     "max": 90.0,
     "mean": 19.46,
-    "median": 15.0
+    "median": 15.0,
+    "phys_min": 0.0,
+    "phys_max": 150.0,
+    "ref_low": 0.0,
+    "ref_high": 20.0,
+    "source": "Westergren Reference Range",
+    "reviewed": false,
+    "domain": "labs"
   },
   "HB": {
     "group": "lab",
@@ -448,7 +594,14 @@
     "min": 8.9,
     "max": 17.6,
     "mean": 13.15,
-    "median": 13.2
+    "median": 13.2,
+    "phys_min": 3.0,
+    "phys_max": 25.0,
+    "ref_low": 12.0,
+    "ref_high": 17.5,
+    "source": "WHO Diagnostic Criteria",
+    "reviewed": false,
+    "domain": "labs"
   },
   "K": {
     "group": "lab",
@@ -458,7 +611,14 @@
     "min": 3.0,
     "max": 6.6,
     "mean": 4.23,
-    "median": 4.2
+    "median": 4.2,
+    "phys_min": 1.5,
+    "phys_max": 9.0,
+    "ref_low": 3.5,
+    "ref_high": 5.0,
+    "source": "Standard Serum Electrolytes",
+    "reviewed": false,
+    "domain": "labs"
   },
   "Na": {
     "group": "lab",
@@ -468,7 +628,14 @@
     "min": 128.0,
     "max": 156.0,
     "mean": 141.0,
-    "median": 141.0
+    "median": 141.0,
+    "phys_min": 100.0,
+    "phys_max": 180.0,
+    "ref_low": 135.0,
+    "ref_high": 145.0,
+    "source": "Standard Serum Electrolytes",
+    "reviewed": false,
+    "domain": "labs"
   },
   "WBC": {
     "group": "lab",
@@ -478,7 +645,14 @@
     "min": 3700.0,
     "max": 18000.0,
     "mean": 7562.05,
-    "median": 7100.0
+    "median": 7100.0,
+    "phys_min": 500.0,
+    "phys_max": 50000.0,
+    "ref_low": 4000.0,
+    "ref_high": 11000.0,
+    "source": "Standard CBC Reference",
+    "reviewed": false,
+    "domain": "labs"
   },
   "Lymph": {
     "group": "lab",
@@ -488,7 +662,14 @@
     "min": 7.0,
     "max": 60.0,
     "mean": 32.4,
-    "median": 32.0
+    "median": 32.0,
+    "phys_min": 1.0,
+    "phys_max": 99.0,
+    "ref_low": 20.0,
+    "ref_high": 40.0,
+    "source": "Standard Differential Count",
+    "reviewed": false,
+    "domain": "labs"
   },
   "Neut": {
     "group": "lab",
@@ -498,7 +679,14 @@
     "min": 32.0,
     "max": 89.0,
     "mean": 60.15,
-    "median": 60.0
+    "median": 60.0,
+    "phys_min": 1.0,
+    "phys_max": 99.0,
+    "ref_low": 40.0,
+    "ref_high": 70.0,
+    "source": "Standard Differential Count",
+    "reviewed": false,
+    "domain": "labs"
   },
   "PLT": {
     "group": "lab",
@@ -508,7 +696,14 @@
     "min": 25.0,
     "max": 742.0,
     "mean": 221.49,
-    "median": 210.0
+    "median": 210.0,
+    "phys_min": 5.0,
+    "phys_max": 1500.0,
+    "ref_low": 150.0,
+    "ref_high": 450.0,
+    "source": "Standard CBC Reference",
+    "reviewed": false,
+    "domain": "labs"
   },
   "EF-TTE": {
     "group": "echo",
@@ -518,7 +713,14 @@
     "min": 15.0,
     "max": 60.0,
     "mean": 47.23,
-    "median": 50.0
+    "median": 50.0,
+    "phys_min": 5.0,
+    "phys_max": 90.0,
+    "ref_low": 50.0,
+    "ref_high": 70.0,
+    "source": "ASE/EACVI Guidelines",
+    "reviewed": false,
+    "domain": "echo"
   },
   "Region RWMA": {
     "group": "echo",
@@ -528,7 +730,10 @@
     "min": 0.0,
     "max": 4.0,
     "mean": 0.62,
-    "median": 0.0
+    "median": 0.0,
+    "phys_min": 0.0,
+    "phys_max": 4.0,
+    "domain": "echo"
   },
   "VHD": {
     "group": "echo",
@@ -540,6 +745,8 @@
       "mild",
       "Moderate",
       "Severe"
-    ]
+    ],
+    "mode": "mild",
+    "domain": "echo"
   }
 }

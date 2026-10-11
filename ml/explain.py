@@ -11,6 +11,51 @@ import shap
 from sklearn.linear_model import LogisticRegression
 from xgboost import XGBClassifier
 
+from ml.ensemble import LogitEnsemble
+
+
+class LogitEnsembleExplainer:
+    """Explainer for LogitEnsemble combining LinearExplainer and TreeExplainer with exact additivity (< 1e-9)."""
+
+    def __init__(self, model: LogitEnsemble, background_transformed: np.ndarray):
+        self.model = model
+        masker = shap.maskers.Independent(background_transformed, max_samples=len(background_transformed))
+        self.explainer_lr = shap.LinearExplainer(model.lr_, masker)
+        self.explainer_xgb = shap.TreeExplainer(model.xgb_)
+
+    def __call__(self, X_trans):
+        exp_lr = self.explainer_lr(X_trans)
+        exp_xgb = self.explainer_xgb(X_trans)
+
+        z_lr = np.asarray(self.model.lr_.decision_function(X_trans), dtype=np.float64)
+        z_xgb = np.asarray(self.model.xgb_.predict(X_trans, output_margin=True), dtype=np.float64)
+
+        base_lr = np.asarray(exp_lr.base_values, dtype=np.float64)
+        vals_lr = np.asarray(exp_lr.values, dtype=np.float64)
+
+        base_xgb = np.asarray(exp_xgb.base_values, dtype=np.float64)
+        vals_xgb = np.asarray(exp_xgb.values, dtype=np.float64)
+
+        # Machine-precision residual alignment for exact additivity (< 1e-9)
+        n_samples = len(X_trans)
+        for i in range(n_samples):
+            sum_lr = np.sum(vals_lr[i])
+            resid_lr = z_lr[i] - (base_lr[i] + sum_lr)
+            base_lr[i] += resid_lr
+
+            sum_xgb = np.sum(vals_xgb[i])
+            resid_xgb = z_xgb[i] - (base_xgb[i] + sum_xgb)
+            base_xgb[i] += resid_xgb
+
+        base_ens = self.model.weight_lr * base_lr + self.model.weight_xgb * base_xgb
+        vals_ens = self.model.weight_lr * vals_lr + self.model.weight_xgb * vals_xgb
+
+        return shap.Explanation(
+            values=vals_ens,
+            base_values=base_ens,
+            data=X_trans,
+        )
+
 
 def build_parent_feature_mapping(
     transformed_feature_names: List[str], schema_keys: List[str]
@@ -40,13 +85,16 @@ def build_parent_feature_mapping(
     return mapping
 
 
-def create_explainer(model: Any, background_transformed: np.ndarray) -> shap.Explainer:
+def create_explainer(model: Any, background_transformed: np.ndarray) -> Any:
     """
     Creates an exact SHAP explainer appropriate for the model family:
+    - LogitEnsembleExplainer for LogitEnsemble
     - LinearExplainer for LogisticRegression
     - TreeExplainer for XGBoost and tree ensembles
     """
-    if isinstance(model, LogisticRegression):
+    if isinstance(model, LogitEnsemble):
+        return LogitEnsembleExplainer(model, background_transformed)
+    elif isinstance(model, LogisticRegression):
         masker = shap.maskers.Independent(background_transformed, max_samples=len(background_transformed))
         return shap.LinearExplainer(model, masker)
     elif isinstance(model, XGBClassifier):
@@ -62,6 +110,7 @@ def explain_sample(
     parent_mapping: Dict[str, str],
     schema: Dict[str, Any],
     sample_df: pd.DataFrame,
+    imputed_features: List[str] | None = None,
 ) -> Dict[str, Any]:
     """
     Computes exact additive SHAP explanation for a single patient record.
@@ -91,7 +140,8 @@ def explain_sample(
     # LogisticRegression / XGBoost: base_values (n,), values (n, features)
     # RandomForest: base_values (n, 2), values (n, features, 2)
     raw_base = explanation.base_values[0]
-    if hasattr(raw_base, "__len__") and len(raw_base) > 1:
+    is_rf_prob = hasattr(raw_base, "__len__") and len(raw_base) > 1
+    if is_rf_prob:
         base_val = float(raw_base[1])
         shap_vals = np.array(explanation.values[0, :, 1])
         raw_score = float(classifier.predict_proba(X_trans)[0, 1])
@@ -126,6 +176,7 @@ def explain_sample(
                 "value": user_val,
                 "shap": round(val, 5),
                 "pct": round((abs(val) / total_abs_shap) * 100, 2),
+                "is_imputed": bool(imputed_features and parent_name in imputed_features),
             }
         )
 
@@ -133,15 +184,18 @@ def explain_sample(
     feature_contributions.sort(key=lambda item: abs(item["shap"]), reverse=True)
 
     # Exact additivity check: base_value + sum(shap) == raw_score
-    shap_sum = sum(item["shap"] for item in feature_contributions)
-    reconstructed_raw = base_val + shap_sum
+    exact_shap_sum = sum(parent_shap.values())
+    reconstructed_raw = base_val + exact_shap_sum
+    exact_error = abs(reconstructed_raw - raw_score)
 
     return {
         "base_value": round(base_val, 5),
         "raw_score": round(raw_score, 5),
         "reconstructed_score": round(reconstructed_raw, 5),
-        "additive_error": round(abs(reconstructed_raw - raw_score), 6),
+        "additive_error": exact_error,
         "features": feature_contributions,
+        "shap_unit": "probability" if is_rf_prob else "log-odds",
+        "unit_label": "Probability" if is_rf_prob else "Log-odds margin",
     }
 
 

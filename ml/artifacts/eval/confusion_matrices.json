@@ -1,0 +1,106 @@
+{
+  "Cath": {
+    "balanced": {
+      "threshold": 0.5,
+      "tn": 61,
+      "fp": 25,
+      "fn": 12,
+      "tp": 205,
+      "sensitivity": 0.9447,
+      "specificity": 0.7093,
+      "accuracy": 0.8779,
+      "ppv": 0.8913,
+      "npv": 0.8356
+    },
+    "screening": {
+      "threshold": 0.4,
+      "tn": 54,
+      "fp": 32,
+      "fn": 9,
+      "tp": 208,
+      "sensitivity": 0.9585,
+      "specificity": 0.6279,
+      "accuracy": 0.8647,
+      "ppv": 0.8667,
+      "npv": 0.8571
+    }
+  },
+  "LAD": {
+    "balanced": {
+      "threshold": 0.5,
+      "tn": 87,
+      "fp": 39,
+      "fn": 26,
+      "tp": 151,
+      "sensitivity": 0.8531,
+      "specificity": 0.6905,
+      "accuracy": 0.7855,
+      "ppv": 0.7947,
+      "npv": 0.7699
+    },
+    "screening": {
+      "threshold": 0.42,
+      "tn": 75,
+      "fp": 51,
+      "fn": 17,
+      "tp": 160,
+      "sensitivity": 0.904,
+      "specificity": 0.5952,
+      "accuracy": 0.7756,
+      "ppv": 0.7583,
+      "npv": 0.8152
+    }
+  },
+  "LCX": {
+    "balanced": {
+      "threshold": 0.5,
+      "tn": 147,
+      "fp": 37,
+      "fn": 59,
+      "tp": 60,
+      "sensitivity": 0.5042,
+      "specificity": 0.7989,
+      "accuracy": 0.6832,
+      "ppv": 0.6186,
+      "npv": 0.7136
+    },
+    "screening": {
+      "threshold": 0.248,
+      "tn": 81,
+      "fp": 103,
+      "fn": 11,
+      "tp": 108,
+      "sensitivity": 0.9076,
+      "specificity": 0.4402,
+      "accuracy": 0.6238,
+      "ppv": 0.5118,
+      "npv": 0.8804
+    }
+  },
+  "RCA": {
+    "balanced": {
+      "threshold": 0.5,
+      "tn": 162,
+      "fp": 27,
+      "fn": 62,
+      "tp": 52,
+      "sensitivity": 0.4561,
+      "specificity": 0.8571,
+      "accuracy": 0.7063,
+      "ppv": 0.6582,
+      "npv": 0.7232
+    },
+    "screening": {
+      "threshold": 0.232,
+      "tn": 81,
+      "fp": 108,
+      "fn": 11,
+      "tp": 103,
+      "sensitivity": 0.9035,
+      "specificity": 0.4286,
+      "accuracy": 0.6073,
+      "ppv": 0.4882,
+      "npv": 0.8804
+    }
+  }
+}

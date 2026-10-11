@@ -1,0 +1,46 @@
+Cardio3D AI — Legal & Third-Party Notices
+
+================================================================================
+1. Software Code
+================================================================================
+Copyright (c) 2026 Cardio3D AI Authors.
+Licensed under the MIT License (see LICENSE).
+
+================================================================================
+2. 3D Anatomical Heart Model (web/public/models/heart.glb)
+================================================================================
+This work incorporates and modifies 3D anatomical models from BodyParts3D:
+BodyParts3D, © The Database Center for Life Science (DBCLS), Japan.
+Licensed under Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP).
+URL: https://lifesciencedb.jp/bp3d/
+
+The derived asset `web/public/models/heart.glb` was constructed
+via `scripts/build_heart_glb.py` by extracting
+anatomical artery branches (LAD, LCX, RCA), the ascending aorta, and performing 70% quadric
+decimation on myocardial chamber walls to meet real-time rendering budgets (83,600 triangles).
+
+Pursuant to the ShareAlike condition of CC BY-SA 2.1 Japan, `web/public/models/heart.glb`
+and any derivative coronary artery 3D meshes are released and distributed under the
+identical Creative Commons Attribution-ShareAlike 2.1 Japan (CC BY-SA 2.1 JP) license.
+
+================================================================================
+3. Clinical Dataset
+================================================================================
+Dataset: UCI Extension of Z-Alizadeh Sani CAD Dataset (UCI Dataset ID: 411).
+Origin: Shaheed Rajaei Cardiovascular, Medical and Research Center, Tehran, Iran (303 patients referred for coronary angiography).
+Citation: Alizadehsani, R., Roshanzamir, M., & Sani, Z. (2017).
+"extention of Z-Alizadeh sani dataset [Dataset]". UCI Machine Learning Repository / Mendeley Data.
+https://doi.org/10.17632/bgf5czvpg2.1 (also https://doi.org/10.24432/C5461K)
+Licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
+
+================================================================================
+4. BodyParts3D Part ID Mapping (web/public/models/heart.glb)
+================================================================================
+Node Name       BP3D ID   FMA ID      Anatomical Structure
+---------       -------   ------      --------------------
+LAD             FJ3240    FMA:70557   Left anterior descending artery
+LCX             FJ3241    FMA:70558   Circumflex branch of left coronary artery
+RCA             FJ3242    FMA:70559   Right coronary artery
+Aorta           FJ1118    FMA:3734    Ascending aorta & aortic root
+Heart_Muscle    FJ1115    FMA:7088    Combined myocardium chamber walls (decimated)
+

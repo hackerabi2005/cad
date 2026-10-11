@@ -3,11 +3,15 @@
 .PHONY: setup train-local test test-ui serve clean build-3d build-web report
 
 setup:
-	pip install -r ml/requirements.txt
+	pip install -r requirements.txt
+	cd web && npm install
+
+setup-dev:
+	pip install -r requirements-dev.txt
 	cd web && npm install
 
 build-3d:
-	python scripts/build_heart_glb.py
+	python scripts/prepare_heart_mesh.py
 
 train-local:
 	python -m ml.train

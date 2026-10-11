@@ -1,6 +1,6 @@
 # PLAN.md — CAD Risk Prediction & Interactive 3D Coronary Viewer
 
-## 0. Core Decisions (FIX_PLAN.md Alignment)
+## 0. Core Clinical & Architectural Decisions
 
 1. **Row 93 Alignment (Option 2)**:
    - In the raw dataset, row index 93 (spreadsheet row 95) contains `LAD='Stenotic'`, `LCX='Normal'`, `RCA='Normal'`, but `Cath='Normal'`.

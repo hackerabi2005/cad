@@ -1,0 +1,111 @@
+{
+  "checks": [
+    {
+      "name": "tail fuzz HB->422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "tail fuzz EF-TTE->422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "tail fuzz DM->422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "tail fuzz Age->422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "tail fuzz Foo->422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "tail fuzz zero-500s",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "E1 CORS no reflection",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "E2 security headers",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "E3 api no-store",
+      "ok": true,
+      "detail": "no-store, no-cache, must-revalidate"
+    },
+    {
+      "name": "E4 54 typed fields",
+      "ok": true,
+      "detail": "fields=54"
+    },
+    {
+      "name": "E4 response_model",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "E5 samples.json",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "E6 MANIFEST valid 64-hex",
+      "ok": true,
+      "detail": "bundle_bytes=2393085"
+    },
+    {
+      "name": "A3 phys bounds present",
+      "ok": true,
+      "detail": "missing=[]"
+    },
+    {
+      "name": "whatif delta math",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "name": "disclaimer invariant",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "ensemble proba==sigmoid(margin)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "ensemble margin avg identity",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "G1 video not fabricated",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "CITATION.cff exists",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "requirements-dev exists",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "pass": 21,
+  "fail": 0
+}

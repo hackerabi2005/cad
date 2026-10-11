@@ -5,12 +5,12 @@ export function DisclaimerHeaderBanner() {
   return (
     <div
       id="safety-disclaimer-banner"
-      className="w-full bg-gradient-to-r from-amber-500/15 via-amber-500/25 to-amber-500/15 border-b border-amber-500/30 px-4 py-2 flex items-center justify-center text-center text-xs font-semibold text-amber-200 select-none shadow-sm z-30"
+      className="w-full bg-slate-950/90 bg-gradient-to-r from-amber-500/15 via-amber-500/25 to-amber-500/15 border-b border-amber-500/30 px-3 py-1.5 flex items-center justify-center text-center text-xs font-semibold text-amber-200 select-none shadow-sm sticky top-0 z-30 backdrop-blur-md"
     >
       <div className="flex items-center gap-2 max-w-5xl">
-        <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 animate-pulse" />
-        <span>
-          <strong>Clinical Safety Disclaimer:</strong> Decision support & educational use only — not a substitute for formal diagnostic imaging, catheterization, or physician judgment.
+        <AlertTriangle className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 animate-pulse" />
+        <span className="text-[11px] sm:text-xs">
+          <strong>Clinical Safety Disclaimer:</strong> Decision support / educational purposes only — not a substitute for formal diagnostic imaging.
         </span>
       </div>
     </div>

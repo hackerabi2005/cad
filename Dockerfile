@@ -24,11 +24,15 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY api/ ./api/
 COPY ml/ ./ml/
-COPY data/ ./data/
-COPY docs/ ./docs/
 COPY reports/ ./reports/
 
 COPY --from=frontend-builder /app/web/dist ./web/dist
+
+# Security hardening: Non-root production user
+RUN groupadd -r cadgroup && useradd -r -g cadgroup -d /app -s /sbin/nologin caduser && \
+    chown -R caduser:cadgroup /app
+
+USER caduser
 
 EXPOSE 8000
 

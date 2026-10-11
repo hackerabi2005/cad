@@ -1,0 +1,48 @@
+{
+  "targets": {
+    "Cath": {
+      "id": "Cath",
+      "name": "Overall CAD (Cath ≥50%)",
+      "model_type": "LogitEnsemble",
+      "mesh_id": null,
+      "territory": "Global Coronary Tree",
+      "domain": "epicardial_circulation",
+      "description": "Composite obstructive coronary artery disease across any major branch",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.4
+    },
+    "LAD": {
+      "id": "LAD",
+      "name": "Left Anterior Descending",
+      "model_type": "LogitEnsemble",
+      "mesh_id": "LAD",
+      "territory": "Anterior myocardium & anterior interventricular septum (AHA Segments 1, 2, 7, 8, 13, 14, 17)",
+      "domain": "coronary_branch",
+      "description": "Left anterior descending artery supplying anterior wall and ventricular apex",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.42
+    },
+    "LCX": {
+      "id": "LCX",
+      "name": "Left Circumflex Artery",
+      "model_type": "LogitEnsemble",
+      "mesh_id": "LCX",
+      "territory": "Lateral wall & posterior base of left ventricle (AHA Segments 5, 6, 11, 12, 16)",
+      "domain": "coronary_branch",
+      "description": "Left circumflex artery coursing laterally around the coronary sulcus",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.248
+    },
+    "RCA": {
+      "id": "RCA",
+      "name": "Right Coronary Artery",
+      "model_type": "LogitEnsemble",
+      "mesh_id": "RCA",
+      "territory": "Right ventricle, diaphragmatic inferior wall, SA and AV nodes (AHA Segments 3, 4, 9, 10, 15)",
+      "domain": "coronary_branch",
+      "description": "Right coronary artery coursing through the right atrioventricular sulcus",
+      "default_threshold": 0.5,
+      "high_sensitivity_threshold": 0.232
+    }
+  }
+}

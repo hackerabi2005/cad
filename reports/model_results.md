@@ -2,48 +2,24 @@
 
 Evaluated across 5-fold Cross-Validation with 3 repeats (15 total folds per model).
 
-## 1. Candidate Model Cross-Validation Benchmarks (Default Cutoff = 0.50)
+## 1. Production Model Benchmarks: Default Cutoff (0.50) vs Sensitivity-First Operating Threshold (≥90% Sensitivity)
 
-| Target | Model | ROC-AUC (mean±SD) | PR-AUC | F1-Score | Sens. (Recall) | Specificity | PPV | NPV | Brier Score |
-|---|---|---|---|---|---|---|---|---|---|
-| Cath | Baseline_Majority | 0.500 ± 0.000 | 0.716 | 0.835 | 1.000 | 0.000 | 0.716 | 0.000 | 0.284 |
-| Cath | LogisticRegression | 0.929 ± 0.024 | 0.971 | 0.909 | 0.934 | 0.698 | 0.887 | 0.812 | 0.098 |
-| Cath | RandomForest | 0.929 ± 0.029 | 0.971 | 0.910 | 0.946 | 0.663 | 0.878 | 0.835 | 0.113 |
-| Cath | XGBoost | 0.924 ± 0.024 | 0.970 | 0.910 | 0.929 | 0.713 | 0.892 | 0.809 | 0.101 |
-| LAD | Baseline_Majority | 0.500 ± 0.000 | 0.584 | 0.738 | 1.000 | 0.000 | 0.584 | 0.000 | 0.416 |
-| LAD | LogisticRegression | 0.829 ± 0.054 | 0.874 | 0.793 | 0.816 | 0.664 | 0.777 | 0.725 | 0.165 |
-| LAD | RandomForest | 0.846 ± 0.049 | 0.883 | 0.819 | 0.874 | 0.635 | 0.773 | 0.792 | 0.168 |
-| LAD | XGBoost | 0.834 ± 0.047 | 0.873 | 0.813 | 0.844 | 0.675 | 0.790 | 0.765 | 0.164 |
-| LCX | Baseline_Majority | 0.500 ± 0.000 | 0.393 | 0.000 | 0.000 | 1.000 | 0.000 | 0.607 | 0.393 |
-| LCX | LogisticRegression | 0.704 ± 0.073 | 0.608 | 0.510 | 0.451 | 0.795 | 0.596 | 0.691 | 0.216 |
-| LCX | RandomForest | 0.727 ± 0.079 | 0.615 | 0.391 | 0.280 | 0.908 | 0.673 | 0.661 | 0.210 |
-| LCX | XGBoost | 0.735 ± 0.060 | 0.615 | 0.541 | 0.482 | 0.806 | 0.628 | 0.706 | 0.204 |
-| RCA | Baseline_Majority | 0.500 ± 0.000 | 0.376 | 0.000 | 0.000 | 1.000 | 0.000 | 0.624 | 0.376 |
-| RCA | LogisticRegression | 0.733 ± 0.045 | 0.617 | 0.498 | 0.451 | 0.799 | 0.571 | 0.710 | 0.202 |
-| RCA | RandomForest | 0.732 ± 0.042 | 0.628 | 0.408 | 0.304 | 0.907 | 0.655 | 0.685 | 0.204 |
-| RCA | XGBoost | 0.711 ± 0.057 | 0.609 | 0.517 | 0.450 | 0.833 | 0.635 | 0.717 | 0.208 |
-
-## 2. Production Operating Performance: Default Cutoff (0.50) vs. Sensitivity-First Threshold (≥90% Sensitivity)
-
-Operating thresholds are tuned on out-of-fold predictions to prioritize screening safety.
-
-| Target | Production Model | Cutoff (0.50) Sens. | Cutoff (0.50) Spec. | Cutoff (0.50) PPV | Cutoff (0.50) NPV | Operating Cutoff | Op. Sens. | Op. Spec. | Op. PPV | Op. NPV |
+| Target | Operating Cutoff | Accuracy [95% CI] | Sensitivity [95% CI] | Specificity [95% CI] | PPV [95% CI] | NPV [95% CI] | F1 [95% CI] | ROC-AUC [95% CI] | PR-AUC [95% CI] | Brier Score |
 |---|---|---|---|---|---|---|---|---|---|---|
-| **Cath** | LogisticRegression | 0.935 | 0.698 | 0.886 | 0.811 | **0.611** | **0.903** | 0.826 | 0.929 | 0.772 |
-| **LAD** | RandomForest | 0.876 | 0.635 | 0.771 | 0.784 | **0.469** | **0.904** | 0.603 | 0.762 | 0.817 |
-| **LCX** | XGBoost | 0.487 | 0.821 | 0.637 | 0.712 | **0.217** | **0.908** | 0.370 | 0.482 | 0.861 |
-| **RCA** | LogisticRegression | 0.439 | 0.804 | 0.575 | 0.704 | **0.213** | **0.903** | 0.392 | 0.472 | 0.871 |
+| **Cath (0.50)** | 0.50 | 0.878 [0.838, 0.914] | 0.945 [0.913, 0.972] | 0.709 [0.610, 0.802] | 0.891 [0.850, 0.930] | 0.836 [0.836, 0.836] | 0.917 [0.888, 0.943] | 0.930 [0.898, 0.957] | 0.972 [0.955, 0.985] | 0.097 |
+| **Cath (Screening)** | **0.400** | 0.865 [0.825, 0.901] | **0.959** [0.930, 0.982] | 0.628 [0.525, 0.732] | 0.867 [0.822, 0.908] | 0.857 [0.857, 0.857] | 0.910 [0.881, 0.936] | 0.930 [0.898, 0.957] | 0.972 [0.955, 0.985] | 0.097 |
+| **LAD (0.50)** | 0.50 | 0.785 [0.739, 0.828] | 0.853 [0.798, 0.903] | 0.691 [0.609, 0.768] | 0.795 [0.737, 0.849] | 0.770 [0.770, 0.770] | 0.823 [0.780, 0.864] | 0.841 [0.794, 0.881] | 0.880 [0.833, 0.917] | 0.158 |
+| **LAD (Screening)** | **0.420** | 0.776 [0.729, 0.822] | **0.904** [0.859, 0.943] | 0.595 [0.511, 0.680] | 0.758 [0.700, 0.815] | 0.815 [0.815, 0.815] | 0.825 [0.783, 0.864] | 0.841 [0.794, 0.881] | 0.880 [0.833, 0.917] | 0.158 |
+| **LCX (0.50)** | 0.50 | 0.683 [0.630, 0.733] | 0.504 [0.418, 0.595] | 0.799 [0.739, 0.850] | 0.619 [0.520, 0.709] | 0.714 [0.714, 0.714] | 0.556 [0.470, 0.627] | 0.732 [0.676, 0.787] | 0.591 [0.507, 0.689] | 0.204 |
+| **LCX (Screening)** | **0.248** | 0.624 [0.571, 0.677] | **0.908** [0.853, 0.957] | 0.440 [0.368, 0.514] | 0.512 [0.445, 0.579] | 0.880 [0.880, 0.880] | 0.654 [0.593, 0.710] | 0.732 [0.676, 0.787] | 0.591 [0.507, 0.689] | 0.204 |
+| **RCA (0.50)** | 0.50 | 0.706 [0.657, 0.756] | 0.456 [0.369, 0.546] | 0.857 [0.806, 0.906] | 0.658 [0.554, 0.759] | 0.723 [0.723, 0.723] | 0.539 [0.455, 0.619] | 0.744 [0.685, 0.798] | 0.621 [0.527, 0.722] | 0.196 |
+| **RCA (Screening)** | **0.232** | 0.607 [0.551, 0.660] | **0.903** [0.846, 0.952] | 0.429 [0.358, 0.500] | 0.488 [0.417, 0.553] | 0.880 [0.880, 0.880] | 0.634 [0.567, 0.693] | 0.744 [0.685, 0.798] | 0.621 [0.527, 0.722] | 0.196 |
 
-### Clinical Tradeoff Note on Vessel Models:
-- Overall CAD diagnosis achieves strong discrimination (ROC-AUC 0.929 ± 0.024) and high specificity (0.791) at 91.2% sensitivity.
-- LAD branch stenosis achieves ROC-AUC 0.846 ± 0.049 with 59.5% specificity at 90.4% sensitivity.
-- LCX and RCA targets exhibit moderate discrimination (ROC-AUC ≈ 0.73), resulting in low specificity (37.0% for LCX, 39.1% for RCA) when operating at the ≥90% sensitivity point. This intentional safety-first calibration prioritizes catching potential stenosis.
+## 2. Nested Cross-Validation Honest Operating Estimates
 
-### Nested Cross-Validation (Operating Estimates)
-
-| Target | Nested CV Sensitivity | Nested CV Specificity | Nested CV PPV | Nested CV NPV |
-|---|---|---|---|---|
-| Cath | 0.902 ± 0.039 | 0.806 ± 0.067 | 0.922 | 0.771 |
-| LAD | 0.882 ± 0.072 | 0.622 ± 0.080 | 0.767 | 0.799 |
-| LCX | 0.916 ± 0.063 | 0.351 ± 0.079 | 0.479 | 0.869 |
-| RCA | 0.892 ± 0.069 | 0.387 ± 0.079 | 0.469 | 0.869 |
+| Target | Operating Cutoff | Nested Sens. (Mean ± SD) | Nested Spec. (Mean ± SD) | Pooled Sens. | Pooled Spec. |
+|---|---|---|---|---|---|
+| **Cath** | 0.400 | **0.954 ± 0.030** | 0.648 ± 0.091 | **0.954** | 0.647 |
+| **LAD** | 0.420 | **0.885 ± 0.067** | 0.609 ± 0.099 | **0.885** | 0.609 |
+| **LCX** | 0.248 | **0.916 ± 0.073** | 0.371 ± 0.108 | **0.916** | 0.371 |
+| **RCA** | 0.232 | **0.895 ± 0.071** | 0.367 ± 0.104 | **0.895** | 0.367 |

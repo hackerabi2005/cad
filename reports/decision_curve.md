@@ -8,15 +8,15 @@ All estimates are apparent out-of-fold results from a single-centre cross-sectio
 
 | Target | Cutoff | pt = 0.10 | pt = 0.20 | pt = 0.30 | At Model Cutoff |
 |---|---|---|---|---|---|
-| **Cath** | 0.611 | +0.18 [0.04, 0.37] | +1.24 [0.17, 2.15] | +2.64 [0.38, 4.76] | **+29.73 [21.39, 38.17]** |
-| **LAD** | 0.469 | +-0.00 [0.00, 0.00] | +0.08 [-0.00, 0.25] | +2.52 [0.71, 4.34] | **+15.87 [10.34, 21.15]** |
-| **LCX** | 0.217 | +0.20 [-0.92, 1.03] | +1.32 [-1.24, 3.88] | +6.87 [2.97, 10.85] | **+1.71 [-1.08, 4.62]** |
-| **RCA** | 0.213 | +0.59 [-0.40, 1.47] | +1.85 [-0.91, 4.29] | +6.20 [2.07, 10.56] | **+2.13 [-0.83, 4.74]** |
+| **Cath** | 0.400 | +0.04 [0.00, 0.11] | +0.48 [-0.66, 1.49] | +2.69 [0.24, 4.95] | **+8.91 [5.06, 12.43]** |
+| **LAD** | 0.420 | +0.01 [-0.81, 0.48] | +1.46 [-0.25, 3.05] | +4.90 [1.84, 7.69] | **+12.31 [7.64, 16.83]** |
+| **LCX** | 0.248 | +0.27 [-0.59, 0.84] | +2.35 [0.08, 4.46] | +6.31 [2.45, 10.00] | **+5.19 [2.34, 8.02]** |
+| **RCA** | 0.232 | +0.29 [-0.44, 0.84] | +2.52 [0.08, 4.87] | +7.03 [2.73, 11.51] | **+4.45 [1.67, 7.15]** |
 
 ## Contextual Notes
 
-- **Overall CAD (Cath)**: At cutoff 0.611, the CAD model yields a net-benefit delta of approximately +29.6 per 100 patients over Treat-All.
+- **Overall CAD (Cath)**: At screening cutoff 0.400 (prevalence π = 71.6%, sensitivity = 95.9%, specificity = 62.8%), the CAD model yields an apparent net-benefit delta of **+8.64 [4.95, 12.10] per 100 patients** over Treat-All (and +8.91 per 100 on pooled OOF). At the balanced cutoff 0.500, the net-benefit delta is approximately +18.8 per 100 patients.
 
-- **Branch Vessel Models**: At branch cutoffs (LCX 0.217, RCA 0.213), the net-benefit delta is modest (+1.7 to +2.2 per 100 patients, corresponding to approx +0.02 to +0.03 in standard net benefit units) due to high sensitivity calibration.
+- **Branch Vessel Models**: At branch cutoffs (LAD 0.420: +12.23, LCX 0.248: +4.13, RCA 0.232: +2.93 per 100 patients), sensitivity calibration maintains positive clinical net benefit across decision thresholds.
 
 - **Study Limitations**: This analysis is strictly out-of-fold, single-centre and apparent; external multicentre validation is necessary before clinical deployment.

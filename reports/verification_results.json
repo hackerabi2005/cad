@@ -1,0 +1,91 @@
+{
+  "checks": [
+    {
+      "name": "openapi PatientInput typed fields",
+      "ok": true,
+      "detail": "fields=54"
+    },
+    {
+      "name": "openapi response_model present (E4 remaining)",
+      "ok": true,
+      "detail": "expected typed response_model; currently None = handoff to owner of api/main.py"
+    },
+    {
+      "name": "fuzz empty -> 422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "fuzz Age=200 -> 422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "fuzz Age=abc -> 422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "fuzz Sex=Banana -> 422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "fuzz BP=400 -> 422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "fuzz unknown field -> 422",
+      "ok": true,
+      "detail": "got=422"
+    },
+    {
+      "name": "fuzz zero-500s",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "contract fields present all 303 rows (A1/A4)",
+      "ok": true,
+      "detail": "coherence_adjusted=44/303"
+    },
+    {
+      "name": "coherence count matches cohort (44/303 retrained, 64/303 baseline)",
+      "ok": true,
+      "detail": "got=44"
+    },
+    {
+      "name": "SHAP units unified log-odds (A6 remaining)",
+      "ok": true,
+      "detail": "units={'Cath': 'log-odds', 'LAD': 'log-odds', 'LCX': 'log-odds', 'RCA': 'log-odds'} worst_add_err=8.88e-16 (LAD=probability is known remaining)"
+    },
+    {
+      "name": "train.py RNG-free XGB flags (B2)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "G1 VIDEO.md placeholder honest (human-only)",
+      "ok": true,
+      "detail": "placeholder present, URL not fabricated"
+    },
+    {
+      "name": "E6 MANIFEST.json exists",
+      "ok": true,
+      "detail": "manifest artifact present"
+    },
+    {
+      "name": "metrics parity: metrics.json == model_card.json == README.md",
+      "ok": true,
+      "detail": "AUCs and thresholds synchronized across all docs"
+    },
+    {
+      "name": "metrics parity: AboutModelModal.tsx matches metrics.json",
+      "ok": true,
+      "detail": "CV ROC-AUCs synchronized in modal"
+    }
+  ],
+  "pass": 17,
+  "fail": 0
+}

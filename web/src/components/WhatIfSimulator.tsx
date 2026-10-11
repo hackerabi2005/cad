@@ -27,25 +27,25 @@ export function WhatIfSimulator({
     setSimData({ ...patientData });
   }, [patientData]);
 
-  // Run simulation prediction against /api/predict
+  // Run simulation prediction against fast-path /api/whatif (skips SHAP decomposition)
   const runSimPrediction = useCallback(async (data: Record<string, any>) => {
     try {
       setIsSimulating(true);
-      const res = await fetch('/api/predict', {
+      const res = await fetch('/api/whatif', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ baseline: patientData, modified: data }),
       });
       if (res.ok) {
-        const result: PredictResponse = await res.json();
-        setSimPrediction(result);
+        const result = await res.json();
+        setSimPrediction(result.modified_prediction);
       }
     } catch (e) {
       console.error('Simulation error:', e);
     } finally {
       setIsSimulating(false);
     }
-  }, []);
+  }, [patientData]);
 
   // Debounced prediction trigger
   useEffect(() => {
@@ -59,11 +59,49 @@ export function WhatIfSimulator({
   }, [simData, runSimPrediction]);
 
   const updateField = (field: string, val: any) => {
-    setSimData((prev) => ({ ...prev, [field]: val }));
+    setSimData((prev) => {
+      const next = { ...prev, [field]: val };
+
+      // Keep linked fields in sync: BMI with Weight & Height (Length in cm)
+      if (field === 'BMI') {
+        const len = Number(next.Length || 170);
+        if (len > 0) {
+          next.Weight = Math.round(Number(val) * Math.pow(len / 100, 2) * 10) / 10;
+        }
+        // One-way coupling: set when crossing up, never cleared when sliding down
+        if (Number(val) > 25) {
+          next.Obesity = 'Y';
+        }
+      } else if (field === 'Weight' || field === 'Length') {
+        const w = Number(next.Weight);
+        const l = Number(next.Length);
+        if (w > 0 && l > 0) {
+          next.BMI = Math.round((w / Math.pow(l / 100, 2)) * 10) / 10;
+          if (next.BMI > 25) {
+            next.Obesity = 'Y';
+          }
+        }
+      }
+
+      // Historical diagnostic flags (HTN, DLP) remain fixed: empirical audit showed rules match
+      // dataset flags only 74.3% and 53.1% of the time, so flags are never auto-flipped from measurements.
+      // Obesity (BMI > 25) maintains clinical definition concordance (99.7% agreement).
+
+      // Keep linked fields in sync: Quit smoking (current=0, ex-smoker=1)
+      if (field === 'Current Smoker') {
+        if (Number(val) === 0 && Number(prev['Current Smoker']) === 1) {
+          next['EX-Smoker'] = 1;
+        } else if (Number(val) === 1) {
+          next['EX-Smoker'] = 0;
+        }
+      }
+
+      return next;
+    });
     setAppliedSuccess(false);
   };
 
-  // Example Values Presets
+  // Example Values Presets (continuous modifiable factors; historical diagnosis flags HTN/DLP/DM kept fixed)
   const applyExampleA = () => {
     setSimData((prev) => ({
       ...prev,
@@ -71,18 +109,24 @@ export function WhatIfSimulator({
       FBS: 92,
       LDL: 68,
       'Current Smoker': 0,
-      DM: 0,
+      'EX-Smoker': prev['Current Smoker'] === 1 ? 1 : prev['EX-Smoker'],
     }));
   };
 
   const applyExampleB = () => {
-    setSimData((prev) => ({
-      ...prev,
-      BMI: 23.5,
-      BP: 124,
-      'Current Smoker': 0,
-      FBS: 95,
-    }));
+    setSimData((prev) => {
+      const next: Record<string, any> = {
+        ...prev,
+        BMI: 23.5,
+        BP: 124,
+        'Current Smoker': 0,
+        'EX-Smoker': prev['Current Smoker'] === 1 ? 1 : prev['EX-Smoker'],
+        FBS: 95,
+      };
+      const len = Number(next.Length || 170);
+      if (len > 0) next.Weight = Math.round(23.5 * Math.pow(len / 100, 2) * 10) / 10;
+      return next;
+    });
   };
 
   const resetToCurrent = () => {
@@ -119,7 +163,7 @@ export function WhatIfSimulator({
             </span>
           </h3>
           <p className="text-xs text-slate-400 mt-1 max-w-2xl leading-relaxed">
-            Shows how the model's score changes when inputs change. The model is trained on cross-sectional data and does not estimate treatment effects.
+            <strong className="text-amber-300">Model sensitivity, not predicted treatment effect:</strong> Shows observational changes in model risk score across single-variable modifications. Cross-sectional diagnostic models cannot estimate clinical treatment or interventional effects.
           </p>
         </div>
 
@@ -181,7 +225,7 @@ export function WhatIfSimulator({
               riskDelta < 0 ? 'text-emerald-400' : riskDelta > 0 ? 'text-red-400' : 'text-slate-400'
             }`}
           >
-            {riskDelta > 0 ? `+${riskDeltaPercent}%` : `${riskDeltaPercent}%`}
+            {riskDelta > 0 ? `+${riskDeltaPercent} pp` : `${riskDeltaPercent} pp`}
           </div>
           <span className="text-[10px] text-slate-400">
             {riskDelta !== 0
@@ -240,7 +284,7 @@ export function WhatIfSimulator({
                       : 'bg-slate-800 text-slate-400'
                   }`}
                 >
-                  {deltaV > 0 ? `+${deltaVStr}%` : `${deltaVStr}%`}
+                  {deltaV > 0 ? `+${deltaVStr} pp` : `${deltaVStr} pp`}
                 </div>
               </div>
             );

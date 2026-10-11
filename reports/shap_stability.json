@@ -1,0 +1,17 @@
+{
+  "mean_spearman_rank_correlation": 0.9082,
+  "pairwise_correlations": [
+    0.9278,
+    0.948,
+    0.9193,
+    0.8933,
+    0.9155,
+    0.901,
+    0.8708,
+    0.9149,
+    0.9083,
+    0.8831
+  ],
+  "top_10_stability_rate": 0.975,
+  "audit": "Consistent feature importance rankings across outer validation folds"
+}

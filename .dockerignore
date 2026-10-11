@@ -7,3 +7,5 @@ web/node_modules
 web/dist
 venv
 .venv
+data/raw/**/*.obj
+data/raw/BP51782*

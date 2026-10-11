@@ -7,6 +7,8 @@ import { getRiskColor } from './HeartViewer';
 interface LumenCrossSectionProps {
   vesselId: string;
   prob: number;
+  cutoff?: number;
+  mode?: 'balanced' | 'screening';
   onClose: () => void;
   onSelectVessel?: (vesselId: string) => void;
 }
@@ -14,6 +16,8 @@ interface LumenCrossSectionProps {
 export function LumenCrossSection({
   vesselId,
   prob,
+  cutoff = 0.50,
+  mode = 'balanced',
   onClose,
   onSelectVessel,
 }: LumenCrossSectionProps) {
@@ -26,10 +30,13 @@ export function LumenCrossSection({
     description: 'Coronary perfusion vessel',
   };
 
-  // Fixed illustrative narrowing (normal vs. ≥ 50%)
-  const isStenotic = prob >= 0.50;
+  // Fixed illustrative narrowing following active mode cutoff
+  const effectiveCutoff = cutoff ?? 0.50;
+  const isStenotic = prob >= effectiveCutoff;
   const riskColor = getRiskColor(prob);
-  const predictedLabel = isStenotic ? 'Likely Stenotic (≥ 50%)' : 'Likely Normal (< 50%)';
+  const predictedLabel = isStenotic
+    ? `Likely Stenotic (≥ ${(effectiveCutoff * 100).toFixed(0)}% cutoff)`
+    : `Likely Normal (< ${(effectiveCutoff * 100).toFixed(0)}% cutoff)`;
 
   // SVG dimensions & geometry
   const cx = 100;
@@ -214,8 +221,8 @@ export function LumenCrossSection({
           <span className="font-semibold text-amber-300 block">
             Schematic only — not patient imaging; stenosis severity is not predicted
           </span>
-          <span className="text-slate-400 text-[10px]">
-            The underlying clinical dataset records binary stenosis (≥ 50%). Continuous percentage narrowing and physiological flow indices are not predicted.
+          <span className="text-slate-400 text-[10px] block mt-0.5">
+            The underlying clinical dataset records binary stenosis (≥ 50%). Continuous percentage narrowing and physiological flow indices are not predicted. Whole vessels are colored uniformly because the dataset contains no intra-vascular lesion coordinates.
           </span>
         </div>
       </div>
