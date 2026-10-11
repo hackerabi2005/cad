@@ -52,7 +52,7 @@ export interface CadPrediction {
   raw_prob?: number;
   displayed_prob?: number;
   driving_vessel?: 'LAD' | 'LCX' | 'RCA' | null;
-  coherent_prob: number;
+  coherent_prob?: number;
   similar_cohort?: SimilarCohortInfo;
   label: string;
   high_sens_label: string;
@@ -60,10 +60,8 @@ export interface CadPrediction {
   high_sensitivity_threshold: number;
   nested_sensitivity?: number;
   coherence_adjusted: boolean;
-  flagged_by_vessel?: boolean;
   flagged_vessels_screening?: string[];
   flagged_vessels_balanced?: string[];
-  diseased_vessels_count?: number;
   flagged_vessels_count?: number;
   diffuse_or_non_focal?: boolean;
   diffuse_or_non_focal_screening?: boolean;
@@ -103,6 +101,7 @@ export interface PredictResponse {
   missing_features?: string[];
   imputed_values?: Record<string, any>;
   completeness?: CompletenessInfo;
+  input_completeness?: 'high' | 'moderate' | 'low';
   reliability?: 'high' | 'moderate' | 'low';
   warnings?: string[];
   disclaimer: string;

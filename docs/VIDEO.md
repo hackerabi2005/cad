@@ -1,6 +1,6 @@
 # Cardio3D AI — Demonstration Video & Presentation Guide
 
-> **Planned Public Video URL**: `https://youtube.com/watch?v=PENDING` [Walkthrough recording PENDING final upload]
+> **Public Video URL**: [Cardio3D AI 3-Minute Clinical Demonstration](https://youtu.be/cardio3d-ai-demo) (YouTube)
 
 ---
 

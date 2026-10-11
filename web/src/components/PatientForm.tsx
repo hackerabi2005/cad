@@ -201,7 +201,7 @@ export function PatientForm({
                 : 'bg-rose-500/10 text-rose-400 border-rose-500/30';
               return (
                 <span className={`text-[10px] px-2 py-0.5 rounded-full border font-mono ${colorCls}`}>
-                  Inputs provided: {providedCount} of {totalCount} ({imputedCount > 0 ? `${imputedCount} imputed to cohort median/mode` : 'all provided'}) · {reliability} Reliability
+                  Inputs provided: {providedCount} of {totalCount} ({imputedCount > 0 ? `${imputedCount} imputed to cohort median/mode` : 'all provided'}) · {reliability} Input Completeness
                 </span>
               );
             })()}

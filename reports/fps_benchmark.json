@@ -1,6 +1,7 @@
 {
   "hardware": {
     "cpu": "13th Gen Intel(R) Core(TM) i5-13420H",
+    "gpu": "Intel(R) UHD Graphics (Integrated / No dedicated GPU)",
     "chromium": "148.0.7778.96",
     "resolution": "1280x720",
     "triangles": 83600,

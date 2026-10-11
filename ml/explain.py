@@ -191,6 +191,7 @@ def explain_sample(
     return {
         "base_value": round(base_val, 5),
         "raw_score": round(raw_score, 5),
+        "raw_prob": round(float(1.0 / (1.0 + np.exp(-raw_score))), 4),
         "reconstructed_score": round(reconstructed_raw, 5),
         "additive_error": exact_error,
         "features": feature_contributions,

@@ -357,9 +357,9 @@ sequenceDiagram
   In the raw dataset, row index 93 contains `LAD='Stenotic'`, `LCX='Normal'`, `RCA='Normal'`, but `Cath='Normal'`. Because $\ge 50\%$ stenosis in any major vessel constitutes CAD, row 93 represents an internal clinical contradiction. Derived data aligns `Cath_aligned = Cath | LAD | LCX | RCA` while preserving the raw Excel file unmodified (verified via SHA256 `739343...`). This adjusts cohort labels from 216 CAD / 87 Normal to 217 CAD / 86 Normal, achieving 100% logical consistency across all 303 rows.
 - **Model Selection & Operating Metrics (5-Fold × 3 Repeats Repeated CV)**:
   - Cath: `LogitEnsemble` (CV ROC-AUC $0.932 \pm 0.021$, ROC-AUC $0.930$ [$0.898, 0.957$], Default Cutoff $0.50$, Op Sens $94.5\%$, Op Spec $70.9\%$; Screening Cutoff $0.400$, Op Sens $95.9\%$, Op Spec $62.8\%$; Disjunctive Rule Sens $96.3\%$, Spec $57.0\%$).
-  - LAD: `LogitEnsemble` (CV ROC-AUC $0.840 \pm 0.026$, ROC-AUC $0.841$ [$0.794, 0.881$], Default Cutoff $0.50$, Op Sens $85.3\%$, Op Spec $69.1\%$; Screening Cutoff $0.420$, Op Sens $90.4\%$, Op Spec $59.5\%$, Nested-CV Sens $88.5\% \pm 6.7\%$).
+  - LAD: `LogitEnsemble` (CV ROC-AUC $0.840 \pm 0.026$, ROC-AUC $0.841$ [$0.794, 0.881$], Default Cutoff $0.50$, Op Sens $85.3\%$, Op Spec $69.1\%$; Screening Cutoff $0.420$, Op Sens $90.4\%$, Op Spec $59.5\%$, Nested-CV Sens $88.1\% \pm 6.7\%$).
   - LCX: `LogitEnsemble` (CV ROC-AUC $0.724 \pm 0.038$, ROC-AUC $0.732$ [$0.676, 0.787$], Default Cutoff $0.50$, Op Sens $50.4\%$, Op Spec $79.9\%$; Screening Cutoff $0.248$, Op Sens $90.8\%$, Op Spec $44.0\%$, Nested-CV Sens $91.6\% \pm 7.3\%$).
-  - RCA: `LogitEnsemble` (CV ROC-AUC $0.741 \pm 0.033$, ROC-AUC $0.744$ [$0.685, 0.798$], Default Cutoff $0.50$, Op Sens $45.6\%$, Op Spec $85.7\%$; Screening Cutoff $0.232$, Op Sens $90.3\%$, Op Spec $42.9\%$, Nested-CV Sens $89.5\% \pm 7.1\%$).
+  - RCA: `LogitEnsemble` (CV ROC-AUC $0.741 \pm 0.033$, ROC-AUC $0.744$ [$0.685, 0.798$], Default Cutoff $0.50$, Op Sens $45.6\%$, Op Spec $85.7\%$; Screening Cutoff $0.232$, Op Sens $90.3\%$, Op Spec $42.9\%$, Nested-CV Sens $89.2\% \pm 7.1\%$).
 - **Decision Curve Analysis (DCA)**:
   Evaluated across threshold probabilities $p_t \in [0.05, 0.75]$:
   $$\text{Net Benefit}(p_t) = \frac{\text{TP}}{N} - \frac{\text{FP}}{N} \left(\frac{p_t}{1 - p_t}\right)$$
@@ -370,18 +370,6 @@ sequenceDiagram
   - Gain at model screening cutoffs:
     - Cath cutoff ($0.400$): **+8.91 net benefit gain per 100 patients** [$5.06, 12.43$] over Treat-All (with prevalence $\pi = 71.6\%$, sensitivity $95.9\%$, specificity $62.8\%$; theoretical max gain at $p_t=0.400$ is $+18.92$ per 100).
     - LAD cutoff ($0.420$): **+12.23 per 100** [$7.01, 16.98$]
-    - LCX cutoff ($0.248$): **+4.13 per 100** [$1.01, 7.06$]
-    - RCA cutoff ($0.232$): **+2.93 per 100** [$-0.21, 5.90$]
-  - *Analysis nature*: Out-of-fold, single-centre and apparent clinical utility.
-- **Demographic Fairness & Subgroup Parity**:
-  Audited on out-of-fold predictions at screening operating cutoff (0.400) with Wilson 95% intervals:
-  - Sex Comparison:
-    - Male ($n=176$, prevalence $74.4\%$): Sensitivity $95.4\%$ [$90.4\%–97.9\%$], Specificity $57.8\%$ [$43.3\%–71.0\%$].
-    - Female ($n=127$, prevalence $67.7\%$): Sensitivity $96.5\%$ [$90.2\%–98.8\%$], Specificity $68.3\%$ [$53.0\%–80.4\%$].
-    - Equal Opportunity sensitivity gap: $1.1\%$.
-  - Age Comparison:
-    - Age $\le 65$ ($n=219$, prevalence $65.3\%$): Sensitivity $93.7\%$ [$88.5\%–96.7\%$], Specificity $67.1\%$ [$55.9\%–76.6\%$].
-    - Age $> 65$ ($n=84$, prevalence $88.1\%$): Sensitivity $100.0\%$ [$95.1\%–100.0\%$], Specificity $30.0\%$ [$10.8\%–60.3\%$].
   - Subgroup Strata Sums: Both Sex ($125+83=208$ TP, $26+28=54$ TN) and Age ($134+74=208$ TP, $51+3=54$ TN) sum exactly to the pooled confusion matrix ($208$ TP / $54$ TN). Senior specificity reflects referral cohort imbalance (only 10 normal patients in seniors) and is explicitly documented as a clinical limitation.
 
 ### 5.2. Unified Prediction Service (`ml/service.py`)
@@ -409,11 +397,12 @@ Centralizes validation, inference, similar cohort intervals, coherence enforceme
 
 ### 5.4. Clinical Interpretability & Decision Support
 - **Physiological Domain Breakdown (`ShapWaterfall.tsx`)**:
-  Attributions aggregate into 4 distinct clinical organ systems:
-  1. *Hemodynamic & Vitals*: Arterial BP, pulse rate, dyspnea, murmurs, rales.
-  2. *Metabolic & Lipids*: Glycemia (FBS, DM), atherogenic lipids (LDL, HDL, TG), renal filtration (CR, BUN), BMI.
-  3. *Symptoms & ECG*: Typical chest pain, ST-segment shifts, T-wave inversion, pathological Q waves.
-  4. *Echocardiographic & Structural*: Left ventricular EF-TTE, regional wall motion abnormalities (RWMA count).
+  Attributions aggregate into 5 distinct clinical organ systems:
+  1. *Demographics & Clinical History*: Age, Sex, DM, HTN, Smoker, Family History.
+  2. *Hemodynamic & Vitals*: Arterial BP, pulse rate, dyspnea, murmurs, rales.
+  3. *Metabolic & Lipids*: Glycemia (FBS, DM), atherogenic lipids (LDL, HDL, TG), renal filtration (CR, BUN), BMI.
+  4. *Symptoms & ECG*: Typical chest pain, ST-segment shifts, T-wave inversion, pathological Q waves.
+  5. *Echocardiographic & Structural*: Left ventricular EF-TTE, regional wall motion abnormalities (RWMA count).
 - **Model Sensitivity Explorer (`WhatIfSimulator.tsx`)**:
   Enables clinicians to adjust modifiable clinical factors (Systolic BP, FBS, LDL, BMI, Smoking) with measured end-to-end API latency of $\text{p50} \approx 145\text{ ms}$ and $\text{p95} \approx 180\text{ ms}$ on 13th Gen Intel Core i5-13420H (in-process model scoring $\text{p50} = 3.1\text{ ms}, \text{p95} = 4.4\text{ ms}$; contract assertion $\le 300\text{ ms}$), rendering live change in model score ($\Delta P$) and 1-click presets (`Example values A`, `Example values B`). Caption notes: *"Shows how the model's score changes when inputs change. The model is trained on cross-sectional data and does not estimate treatment effects."*
 - **Printable Clinical Assessment Report (`ClinicalSummaryModal.tsx`)**:
@@ -465,7 +454,7 @@ The canonical feature registry defines 54 active physiological features across 5
       "high_sens_label": "Stenotic",
       "threshold": 0.50,
       "high_sensitivity_threshold": 0.420,
-      "nested_sensitivity": 0.8851
+      "nested_sensitivity": 0.8812
     },
     "LCX": {
       "prob": 0.1190,
@@ -493,7 +482,7 @@ The canonical feature registry defines 54 active physiological features across 5
       "high_sens_label": "Stenotic",
       "threshold": 0.50,
       "high_sensitivity_threshold": 0.232,
-      "nested_sensitivity": 0.8947
+      "nested_sensitivity": 0.8924
     }
   },
   "explain": {

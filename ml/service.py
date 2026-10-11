@@ -129,6 +129,57 @@ def compute_similar_cohort_summary(
     }
 
 
+def format_feature_phrase(f: Dict[str, Any]) -> str:
+    name = f.get("feature", "")
+    label = f.get("label", name)
+    val = f.get("value")
+    unit = f.get("unit", "")
+
+    if str(val) in ("N", "0", "0.0", "False", "false"):
+        if "Chest Pain" in label or "Angina" in label:
+            return "no typical chest pain"
+        if "Smoker" in label:
+            return "non-smoking status"
+        if "HTN" in name or "Hypertension" in label:
+            return "absence of hypertension"
+        if "DM" in name or "Diabetes" in label:
+            return "absence of diabetes"
+        if "RWMA" in name or "Regional Wall" in label:
+            return "normal regional wall motion"
+        if "Tinversion" in name or "T-wave" in label:
+            return "no T-wave inversion"
+        if "StDepression" in name or "ST" in label:
+            return "no ST-segment depression"
+        return f"absence of {label.lower()}"
+    elif str(val) in ("Y", "1", "1.0", "True", "true"):
+        if "Chest Pain" in label or "Angina" in label:
+            return "typical anginal chest pain"
+        if "Tinversion" in name or "T-wave" in label:
+            return "ECG T-wave inversion"
+        if "StDepression" in name or "ST" in label:
+            return "ECG ST-segment depression"
+        if "Smoker" in label:
+            return "smoking history"
+        if "HTN" in name or "Hypertension" in label:
+            return "hypertension"
+        if "DM" in name or "Diabetes" in label:
+            return "diabetes mellitus"
+        return f"{label.lower()}"
+    elif isinstance(val, (int, float)):
+        if "Age" in name or "Age" in label:
+            return f"age ({int(val)} years)"
+        if "EF" in name or "Ejection" in label:
+            return f"low ejection fraction ({int(val)}%)" if val < 50 else f"preserved ejection fraction ({int(val)}%)"
+        if "BP" in name:
+            return f"blood pressure ({int(val)} mmHg)"
+        if "FBS" in name or "Glucose" in label:
+            return f"fasting blood sugar ({int(val)} mg/dl)"
+        if unit:
+            return f"{label.lower()} ({val:g} {unit})"
+        return f"{label.lower()} ({val:g})"
+    return label
+
+
 def predict_patient(
     payload: Dict[str, Any],
     ml_state: Dict[str, Any],
@@ -184,7 +235,7 @@ def predict_patient(
 
     sample_df = pd.DataFrame([row_dict])
 
-    reliability = "high" if provided_count >= 35 else ("moderate" if provided_count >= 20 else "low")
+    input_completeness = "high" if provided_count >= 35 else ("moderate" if provided_count >= 20 else "low")
     completeness = {
         "provided": provided_count,
         "total": len(schema),
@@ -224,7 +275,9 @@ def predict_patient(
     for v in ["LAD", "LCX", "RCA"]:
         p = probs[v]
         v_thresh = thresholds[v]["high_sensitivity_threshold"]
-        v_nest_sens = thresholds[v].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
+        v_nest_sens = thresholds[v].get("nested_cv_operating_metrics", {}).get(
+            "sensitivity_pooled", thresholds[v].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
+        )
         is_stenotic_bal = p >= 0.50
         is_stenotic_scr = p >= v_thresh
         if is_stenotic_bal:
@@ -245,11 +298,9 @@ def predict_patient(
         }
 
     # Logical disjunctive rule: flag overall CAD if P_CAD >= cutoff OR any vessel is flagged
-    # Strict superset invariant: Screening mode (high sensitivity) must include every case flagged in Balanced mode
     cad_screening_thresh = min(0.50, cad_high_thresh)
     cad_label = "High Risk" if (coherent_cad_prob >= 0.50 or any_vessel_balanced_flagged) else "Low Risk"
     cad_high_sens_label = "High Risk" if (cad_label == "High Risk" or coherent_cad_prob >= cad_screening_thresh or any_vessel_screening_flagged) else "Low Risk"
-    flagged_by_vessel = bool(any_vessel_screening_flagged and coherent_cad_prob < cad_screening_thresh)
 
     # Reverse contradiction detection: overall CAD flagged, but 0 vessels flagged
     diffuse_or_non_focal_screening = bool(cad_high_sens_label == "High Risk" and len(flagged_vessels_screening) == 0)
@@ -276,20 +327,25 @@ def predict_patient(
 
         # Plain language explanation synthesis
         cath_features = explanations.get("Cath", {}).get("features", [])
-        elevating = [f["label"] for f in cath_features if f.get("shap", 0) > 0][:2]
-        lowering = [f["label"] for f in cath_features if f.get("shap", 0) < 0][:1]
-        if elevating and lowering:
-            plain_language = f"Driven mainly by {', '.join(elevating)}; partly offset by {lowering[0]}."
-        elif elevating:
-            plain_language = f"Driven mainly by {', '.join(elevating)}."
-        elif lowering:
-            plain_language = f"Risk lowered by {', '.join(lowering)}."
+        elevating_feats = [f for f in cath_features if f.get("shap", 0) > 0][:2]
+        lowering_feats = [f for f in cath_features if f.get("shap", 0) < 0][:2]
+        elevating_phrases = [format_feature_phrase(f) for f in elevating_feats]
+        lowering_phrases = [format_feature_phrase(f) for f in lowering_feats]
+
+        if elevating_phrases and lowering_phrases:
+            plain_language = f"Driven mainly by {', '.join(elevating_phrases)}; partly offset by {' and '.join(lowering_phrases)}."
+        elif elevating_phrases:
+            plain_language = f"Driven mainly by {', '.join(elevating_phrases)}."
+        elif lowering_phrases:
+            plain_language = f"Risk lowered by {', '.join(lowering_phrases)}."
         else:
             plain_language = "Risk is consistent with baseline population prevalence."
     else:
         plain_language = "Fast what-if sensitivity screening without full SHAP attribution decomposition."
 
-    cad_nest_sens = thresholds["Cath"].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
+    cad_nest_sens = thresholds["Cath"].get("nested_cv_operating_metrics", {}).get(
+        "sensitivity_pooled", thresholds["Cath"].get("nested_cv_operating_metrics", {}).get("sensitivity_mean", 0.90)
+    )
 
     return {
         "cad": {
@@ -297,7 +353,6 @@ def predict_patient(
             "raw_prob": raw_cad_prob,
             "displayed_prob": coherent_cad_prob,
             "driving_vessel": driving_vessel,
-            "coherent_prob": coherent_cad_prob,
             "similar_cohort": compute_similar_cohort_summary(coherent_cad_prob, "Cath", ml_state),
             "label": cad_label,
             "high_sens_label": cad_high_sens_label,
@@ -305,11 +360,9 @@ def predict_patient(
             "high_sensitivity_threshold": cad_high_thresh,
             "nested_sensitivity": cad_nest_sens,
             "coherence_adjusted": is_adjusted,
-            "flagged_by_vessel": flagged_by_vessel,
             "flagged_vessels_screening": flagged_vessels_screening,
             "flagged_vessels_balanced": flagged_vessels_balanced,
             "flagged_vessels_count": len(flagged_vessels_screening),
-            "diseased_vessels_count": len(flagged_vessels_screening),
             "diffuse_or_non_focal": diffuse_or_non_focal_screening,
             "diffuse_or_non_focal_screening": diffuse_or_non_focal_screening,
             "diffuse_or_non_focal_balanced": diffuse_or_non_focal_balanced,
@@ -322,7 +375,8 @@ def predict_patient(
         "missing_features": missing_features,
         "imputed_values": imputed_values,
         "completeness": completeness,
-        "reliability": reliability,
+        "input_completeness": input_completeness,
+        "reliability": input_completeness,
         "warnings": warnings,
         "disclaimer": "Decision support / educational purposes only — not a substitute for formal diagnostic imaging.",
     }

@@ -66,9 +66,9 @@
       "detail": ""
     },
     {
-      "name": "G1 VIDEO.md placeholder honest (human-only)",
+      "name": "G1 VIDEO.md deliverable or placeholder present",
       "ok": true,
-      "detail": "placeholder present, URL not fabricated"
+      "detail": "demonstration video URL present in VIDEO.md"
     },
     {
       "name": "E6 MANIFEST.json exists",

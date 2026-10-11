@@ -19,7 +19,7 @@ export function RiskOverview({ cad, isLoading, mode = 'balanced', onToggleMode }
     );
   }
 
-  const prob = cad.coherent_prob;
+  const prob = cad.prob;
   const percentage = Math.round(prob * 100);
   const displayPercentage = prob >= 0.99 ? '>99%' : (prob <= 0.01 ? '<1%' : `${percentage}%`);
   const riskColor = getRiskColor(prob);
@@ -128,7 +128,7 @@ export function RiskOverview({ cad, isLoading, mode = 'balanced', onToggleMode }
             {cad.coherence_adjusted ? (
               <span
                 className="text-[8px] text-amber-300 font-mono tracking-tight px-1 font-semibold"
-                title={`Cath model alone: ${((cad.raw_prob ?? cad.prob) * 100).toFixed(1)}%; raised to ${cad.driving_vessel || 'vessel'}’s ${(cad.coherent_prob * 100).toFixed(1)}%.`}
+                title={`Cath model alone: ${((cad.raw_prob ?? cad.prob) * 100).toFixed(1)}%; raised to ${cad.driving_vessel || 'vessel'}’s ${(cad.prob * 100).toFixed(1)}%.`}
               >
                 Cath alone: {((cad.raw_prob ?? cad.prob) * 100).toFixed(1)}%
               </span>
@@ -163,7 +163,7 @@ export function RiskOverview({ cad, isLoading, mode = 'balanced', onToggleMode }
             <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
               <span className="text-[10px] text-slate-400 block">Coherent Risk:</span>
               <span className="font-mono font-semibold text-slate-200 flex items-center gap-1">
-                {cad.coherent_prob >= 0.99 ? '>99%' : `${(cad.coherent_prob * 100).toFixed(1)}%`}
+                {cad.prob >= 0.99 ? '>99%' : `${(cad.prob * 100).toFixed(1)}%`}
                 {cad.coherence_adjusted && (
                   <span
                     className="text-[9px] px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30"
@@ -178,8 +178,8 @@ export function RiskOverview({ cad, isLoading, mode = 'balanced', onToggleMode }
             <div className="p-2 rounded-lg bg-slate-800/60 border border-slate-700/50">
               <span className="text-[10px] text-slate-400 block">Vessels above cutoff:</span>
               <span className="font-mono font-semibold text-amber-300 text-[11px] block">
-                {(cad.flagged_vessels_count ?? cad.diseased_vessels_count ?? branchCount) !== undefined
-                  ? `${cad.flagged_vessels_count ?? cad.diseased_vessels_count ?? branchCount} / 3`
+                {(cad.flagged_vessels_count ?? branchCount) !== undefined
+                  ? `${cad.flagged_vessels_count ?? branchCount} / 3`
                   : '—'}
               </span>
             </div>
@@ -194,14 +194,14 @@ export function RiskOverview({ cad, isLoading, mode = 'balanced', onToggleMode }
             </div>
           </div>
 
-          {cad.flagged_by_vessel && (
+          {branchCount > 0 && (
             <div className="text-[11px] px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 flex items-center gap-1.5">
               <ShieldAlert className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
               <span>Overall status flagged positive via <strong>{(cad.flagged_vessels_screening ?? cad.flagged_vessels_balanced)?.join(', ')}</strong> stenosis (logical disjunctive rule).</span>
             </div>
           )}
 
-          {isHighRisk && !cad.flagged_by_vessel && branchCount === 0 && (
+          {isHighRisk && branchCount === 0 && (
             <div className="text-[11px] px-2.5 py-1 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 flex items-center gap-1.5">
               <ShieldAlert className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
               <span>Overall model above cutoff; no vessel model above its cutoff; location not determined (no single vessel crosses its cutoff, so the model cannot localize focal stenosis).</span>

@@ -120,3 +120,55 @@ def test_fairness_subgroups_sum_to_pooled_balanced(oof_predictions_and_dataset):
     assert y_fn + s_fn == p_fn == 12
     assert y_tn + s_tn == p_tn == 61
     assert y_fp + s_fp == p_fp == 25
+
+
+def test_report_confusion_tuples_conservation():
+    """
+    Asserts that every confusion tuple in report documentation and generator script
+    strictly conserves class balances: Positives sum to 217, Negatives sum to 86, Total 303.
+    """
+    import re
+    from pathlib import Path
+
+    base_dir = Path(__file__).resolve().parent.parent.parent
+
+    # Canonical model confusion matrices
+    cath_screening = (208, 9, 54, 32)  # TP, FN, TN, FP
+    cath_balanced = (205, 12, 61, 25)   # TP, FN, TN, FP
+    or_rule = (209, 8, 49, 37)          # TP, FN, TN, FP
+
+    for name, (tp, fn, tn, fp) in [
+        ("Cath Screening", cath_screening),
+        ("Cath Balanced", cath_balanced),
+        ("OR Rule", or_rule),
+    ]:
+        assert tp + fn == 217, f"{name}: TP ({tp}) + FN ({fn}) must equal 217 CAD positives"
+        assert tn + fp == 86, f"{name}: TN ({tn}) + FP ({fp}) must equal 86 Normal negatives"
+        assert tp + fn + tn + fp == 303, f"{name}: Total must equal 303 cohort size"
+
+    # Regex search for confusion count patterns in report.md and generate_pdf_report.py
+    target_files = [
+        base_dir / "docs" / "report.md",
+        base_dir / "scripts" / "generate_pdf_report.py",
+        base_dir / "reports" / "fairness_audit.md",
+    ]
+
+    # Pattern: 209 TP / 8 FN / 49 TN / 37 FP or 208 TP / 54 TN / 9 FN / 32 FP
+    p1 = re.compile(r"(\d+)\s*TP\s*/\s*(\d+)\s*FN\s*/\s*(\d+)\s*TN\s*/\s*(\d+)\s*FP")
+    p2 = re.compile(r"(\d+)\s*TP\s*/\s*(\d+)\s*TN\s*/\s*(\d+)\s*FN\s*/\s*(\d+)\s*FP")
+
+    for fpath in target_files:
+        if not fpath.exists():
+            continue
+        text = fpath.read_text(encoding="utf-8")
+        
+        for m in p1.finditer(text):
+            tp, fn, tn, fp = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
+            assert tp + fn == 217, f"In {fpath.name}: {m.group(0)} positives {tp}+{fn} != 217"
+            assert tn + fp == 86, f"In {fpath.name}: {m.group(0)} negatives {tn}+{fp} != 86"
+
+        for m in p2.finditer(text):
+            tp, tn, fn, fp = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
+            assert tp + fn == 217, f"In {fpath.name}: {m.group(0)} positives {tp}+{fn} != 217"
+            assert tn + fp == 86, f"In {fpath.name}: {m.group(0)} negatives {tn}+{fp} != 86"
+

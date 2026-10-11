@@ -161,49 +161,52 @@ def main():
     lines = [
         "# Demographic Fairness & Subgroup Validation Audit\n",
         "This audit evaluates predictive characteristics across demographic strata (Sex and Age) ",
-        "for the primary CAD model across both operating modes (Screening 0.400 and Balanced 0.500). ",
+        "for the primary Cath model alone across both operating modes (Screening 0.400 and Balanced 0.500). ",
+        "*(Audited on Cath model alone; the deployed disjunctive OR rule is not separately audited for demographic subgroups).* ",
         "All metrics are calculated on out-of-fold predictions with Wilson 95% confidence intervals.\n",
-        "## 1. Screening Mode Subgroup Performance (Cutoff 0.400 / High Sensitivity)\n",
+        "## 1. Screening Mode Subgroup Performance — Cath Model Alone (Cutoff 0.400 / High Sensitivity)\n",
         "| Stratum | n | TP | FN | TN | FP | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |",
         "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
 
     for m in [m_male, m_female, m_younger, m_senior, m_pooled_scr]:
-        sens_str = f"{m['sensitivity']:.1%} [{m['sensitivity_ci'][0]:.1%}–{m['sensitivity_ci'][1]:.1%}]"
-        spec_str = f"{m['specificity']:.1%} [{m['specificity_ci'][0]:.1%}–{m['specificity_ci'][1]:.1%}]"
+        sens_str = f"{m['sensitivity']:.1%} [{m['sensitivity_ci'][0]:.2%}–{m['sensitivity_ci'][1]:.2%}]"
+        spec_str = f"{m['specificity']:.1%} [{m['specificity_ci'][0]:.2%}–{m['specificity_ci'][1]:.2%}]"
         lines.append(
             f"| **{m['group']}** | {m['count']} | {m['tp']} | {m['fn']} | {m['tn']} | {m['fp']} | {m['prevalence']:.1%} | {m['auc']:.3f} | "
             f"{sens_str} | {spec_str} | {m['ppv']:.1%} | {m['npv']:.1%} |"
         )
 
     lines.extend([
-        "\n## 2. Balanced Mode Subgroup Performance (Cutoff 0.500)\n",
+        "\n## 2. Balanced Mode Subgroup Performance — Cath Model Alone (Cutoff 0.500)\n",
         "| Stratum | n | TP | FN | TN | FP | Prevalence | ROC-AUC | Sensitivity (95% Wilson) | Specificity (95% Wilson) | PPV | NPV |",
         "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ])
 
     for m in [bal_male, bal_female, bal_younger, bal_senior, bal_pooled]:
-        sens_str = f"{m['sensitivity']:.1%} [{m['sensitivity_ci'][0]:.1%}–{m['sensitivity_ci'][1]:.1%}]"
-        spec_str = f"{m['specificity']:.1%} [{m['specificity_ci'][0]:.1%}–{m['specificity_ci'][1]:.1%}]"
+        sens_str = f"{m['sensitivity']:.1%} [{m['sensitivity_ci'][0]:.2%}–{m['sensitivity_ci'][1]:.2%}]"
+        spec_str = f"{m['specificity']:.1%} [{m['specificity_ci'][0]:.2%}–{m['specificity_ci'][1]:.2%}]"
         lines.append(
             f"| **{m['group']}** | {m['count']} | {m['tp']} | {m['fn']} | {m['tn']} | {m['fp']} | {m['prevalence']:.1%} | {m['auc']:.3f} | "
             f"{sens_str} | {spec_str} | {m['ppv']:.1%} | {m['npv']:.1%} |"
         )
 
+    eq_opp_diff_sex = abs(m_male["sensitivity"] - m_female["sensitivity"])
+    spec_diff_sex = abs(m_male["specificity"] - m_female["specificity"])
     lines.extend([
-        "\n## 3. Subgroup Comparisons & Parity\n",
+        "\n## 3. Subgroup Comparisons & Parity (Cath Model Alone)\n",
         "- **Sex Comparison (Female vs. Male)**:",
         f"  - **Sample Size**: Male n={m_male['count']} (131 CAD / 45 normal), Female n={m_female['count']} (86 CAD / 41 normal).",
-        f"  - **Screening Sensitivity**: Male {m_male['sensitivity']:.1%} (95% CI: {m_male['sensitivity_ci'][0]:.1%}–{m_male['sensitivity_ci'][1]:.1%}) vs Female {m_female['sensitivity']:.1%} (95% CI: {m_female['sensitivity_ci'][0]:.1%}–{m_female['sensitivity_ci'][1]:.1%}), gap = {eq_opp_diff_sex*100:.1f}%.",
-        f"  - **Screening Specificity**: Male {m_male['specificity']:.1%} (95% CI: {m_male['specificity_ci'][0]:.1%}–{m_male['specificity_ci'][1]:.1%}) vs Female {m_female['specificity']:.1%} (95% CI: {m_female['specificity_ci'][0]:.1%}–{m_female['specificity_ci'][1]:.1%}).",
+        f"  - **Screening Sensitivity**: Male {m_male['sensitivity']:.1%} (95% CI: {m_male['sensitivity_ci'][0]:.1%}–{m_male['sensitivity_ci'][1]:.1%}) vs Female {m_female['sensitivity']:.1%} (95% CI: {m_female['sensitivity_ci'][0]:.1%}–{m_female['sensitivity_ci'][1]:.1%}), sensitivity gap = {eq_opp_diff_sex*100:.1f} points.",
+        f"  - **Screening Specificity**: Male {m_male['specificity']:.1%} (95% CI: {m_male['specificity_ci'][0]:.1%}–{m_male['specificity_ci'][1]:.1%}) vs Female {m_female['specificity']:.1%} (95% CI: {m_female['specificity_ci'][0]:.1%}–{m_female['specificity_ci'][1]:.1%}), specificity gap = {spec_diff_sex*100:.1f} points.",
         f"  - **ROC-AUC**: Male {m_male['auc']:.3f} vs Female {m_female['auc']:.3f} (delta = {auc_diff_sex:.3f}).",
         f"  - **Disparate Impact Ratio**: {disparate_impact_sex:.3f} (selection rates reflect underlying disease prevalence: {m_female['prevalence']:.1%} vs {m_male['prevalence']:.1%}).",
         "\n- **Age Comparison (Age > 65 vs. Age ≤ 65)**:",
         f"  - **Sample Size**: Age ≤ 65 n={m_younger['count']} (143 CAD / 76 normal), Age > 65 n={m_senior['count']} (74 CAD / 10 normal).",
-        f"  - **Screening Sensitivity**: Age > 65 is {m_senior['sensitivity']:.1%} (95% CI: {m_senior['sensitivity_ci'][0]:.1%}–{m_senior['sensitivity_ci'][1]:.1%}) vs Age ≤ 65 is {m_younger['sensitivity']:.1%} (95% CI: {m_younger['sensitivity_ci'][0]:.1%}–{m_younger['sensitivity_ci'][1]:.1%}), gap = {eq_opp_diff_age*100:.1f}%.",
+        f"  - **Screening Sensitivity**: Age > 65 is {m_senior['sensitivity']:.1%} (95% CI: {m_senior['sensitivity_ci'][0]:.1%}–{m_senior['sensitivity_ci'][1]:.1%}) vs Age ≤ 65 is {m_younger['sensitivity']:.1%} (95% CI: {m_younger['sensitivity_ci'][0]:.2%}–{m_younger['sensitivity_ci'][1]:.2%}), gap = {eq_opp_diff_age*100:.1f} points.",
         f"  - **Screening Specificity**: Age > 65 is {m_senior['specificity']:.1%} (95% CI: {m_senior['specificity_ci'][0]:.1%}–{m_senior['specificity_ci'][1]:.1%}) vs Age ≤ 65 is {m_younger['specificity']:.1%} (95% CI: {m_younger['specificity_ci'][0]:.1%}–{m_younger['specificity_ci'][1]:.1%}).",
         "\n## 4. Clinical Takeaway & Documented Limitations",
-        f"- **Safety Sensitivity**: Screening operating point prioritizes safety-first sensitivity (>93%) across both male and female groups with low sex disparity (gap = {eq_opp_diff_sex*100:.1f}%).",
+        f"- **Safety Sensitivity**: Screening operating point prioritizes safety-first sensitivity (>93%) across both male and female groups with low sex disparity (sensitivity gap = {eq_opp_diff_sex*100:.1f} points, specificity gap = {spec_diff_sex*100:.1f} points).",
         f"- **Known Limitation (Senior Specificity)**: In seniors aged > 65, specificity is markedly reduced ({m_senior['specificity']:.1%}, 95% CI: {m_senior['specificity_ci'][0]:.1%}–{m_senior['specificity_ci'][1]:.1%}, 3/10 normal patients identified) compared to younger adults ({m_younger['specificity']:.1%} at screening, {bal_younger['specificity']:.1%} balanced). This reflects severe referral bias and cohort imbalance in elderly patients (88.1% CAD prevalence, only 10 normal patients). Clinicians must note that positive flags in patients over 65 carry an elevated false-alarm rate.",
     ])
 

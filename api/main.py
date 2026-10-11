@@ -52,6 +52,7 @@ def load_artifacts():
     ml_state["parent_mappings"] = bundle["parent_mappings"]
     ml_state["thresholds"] = bundle["thresholds"]
     ml_state["coherence_fix"] = bundle["coherence_fix"]
+    ml_state["oof_predictions"] = bundle.get("oof_predictions", {})
 
     with open(ARTIFACTS_DIR / "metrics.json", "r", encoding="utf-8") as f:
         ml_state["metrics"] = json.load(f)
@@ -224,7 +225,7 @@ def version_info():
         with open(manifest_path, "r", encoding="utf-8") as f:
             bundle_hash = json.load(f).get("model_bundle_sha256")
     return {
-        "version": "1.1.0",
+        "version": "1.1.1",
         "service": "Cardio3D AI",
         "sklearn_version": sklearn.__version__,
         "bundle_sha256": bundle_hash,
@@ -309,7 +310,6 @@ class CadPredictionModel(BaseModel):
     prob: float
     raw_prob: Optional[float] = None
     displayed_prob: Optional[float] = None
-    coherent_prob: float
     driving_vessel: Optional[str] = None
     similar_cohort: Optional[Dict[str, Any]] = None
     label: str
@@ -318,11 +318,9 @@ class CadPredictionModel(BaseModel):
     high_sensitivity_threshold: float
     nested_sensitivity: Optional[float] = None
     coherence_adjusted: bool
-    flagged_by_vessel: Optional[bool] = None
     flagged_vessels_screening: Optional[List[str]] = None
     flagged_vessels_balanced: Optional[List[str]] = None
     flagged_vessels_count: Optional[int] = None
-    diseased_vessels_count: Optional[int] = None
     diffuse_or_non_focal: Optional[bool] = None
     diffuse_or_non_focal_screening: Optional[bool] = None
     diffuse_or_non_focal_balanced: Optional[bool] = None
@@ -337,6 +335,7 @@ class VesselPredictionModel(BaseModel):
     threshold: float
     high_sensitivity_threshold: float
     nested_sensitivity: Optional[float] = None
+    similar_cohort: Optional[Dict[str, Any]] = None
 
 
 class PredictionResponse(BaseModel):
@@ -347,6 +346,7 @@ class PredictionResponse(BaseModel):
     missing_features: Optional[List[str]] = None
     imputed_values: Optional[Dict[str, Any]] = None
     completeness: Optional[Dict[str, Any]] = None
+    input_completeness: Optional[str] = None
     reliability: Optional[str] = None
     warnings: Optional[List[str]] = None
     disclaimer: str

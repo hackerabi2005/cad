@@ -163,13 +163,13 @@ export function ClinicalSummaryModal({
                 <span className={`text-xs font-bold uppercase tracking-wider ${cad.label === 'CAD' ? 'text-rose-400 print:text-red-700' : 'text-emerald-400 print:text-emerald-700'}`}>
                   {cad.label === 'CAD' ? 'Obstructive Coronary Artery Disease' : 'Normal / Non-obstructive'}
                 </span>
-                {cad.flagged_by_vessel && (
+                {((cad.flagged_vessels_count ?? 0) > 0) && (
                   <span className="text-[10px] text-amber-400 font-mono font-bold block mt-1">
                     ⚠ Flagged by branch vessel stenosis (Disjunctive rule)
                   </span>
                 )}
                 <div className="text-[10px] text-slate-400 print:text-neutral-600 font-mono mt-1">
-                  Flagged Vessels: <strong className="text-white print:text-black">{cad.diseased_vessels_count ?? 0} / 3</strong>
+                  Flagged Vessels: <strong className="text-white print:text-black">{cad.flagged_vessels_count ?? 0} / 3</strong>
                 </div>
               </div>
             </div>

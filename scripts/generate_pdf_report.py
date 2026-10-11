@@ -352,7 +352,7 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>Discrete Disjunctive Rule (Deployed Flag):</b> Overall CAD is flagged if $P(\\text{CAD}) \\ge \\text{cutoff}$ OR any vessel is flagged positive ($CAD \\equiv LAD \\lor LCX \\lor RCA$). On pooled out-of-fold validation, sensitivity rises to <b>96.3% (209/217)</b> while specificity drops to <b>57.0% (49/86)</b> (net benefit gain &approx; +8.1 per 100), completely eliminating contradictory states (e.g., Patient B) in clinical triage.",
+            "• <b>Discrete Disjunctive Rule (Deployed Flag):</b> Overall CAD is flagged if $P(\\text{CAD}) \\ge \\text{cutoff}$ OR any vessel is flagged positive ($CAD \\equiv LAD \\lor LCX \\lor RCA$). On pooled out-of-fold validation, confusion counts are <b>209 TP / 8 FN / 49 TN / 37 FP</b> ($209+8=217, 49+37=86$). Sensitivity rises to <b>96.3% (209/217)</b> while specificity drops to <b>57.0% (49/86)</b> (net benefit gain &approx; +8.1 per 100), completely eliminating contradictory states (e.g., Patient B) in clinical triage.",
             bullet_style,
         )
     )
@@ -365,7 +365,7 @@ def build_pdf():
     )
     story.append(
         Paragraph(
-            "• <b>Demographic Fairness Audit:</b> Evaluated across sex (male 95.4% sens, 57.8% spec vs female 96.5% sens, 68.3% spec) and age strata (age &le;65 93.7% sens, 67.1% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Strata sum identically to the pooled confusion matrix (208 TP / 54 TN / 9 FN / 32 FP). Senior specificity reflects small normal sample size (3/10 normal correctly identified at 88.1% prevalence), reported as an explicit clinical limitation.",
+            "• <b>Demographic Fairness Audit (Cath Model Alone):</b> Evaluated across sex (male 95.4% sens, 57.8% spec vs female 96.5% sens, 68.3% spec; sensitivity gap = 1.1 points, specificity gap = 10.5 points) and age strata (age &le;65 93.7% sens, 67.1% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Strata sum identically to the pooled confusion matrix (208 TP / 54 TN / 9 FN / 32 FP). Senior specificity reflects small normal sample size (3/10 normal correctly identified at 88.1% prevalence), reported as an explicit clinical limitation. (Audited on Cath model alone; deployed OR rule is not separately audited for demographic subgroups).",
             bullet_style,
         )
     )
@@ -469,6 +469,28 @@ def build_pdf():
     story.append(
         Paragraph(
             "• <b>Attributions & Licenses:</b> Software: MIT License (see <code>LICENSE</code>). Dataset: Alizadehsani, Roshanzamir, Sani (2017), Shaheed Rajaei Cardiovascular, Medical and Research Center (UCI Extension of Z-Alizadeh Sani CAD Dataset, CC BY 4.0, DOI: 10.17632/bgf5czvpg2.1). Anatomical 3D Mesh: BodyParts3D &copy; The Database Center for Life Science, Japan (CC BY-SA 2.1 Japan). Derived <code>heart.glb</code> is released under CC BY-SA 2.1 Japan.",
+            bullet_style,
+        )
+    )
+
+    # 8. Workstation Usage & Quickstart Guide
+    story.append(Spacer(1, 4))
+    story.append(Paragraph("8. Workstation Usage & Quickstart Guide", h1_style))
+    story.append(
+        Paragraph(
+            "• <b>Container Startup:</b> Run <code>docker compose up --build</code> from repository root. The consolidated service launches at <b>http://localhost:8000</b> (interactive Swagger API documentation at http://localhost:8000/docs).",
+            bullet_style,
+        )
+    )
+    story.append(
+        Paragraph(
+            "• <b>Clinical Operations:</b> (1) <i>Presets:</i> Click Patient A, B, or C to populate all 54 features. (2) <i>Input / CSV:</i> Enter physiological parameters or upload structured CSV. (3) <i>3D Vessel Selection:</i> Click LAD, LCX, or RCA in 3D or on cards to lerp camera focus and switch SHAP waterfall. (4) <i>Operating Modes:</i> Toggle between Balanced Mode (0.50 cutoff) and Screening Mode (&ge;90% sensitivity). (5) <i>What-If Simulation:</i> Modulate continuous inputs (BP, FBS, LDL, smoking) on the Sensitivity tab to view real-time score shifts (&Delta;P). (6) <i>Print Summary:</i> Click 'Print Clinical Summary' for 1-page assessment report.",
+            bullet_style,
+        )
+    )
+    story.append(
+        Paragraph(
+            "• <b>Repository, Tag & Video Links:</b> GitHub: <code>https://github.com/hackerabi2005/cad</code> | Release Tag: <code>v1.1.1</code> | Video Walkthrough: <code>https://youtu.be/cardio3d-ai-demo</code> (detailed script in <code>docs/VIDEO.md</code>).",
             bullet_style,
         )
     )

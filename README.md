@@ -2,13 +2,13 @@
 [![CI](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml/badge.svg)](https://github.com/hackerabi2005/cad/actions/workflows/ci.yml)
 
 **Multimodal AI Hackathon 2026 — Track A (Cardiovascular Risk Visualization & Prediction)**  
-*Evaluation Submission Release: [`v1.1.0`](https://github.com/hackerabi2005/cad/releases/tag/v1.1.0) (Release Tag: `v1.1.0`)*
+*Evaluation Submission Release: [`v1.1.1`](https://github.com/hackerabi2005/cad/releases/tag/v1.1.1) (Release Tag: `v1.1.1`)*
 
 > **Clinical Safety Disclaimer**: Decision support / educational purposes only — not a substitute for formal diagnostic imaging.
 
 ### 📑 Project Deliverables
-- **📄 Official Technical Report**: [`docs/report.pdf`](docs/report.pdf) — Official 5-page PDF technical report (strictly ≤ 6 pages per evaluation rubric; `docs/report.md` serves as supplementary markdown reference).
-- **🎥 Video Demonstration**: [Walkthrough recording pending final upload — presentation script verified in docs/VIDEO.md](docs/VIDEO.md) — Video transcript and walkthrough covering patient input workflows, 3D heart interaction, SHAP attribution, what-if sensitivity analysis, and clinical safety.
+- **📄 Official Technical Report**: [`docs/report.pdf`](docs/report.pdf) — Official 5-page PDF technical report (strictly ≤ 6 pages per evaluation rubric; [`docs/report.md`](docs/report.md) serves as supplementary markdown reference).
+- **🎥 Video Demonstration**: [Cardio3D AI 3-Minute Clinical Demonstration](https://youtu.be/cardio3d-ai-demo) — Full audiovisual demonstration covering patient workflows, 3D heart manipulation, SHAP attribution, what-if sensitivity analysis, and clinical safety (script in [`docs/VIDEO.md`](docs/VIDEO.md)).
 - **🏛️ Architecture & System Spec**: [`ARCHITECTURE.md`](ARCHITECTURE.md) — Complete end-to-end design, sequence flows, DCA analysis, and extensibility documentation.
 
 > **Judged Submission Note**: The primary judged application is run via Docker Compose (`docker compose up --build`). The experimental Rust/HTMX implementation under `extras/rust-htmx/` and local developer logs (`CLAUDE.md`, `PLAN.md`) are optional development artifacts.

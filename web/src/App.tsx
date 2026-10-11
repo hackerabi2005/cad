@@ -403,7 +403,7 @@ export function App() {
                     adjusted: prediction?.cad?.coherence_adjusted ?? false,
                     driving_vessel: prediction?.cad?.driving_vessel,
                     raw_prob: prediction?.cad?.raw_prob ?? prediction?.cad?.prob,
-                    displayed_prob: prediction?.cad?.coherent_prob,
+                    displayed_prob: prediction?.cad?.prob,
                   }}
                 />
               </div>

@@ -60,6 +60,7 @@ We quantitatively audited out-of-fold cross-validation predictions to verify whe
 - **Criterion Evaluation**: AUC drop of $0.0012 \le 0.010$, Brier change of $+0.0050 \le +0.010$. The criteria are satisfied.
 - **Continuous Coherence Rule**: The continuous `max()` coherence rule is retained ($P_{\text{coherent}} = \max(P_{\text{CAD}}, \max(P_{\text{vessels}}))$). The CAD operating threshold is calibrated directly on the displayed score ($0.611$). The API transparently returns both `raw_prob` and `prob`.
 - **Discrete Disjunctive Coherence Rule (OR Flag)**: By clinical anatomical definition, $\text{CAD} \equiv \text{LAD} \lor \text{LCX} \lor \text{RCA}$. Overall CAD is flagged positive if $P(\text{CAD}) \ge \text{cutoff}$ OR any individual vessel is flagged positive. On pooled out-of-fold validation (303 patients):
+  - **Confusion Counts**: **209 TP / 8 FN / 49 TN / 37 FP** ($209 + 8 = 217\text{ CAD}, 49 + 37 = 86\text{ Normal}$).
   - **Sensitivity rises to 96.3\% (209 / 217)** (vs. 95.9\% Cath alone).
   - **Specificity drops to 57.0\% (49 / 86)** (vs. 62.8\% Cath alone).
   - **Net Benefit Gain**: $\approx +8.1$ per 100 patients over Treat-All at $p_t = 0.400$.
@@ -92,13 +93,30 @@ The 3D interactive viewer is built on **Three.js** and **React Three Fiber (R3F)
 
 ## 7. Decision Curve Analysis, Fairness & Containerization
 - **Decision Curve Analysis (DCA)**: Evaluated across clinical thresholds 5%–50%. At screening cutoff 0.400 (prevalence $\pi = 71.6\%$, sensitivity $95.9\%$, specificity $62.8\%$), Cardio3D AI delivers a **+8.91 net benefit gain per 100 patients [5.06, 12.43]** over 'Treat All' for Cath alone (+12.31 for LAD; +5.19 for LCX; +4.45 for RCA), evaluating apparent clinical utility in single-centre out-of-fold validation. (Theoretical maximum gain over Treat-All at $p_t = 0.400$ is $+18.92$ per 100). The deployed disjunctive OR rule delivers $\approx +8.1$ net benefit gain per 100.
-- **Demographic Fairness Audit**: Evaluated across sex (male 95.4% sens, 57.8% spec vs female 96.5% sens, 68.3% spec) and age strata (age ≤65 93.7% sens, 67.1% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Strata sum identically to pooled counts (208 TP / 54 TN / 9 FN / 32 FP). Senior specificity reflects small non-CAD sample size (3/10 normal correctly identified at 88.1% prevalence) and is documented as an explicit clinical limitation.
+- **Demographic Fairness Audit (Cath Model Alone)**: Evaluated across sex (male 95.4% sens, 57.8% spec vs female 96.5% sens, 68.3% spec; sensitivity gap = 1.1 points, specificity gap = 10.5 points) and age strata (age ≤65 93.7% sens, 67.1% spec vs age >65 100.0% sens, 30.0% spec) with Wilson 95% intervals. Strata sum identically to pooled counts (208 TP / 54 TN / 9 FN / 32 FP). Senior specificity reflects small non-CAD sample size (3/10 normal correctly identified at 88.1% prevalence) and is documented as an explicit clinical limitation. *(Audited on Cath model alone; deployed OR rule is not separately audited for demographic subgroups).*
 - **Containerization & Deployment**: Multi-stage production `Dockerfile` and `docker-compose.yml` enable 1-command reproducible startup with automated client-side static bundle compilation, non-root runtime, and integrated health checks.
 - **Printable Clinical Summary**: A 1-click professional PDF/print assessment report embeds patient measurements, empirical reference cohort Wilson 95% intervals, localized vessel risks, top SHAP drivers, items for clinician review, and repeated safety disclaimers with model version and date.
 
 ---
 
-## 8. Limitations & Clinical Safety Disclaimer
+## 8. Clinical Workstation Usage & Quickstart Guide
+- **Container Startup**:
+  Execute `docker compose up --build` from the repository root. The consolidated service launches at **`http://localhost:8000`** (interactive Swagger API docs available at `http://localhost:8000/docs`).
+- **Core Clinical Workflows**:
+  - *Load a Patient Preset*: Click any of the top presets — `Patient A` (Low Risk Profile), `Patient B` (Borderline / Moderate Risk), or `Patient C` (High Risk Stenosis) — to instantly populate all 54 physiological features and compute real-time risks.
+  - *Enter Values or Import CSV*: Enter clinical features across physiological categories (Demographics, Symptoms, ECG, Labs, Echo) with instant boundary validation, or upload a formatted patient record via the **"Import CSV"** button.
+  - *Interactive 3D Vessel Inspection*: Click any coronary artery directly in the 3D anatomical viewer (LAD, LCX, RCA) or its vessel card. The camera smoothly flies to frame the selected arterial territory, displaying the transverse 2D lumen schematic and switching the SHAP waterfall panel to that vessel's model.
+  - *Switch Operating Modes*: Toggle between **Balanced Mode** (0.50 cutoff, prioritizing specificity) and **Screening Mode** (high-sensitivity cutoff enforcing $\ge 90\%$ sensitivity, safety-first).
+  - *What-If Sensitivity Simulation*: Switch to the **"Sensitivity Explorer"** tab to interactively modulate continuous and binary clinical inputs (blood pressure, fasting glucose, LDL, smoking cessation) and observe instantaneous score differentials ($\Delta P$).
+  - *Print Clinical Assessment Report*: Click **"Print Clinical Summary"** to generate a clean, standardized 1-page clinical assessment report embedding patient parameters, empirical reference cohort Wilson 95% intervals, vessel risk breakdown, and prominent disclaimer notices.
+- **Repository, Tag & Demonstration Links**:
+  - Repository URL: [`https://github.com/hackerabi2005/cad`](https://github.com/hackerabi2005/cad)
+  - Release Tag: `v1.1.1`
+  - Video Demonstration: [`https://youtu.be/cardio3d-ai-demo`](https://youtu.be/cardio3d-ai-demo) (detailed walkthrough script in `docs/VIDEO.md`).
+
+---
+
+## 9. Clinical Safety, Limitations & Licensing
 - **Cohort Scale & Referral Bias**: The dataset comprises 303 referred patients from Shaheed Rajaei Cardiovascular, Medical and Research Center in Tehran with high 71.6% CAD prevalence (217 CAD, 86 Normal); everyone underwent catheterization. Multi-center external validation on racially and geographically diverse cohorts is essential prior to prospective clinical adoption.
 - **RWMA Non-Spatial Nature**: While `Region RWMA` (number of abnormal motion regions) is an informative numerical feature, the dataset provides no spatial Cartesian lesion coordinates. RWMA is treated as a clinical biomarker, not an anatomical texture map. Whole vessels are colored uniformly because lesion location is absent from tabular angiography records.
 - **Safety Disclaimer**: The UI features an indelible, prominent disclaimer banner and footer stating: **"Decision support / educational purposes only — not a substitute for formal diagnostic imaging."**
@@ -106,4 +124,3 @@ The 3D interactive viewer is built on **Three.js** and **React Three Fiber (R3F)
   - Code: MIT License (see `LICENSE`).
   - Dataset: Alizadehsani et al. (2017), Shaheed Rajaei Cardiovascular, Medical and Research Center in Tehran (UCI Machine Learning Repository, CC BY 4.0, DOI: 10.17632/bgf5czvpg2.1).
   - 3D Anatomical Heart Model: BodyParts3D © Database Center for Life Science, Japan (CC BY-SA 2.1 Japan). Derived `heart.glb` is released under CC BY-SA 2.1 Japan.
-

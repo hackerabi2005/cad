@@ -9,7 +9,7 @@
     "sha256": "739343245c2ba578b541370217531750d8e936022f928b83e0d91756caa3ff0b",
     "target_alignment": "Row 93 (spreadsheet row 95) had LAD='Stenotic', LCX='Normal', RCA='Normal', Cath='Normal'. By clinical definition (CAD = >= 1 stenotic vessel, Cath = LAD | LCX | RCA), aligned Cath to 1. Sensitivity analysis confirms metrics under original vs aligned label vary by < 0.002 AUC."
   },
-  "validation_strategy": "5-fold × 3 repeats (3×5-fold repeated stratified CV)",
+  "validation_strategy": "5-fold \u00d7 3 repeats (3\u00d75-fold repeated stratified CV)",
   "selected_models": {
     "Cath": "LogitEnsemble",
     "LAD": "LogitEnsemble",
@@ -249,11 +249,11 @@
         }
       },
       "nested_cv_operating_metrics": {
-        "sensitivity_mean": 0.8853,
+        "sensitivity_mean": 0.8812,
         "sensitivity_std": 0.0674,
         "specificity_mean": 0.609,
         "specificity_std": 0.0989,
-        "sensitivity_pooled": 0.8851,
+        "sensitivity_pooled": 0.8812,
         "specificity_pooled": 0.6085
       },
       "achieved_sensitivity": 0.904,
@@ -485,11 +485,11 @@
         }
       },
       "nested_cv_operating_metrics": {
-        "sensitivity_mean": 0.8951,
+        "sensitivity_mean": 0.8924,
         "sensitivity_std": 0.0707,
         "specificity_mean": 0.3671,
         "specificity_std": 0.1042,
-        "sensitivity_pooled": 0.8947,
+        "sensitivity_pooled": 0.8924,
         "specificity_pooled": 0.3668
       },
       "achieved_sensitivity": 0.9035,
